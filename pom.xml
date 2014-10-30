@@ -62,7 +62,7 @@
   </developers>
 
   <properties>
-    <h2.version>1.4.181</h2.version>
+    <h2.version>1.4.182</h2.version>
     <mysql.version>5.1.33</mysql.version>
   </properties>
   
@@ -70,7 +70,7 @@
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-commons</artifactId>
-      <version>5.1.0</version>
+      <version>5.2.0</version>
     </dependency>
     
     <dependency>
