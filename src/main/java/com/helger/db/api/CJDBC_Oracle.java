@@ -22,7 +22,7 @@ import com.helger.commons.annotations.PresentForCodeCoverage;
 
 /**
  * JDBC constants for Oracle
- * 
+ *
  * @author Philip Helger
  */
 @Immutable
@@ -37,7 +37,6 @@ public final class CJDBC_Oracle
   public static final String DEFAULT_JDBC_DRIVER_CLASS_NAME = "oracle.jdbc.driver.OracleDriver";
 
   @PresentForCodeCoverage
-  @SuppressWarnings ("unused")
   private static final CJDBC_Oracle s_aInstance = new CJDBC_Oracle ();
 
   private CJDBC_Oracle ()

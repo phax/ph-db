@@ -22,7 +22,7 @@ import com.helger.commons.annotations.PresentForCodeCoverage;
 
 /**
  * JDBC constants for Microsoft SQL Server
- * 
+ *
  * @author Philip Helger
  */
 @Immutable
@@ -33,7 +33,6 @@ public final class CJDBC_SQLServer
   public static final String DEFAULT_JDBC_DRIVER_CLASS_NAME = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 
   @PresentForCodeCoverage
-  @SuppressWarnings ("unused")
   private static final CJDBC_SQLServer s_aInstance = new CJDBC_SQLServer ();
 
   private CJDBC_SQLServer ()
