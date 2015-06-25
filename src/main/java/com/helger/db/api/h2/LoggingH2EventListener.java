@@ -29,9 +29,9 @@ import com.helger.commons.string.ToStringGenerator;
  * 
  * @author Philip Helger
  */
-public class H2EventListener implements DatabaseEventListener
+public class LoggingH2EventListener implements DatabaseEventListener
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (H2EventListener.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (LoggingH2EventListener.class);
 
   public void init (final String sURL)
   {

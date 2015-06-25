@@ -16,12 +16,14 @@
  */
 package com.helger.db.api.h2;
 
+import com.helger.commons.id.IHasIntID;
+
 /**
  * H2 lock mode
- * 
+ *
  * @author Philip Helger
  */
-public enum EH2LockMode
+public enum EH2LockMode implements IHasIntID
 {
   READ_COMMITTED (3),
   SERIALIZABLE (1),
@@ -37,7 +39,7 @@ public enum EH2LockMode
     m_nValue = i;
   }
 
-  public int getValue ()
+  public int getID ()
   {
     return m_nValue;
   }

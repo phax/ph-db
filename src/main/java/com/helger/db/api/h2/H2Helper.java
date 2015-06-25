@@ -22,23 +22,18 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.string.StringHelper;
 import com.helger.db.api.CJDBC_H2;
 
 /**
  * H2 helper methods
- * 
+ *
  * @author Philip Helger
  */
 @Immutable
 public final class H2Helper
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (H2Helper.class);
-
   private H2Helper ()
   {}
 
@@ -60,10 +55,10 @@ public final class H2Helper
   public static String buildJDBCString (@Nonnull @Nonempty final String sJdbcURL,
                                         @Nullable final Map <String, String> aConnectionProperties)
   {
-    if (StringHelper.hasNoText (sJdbcURL))
-      throw new IllegalArgumentException ("JDBC URL may not be empty!");
-    if (!sJdbcURL.startsWith (CJDBC_H2.CONNECTION_PREFIX))
-      s_aLogger.error ("The JDBC URL '" + sJdbcURL + "' does not seem to be a H2 connection string!");
+    ValueEnforcer.notEmpty (sJdbcURL, "JDBC URL");
+    ValueEnforcer.isTrue (sJdbcURL.startsWith (CJDBC_H2.CONNECTION_PREFIX), "The JDBC URL '" +
+                                                                            sJdbcURL +
+                                                                            "' does not seem to be a H2 connection string!");
 
     // Add the connection properties to the JDBC string
     final StringBuilder aSB = new StringBuilder (sJdbcURL);

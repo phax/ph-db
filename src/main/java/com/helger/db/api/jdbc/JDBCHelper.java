@@ -62,7 +62,7 @@ public final class JDBCHelper
       }
       catch (final SQLException ex)
       {
-        s_aLogger.warn ("Error committing connection", ex);
+        s_aLogger.warn ("Error committing connection " + aConnection, ex);
       }
     }
     return ESuccess.FAILURE;
@@ -80,7 +80,7 @@ public final class JDBCHelper
       }
       catch (final SQLException ex)
       {
-        s_aLogger.warn ("Error rolling back connection", ex);
+        s_aLogger.warn ("Error rolling back connection " + aConnection, ex);
       }
     }
   }
@@ -96,7 +96,7 @@ public final class JDBCHelper
       }
       catch (final SQLException ex)
       {
-        s_aLogger.warn ("Error closing connection", ex);
+        s_aLogger.warn ("Error closing connection " + aConnection, ex);
       }
     }
   }
@@ -111,7 +111,7 @@ public final class JDBCHelper
       }
       catch (final SQLException ex)
       {
-        s_aLogger.warn ("Error closing statement", ex);
+        s_aLogger.warn ("Error closing statement " + aStatement, ex);
       }
     }
   }

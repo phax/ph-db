@@ -21,6 +21,7 @@ import javax.annotation.Nullable;
 
 import com.helger.commons.annotation.CodingStyleguideUnaware;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.name.IHasName;
 import com.helger.commons.version.Version;
 
 /**
@@ -31,7 +32,7 @@ import com.helger.commons.version.Version;
  * @author Philip Helger
  */
 @CodingStyleguideUnaware
-public enum EMySQLConnectionProperty
+public enum EMySQLConnectionProperty implements IHasName
 {
   /** The user to connect as */
   user ("user", null, null),

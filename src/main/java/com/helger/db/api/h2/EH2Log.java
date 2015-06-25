@@ -16,12 +16,14 @@
  */
 package com.helger.db.api.h2;
 
+import com.helger.commons.id.IHasIntID;
+
 /**
  * H2 log mode
- * 
+ *
  * @author Philip Helger
  */
-public enum EH2Log
+public enum EH2Log implements IHasIntID
 {
   DISABLE (0),
   LOG (1),
@@ -37,7 +39,7 @@ public enum EH2Log
     m_nValue = i;
   }
 
-  public int getValue ()
+  public int getID ()
   {
     return m_nValue;
   }
