@@ -29,12 +29,13 @@ import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.lang.ClassHelper;
 import com.helger.commons.state.ESuccess;
 
 /**
  * Small class for safe SQL-as-usual methods.
- * 
+ *
  * @author Philip Helger
  */
 @Immutable
@@ -117,7 +118,7 @@ public final class JDBCHelper
 
   /**
    * Determine the JDBC type from the passed class.
-   * 
+   *
    * @param aClass
    *        The class to check. May not be <code>null</code>.
    * @return {@link Types#JAVA_OBJECT} if the type could not be determined.
@@ -125,8 +126,7 @@ public final class JDBCHelper
    */
   public static int getJDBCTypeFromClass (@Nonnull final Class <?> aClass)
   {
-    if (aClass == null)
-      throw new NullPointerException ("class");
+    ValueEnforcer.notNull (aClass, "Class");
 
     if (!ClassHelper.isArrayClass (aClass))
     {

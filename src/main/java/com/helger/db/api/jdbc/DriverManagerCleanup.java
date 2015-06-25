@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A simple class that deregisters all {@link Driver}'s registered in the
  * central {@link DriverManager}.
- * 
+ *
  * @author Philip Helger
  */
 @Immutable
@@ -41,7 +41,7 @@ public final class DriverManagerCleanup
   {}
 
   /**
-   * Deregister all JDBC drivers, still registered in the {@link DriverManager}.
+   * Unregister all JDBC drivers, still registered in the {@link DriverManager}.
    * This method should be called upon application shutdown!
    */
   public static void deregisterAllDrivers ()
