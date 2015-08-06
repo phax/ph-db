@@ -60,6 +60,19 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
+  
+  <repositories>
+    <repository>
+        <id>h2</id>
+        <url>http://hsql.sourceforge.net/m2-repo/</url>
+        <releases>
+           <enabled>true</enabled>
+        </releases>
+        <snapshots>
+          <enabled>false</enabled>
+        </snapshots>
+     </repository>
+  </repositories>
 
   <properties>
     <h2.version>1.4.188</h2.version>
@@ -70,7 +83,7 @@
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-commons</artifactId>
-      <version>6.1.0</version>
+      <version>6.1.1</version>
     </dependency>
     
     <dependency>
