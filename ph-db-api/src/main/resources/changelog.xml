@@ -18,6 +18,12 @@
 
 -->
 <changelog xmlns="http://www.helger.com/xsd/changelog/1.0" version="1.0" component="ph-db-api">
+  <release date="2015-08-13" version="4.1.0" />
+  <entry date="2015-08-13" category="tech" action="update">
+    <change>
+      <text locale="en">Merged all ph-db-* projects into a single GitHub project</text>
+    </change>
+  </entry>
   <release date="2015-07-02" version="2.0.0" />
   <entry date="2015-07-02" category="tech" action="update">
     <change>

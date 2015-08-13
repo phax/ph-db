@@ -18,7 +18,13 @@
 
 -->
 <changelog xmlns="http://www.helger.com/xsd/changelog/1.0" version="1.0" component="ph-db-jpa">
-  <entry date="2014-08-03" category="tech" action="update">
+  <release date="2015-08-13" version="4.1.0" />
+  <entry date="2015-08-13" category="tech" action="update">
+    <change>
+      <text locale="en">Merged all ph-db-* projects into a single GitHub project</text>
+    </change>
+  </entry>
+  <entry date="2015-08-03" category="tech" action="update">
     <change>
       <text locale="en">Updated to H2 1.4.188</text>
     </change>
