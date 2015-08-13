@@ -61,15 +61,15 @@
 
   <repositories>
     <repository>
-        <id>h2</id>
-        <url>http://hsql.sourceforge.net/m2-repo/</url>
-        <releases>
-           <enabled>true</enabled>
-        </releases>
-        <snapshots>
-          <enabled>false</enabled>
-        </snapshots>
-     </repository>
+      <id>h2</id>
+      <url>http://hsql.sourceforge.net/m2-repo/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
   </repositories>
 
   <developers>
