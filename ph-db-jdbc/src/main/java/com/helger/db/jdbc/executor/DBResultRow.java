@@ -152,6 +152,12 @@ public class DBResultRow implements ICloneable <DBResultRow>
     return get (nIndex).getAsByte (nDefault);
   }
 
+  @Nullable
+  public byte [] getAsByteArray (@Nonnegative final int nIndex)
+  {
+    return get (nIndex).getAsByteArray ();
+  }
+
   public char getAsChar (@Nonnegative final int nIndex)
   {
     return get (nIndex).getAsChar ();

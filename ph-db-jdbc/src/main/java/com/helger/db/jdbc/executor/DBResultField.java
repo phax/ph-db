@@ -35,7 +35,6 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.typeconvert.TypeConverter;
 import com.helger.commons.typeconvert.TypeConverterException;
-import com.helger.db.api.jdbc.JDBCHelper;
 
 /**
  * Represents a single DB query result value within a result row.
@@ -125,6 +124,12 @@ public class DBResultField
   public byte getAsByte (final byte nDefault)
   {
     return m_aValue == null ? nDefault : getAsByte ();
+  }
+
+  @Nullable
+  public byte [] getAsByteArray () throws TypeConverterException
+  {
+    return TypeConverter.convertIfNecessary (m_aValue, byte [].class);
   }
 
   public char getAsChar () throws TypeConverterException
