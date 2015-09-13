@@ -35,6 +35,7 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.typeconvert.TypeConverter;
 import com.helger.commons.typeconvert.TypeConverterException;
+import com.helger.db.api.jdbc.JDBCHelper;
 
 /**
  * Represents a single DB query result value within a result row.
