@@ -417,6 +417,8 @@ public class JPAEnabledManager
    * @param aCallable
    *        The callable
    * @return The return of the callable or <code>null</code> upon success
+   * @param <T>
+   *        The return type of the callable
    */
   @Nonnull
   public static final <T> JPAExecutionResult <T> doSelectStatic (@Nonnull final Callable <T> aCallable)
@@ -453,6 +455,8 @@ public class JPAEnabledManager
    * @param aCallable
    *        The callable to execute.
    * @return A non-<code>null</code> result of the select.
+   * @param <T>
+   *        Return type of the callable
    */
   @Nonnull
   public final <T> JPAExecutionResult <T> doSelect (@Nonnull final Callable <T> aCallable)

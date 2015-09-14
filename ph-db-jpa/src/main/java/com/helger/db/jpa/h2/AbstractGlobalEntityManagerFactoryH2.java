@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.platform.database.H2Platform;
 
@@ -55,11 +56,11 @@ public abstract class AbstractGlobalEntityManagerFactoryH2 extends AbstractGloba
    * Constructor. Never initialize manually!
    */
   protected AbstractGlobalEntityManagerFactoryH2 (@Nonnull @Nonempty final String sJdbcURL,
-                                                  @Nullable final String sUser,
+                                                  @Nullable final String sUserName,
                                                   @Nullable final String sPassword,
                                                   @Nonnull @Nonempty final String sPersistenceUnitName)
   {
-    this (sJdbcURL, null, sUser, sPassword, sPersistenceUnitName, null);
+    this (sJdbcURL, null, sUserName, sPassword, sPersistenceUnitName, null);
   }
 
   /*
@@ -67,30 +68,46 @@ public abstract class AbstractGlobalEntityManagerFactoryH2 extends AbstractGloba
    */
   protected AbstractGlobalEntityManagerFactoryH2 (@Nonnull @Nonempty final String sJdbcURL,
                                                   @Nullable final Map <String, String> aConnectionProperties,
-                                                  @Nullable final String sUser,
+                                                  @Nullable final String sUserName,
                                                   @Nullable final String sPassword,
                                                   @Nonnull @Nonempty final String sPersistenceUnitName)
   {
-    this (sJdbcURL, aConnectionProperties, sUser, sPassword, sPersistenceUnitName, null);
+    this (sJdbcURL, aConnectionProperties, sUserName, sPassword, sPersistenceUnitName, null);
   }
 
   /**
    * Constructor. Never initialize manually!
+   *
+   * @param sJdbcURL
+   *        JDBC URL
+   * @param aConnectionProperties
+   *        Connection properties to build the connection string
+   * @param sUserName
+   *        User name to access the DB. May be <code>null</code>.
+   * @param sPassword
+   *        Password to access the DB. May be <code>null</code>.
+   * @param sPersistenceUnitName
+   *        The name of the persistence unit as stated in the persistence.xml
+   * @param aAdditionalFactoryProperties
+   *        An optional Map with properties for {@link EntityManagerFactory}.
+   *        This can even be used to overwrite the settings specified as
+   *        explicit parameters, so be careful. This map is applied after the
+   *        special properties are set! May be <code>null</code>.
    */
   protected AbstractGlobalEntityManagerFactoryH2 (@Nonnull @Nonempty final String sJdbcURL,
                                                   @Nullable final Map <String, String> aConnectionProperties,
-                                                  @Nullable final String sUser,
+                                                  @Nullable final String sUserName,
                                                   @Nullable final String sPassword,
                                                   @Nonnull @Nonempty final String sPersistenceUnitName,
-                                                  @Nullable final Map <String, Object> aAdditionalFactoryProps)
+                                                  @Nullable final Map <String, Object> aAdditionalFactoryProperties)
   {
     super (H2DriverSingleton.getInstance ().getDriverClassName (),
            _buildJDBCString (sJdbcURL, aConnectionProperties),
-           sUser,
+           sUserName,
            sPassword,
            H2Platform.class.getName (),
            sPersistenceUnitName,
-           aAdditionalFactoryProps);
+           aAdditionalFactoryProperties);
   }
 
   public static final void setJMXEnabledByDefault (final boolean bEnabled)
