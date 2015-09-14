@@ -307,7 +307,7 @@ public class JPAEnabledManager
   @Nonnull
   public static final JPAExecutionResult <?> doInTransaction (@Nonnull @WillNotClose final EntityManager aEntityMgr,
                                                               final boolean bAllowNestedTransactions,
-                                                              @Nonnull final IThrowingRunnable aRunnable)
+                                                              @Nonnull final IThrowingRunnable <Exception> aRunnable)
   {
     return doInTransaction (aEntityMgr,
                             bAllowNestedTransactions,
@@ -315,7 +315,7 @@ public class JPAEnabledManager
   }
 
   @Nonnull
-  public final JPAExecutionResult <?> doInTransaction (@Nonnull final IThrowingRunnable aRunnable)
+  public final JPAExecutionResult <?> doInTransaction (@Nonnull final IThrowingRunnable <Exception> aRunnable)
   {
     // Create entity manager
     final EntityManager aEntityMgr = getEntityManager ();
@@ -336,7 +336,7 @@ public class JPAEnabledManager
   @Nonnull
   public final JPAExecutionResult <?> doInTransaction (@Nonnull final Runnable aRunnable)
   {
-    return doInTransaction (new AdapterRunnableToThrowingRunnable (aRunnable));
+    return doInTransaction (new AdapterRunnableToThrowingRunnable <Exception> (aRunnable));
   }
 
   @Nonnull
