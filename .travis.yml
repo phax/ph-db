@@ -1,9 +1,24 @@
 language: java
 
+env:
+  global:
+    - SONATYPE_USERNAME=ph@phloc.com
+    - secure: "vAMnsB+0E9i0SWOttnuQAxq8czJ1LWf1z3ahg3nLPIbqSL40+O7Y6IzsKs/w/0TewZ9eAzD/33EjeygFH2uLt+JZi
+rCykVe7u9nyYU9BKCk/bFEkf6sqiMgJSLg+ZULdPnP1jO6bU4v0R2iPKkEBgc0fuqh/CvoCxKSepS2JNGohVylgFNiBJaQrToEyX
+ZhDXyhCAcc+hBQ4e3qGhsDlPGUnwpjexahvywLGGFH5xAFXoZBb/ZMIEPCHNnozDOjhQ6MHz+lm5VXubQ+NWTwRpyICMbEH5lawp
+odzJ4JRCtL14tzpKbRJqeI1xg7kg62J0CiVROTm/qu/+LW19OoX0logG8wWySWWX5EJZ5rIiCNswBbwK6v4rEW3OupHsBwNO0Z8b
+NYD+SEf+2HfnxqfC1j7STaBoxv0OdQXsZH7yr59vK7T6Cv4cJ4sntfWlwc6YcmRsl0rd8EjjbLGtwGWXQRuOAJ8zrO029Xup/OXm
+zfeflXsYGDsAjh9hHowiNlfa01kOzLFlP9thDcWubz4s2VZWDDjBzlnYu86S2FyMkXU7ZPQcCmKgtSwYxci7k7owJZc0SYAdWBHh
+ANGf1BoobYL6iX7TZVW64ij9+WOxGhfkfSevZK+Wyeq1PI/4dirFqre/g9cOcdK174DauwnZChTyWh+aEro2fbSSBfieKc="
+    
 jdk:
   - openjdk6
   
 cache:
   directories:
   - $HOME/.m2
+
+after_success:
+  - python mvn-settings-add-snapshot.py
+  - mvn clean deploy -DskipTests=true --settings ~/.m2/snapshot-settings.xml
   
