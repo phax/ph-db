@@ -26,7 +26,7 @@ import org.junit.Test;
 
 /**
  * Test class for class {@link JPAJodaDurationConverter}.
- * 
+ *
  * @author Philip Helger
  */
 public final class JPAJodaDurationConverterTest

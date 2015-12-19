@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 
 /**
  * Simple {@link Connection} provider interface.
- * 
+ *
  * @author Philip Helger
  */
 public interface IHasConnection

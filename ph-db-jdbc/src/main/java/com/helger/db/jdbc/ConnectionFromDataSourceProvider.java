@@ -32,8 +32,8 @@ import com.helger.commons.string.ToStringGenerator;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * Implementation of {@link IHasConnection} that creates a connection from
- * an {@link IHasDataSource}.
+ * Implementation of {@link IHasConnection} that creates a connection from an
+ * {@link IHasDataSource}.
  *
  * @author Philip Helger
  */

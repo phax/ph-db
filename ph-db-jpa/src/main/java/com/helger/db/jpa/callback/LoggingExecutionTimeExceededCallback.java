@@ -26,7 +26,7 @@ import com.helger.commons.string.ToStringGenerator;
 
 /**
  * A logging implementation of {@link IExecutionTimeExceededCallback}.
- * 
+ *
  * @author Philip Helger
  */
 public class LoggingExecutionTimeExceededCallback implements IExecutionTimeExceededCallback

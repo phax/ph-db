@@ -247,7 +247,7 @@ public final class JDBCHelper
         return "DATALINK";
       case Types.BOOLEAN:
         return "BOOLEAN";
-        // JDBC 4.0
+      // JDBC 4.0
       case Types.ROWID:
         return "ROWID";
       case Types.NCHAR:

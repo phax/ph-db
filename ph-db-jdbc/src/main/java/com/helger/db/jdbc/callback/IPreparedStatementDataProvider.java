@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 /**
  * Interface for objects that deliver content to pass parameters to a prepared
  * statement.
- * 
+ *
  * @author Philip Helger
  */
 public interface IPreparedStatementDataProvider

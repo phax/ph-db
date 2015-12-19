@@ -28,7 +28,7 @@ import com.helger.datetime.PDTFactory;
 
 /**
  * Test class for class {@link JPAJodaLocalDateConverter}.
- * 
+ *
  * @author Philip Helger
  */
 public final class JPAJodaLocalDateConverterTest

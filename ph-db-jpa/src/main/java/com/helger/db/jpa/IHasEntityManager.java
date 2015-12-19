@@ -21,7 +21,7 @@ import javax.persistence.EntityManager;
 
 /**
  * Indirection interface for retrieving JPA {@link EntityManager}.
- * 
+ *
  * @author Philip Helger
  */
 public interface IHasEntityManager

@@ -24,7 +24,7 @@ import com.helger.db.jdbc.AbstractConnector;
 
 /**
  * Abstract DB connector for DB2
- * 
+ *
  * @author Philip Helger
  */
 public abstract class AbstractDB2Connector extends AbstractConnector

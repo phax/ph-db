@@ -18,11 +18,9 @@ package com.helger.db.jdbc.h2;
 
 import org.junit.Test;
 
-import com.helger.db.jdbc.h2.H2FileConnector;
-
 /**
  * Test class for class {@link H2FileConnector}.
- * 
+ *
  * @author Philip Helger
  */
 public final class H2FileConnectorTest
@@ -30,9 +28,10 @@ public final class H2FileConnectorTest
   @Test
   public void testAll ()
   {
-    final H2FileConnector h2c = new H2FileConnector (".", "test", "sa", "");
-    h2c.close ();
-    // Close again
-    h2c.close ();
+    try (final H2FileConnector h2c = new H2FileConnector (".", "test", "sa", ""))
+    {
+      h2c.close ();
+      // Close again
+    }
   }
 }

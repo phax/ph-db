@@ -40,13 +40,11 @@ import com.helger.commons.state.ESuccess;
 import com.helger.db.api.CJDBC_H2;
 import com.helger.db.api.h2.LoggingH2EventListener;
 import com.helger.db.jdbc.AbstractConnector;
-import com.helger.db.jdbc.callback.IResultSetRowCallback;
 import com.helger.db.jdbc.executor.DBExecutor;
-import com.helger.db.jdbc.executor.DBResultRow;
 
 /**
  * Base DB connector for H2 databases
- * 
+ *
  * @author Philip Helger
  */
 @ThreadSafe
@@ -228,15 +226,11 @@ public abstract class AbstractH2Connector extends AbstractConnector
       try
       {
         final DBExecutor aExecutor = new DBExecutor (this);
-        final ESuccess ret = aExecutor.queryAll ("SCRIPT SIMPLE", new IResultSetRowCallback ()
-        {
-          public void run (@Nullable final DBResultRow aCurrentObject)
+        final ESuccess ret = aExecutor.queryAll ("SCRIPT SIMPLE", aCurrentObject -> {
+          if (aCurrentObject != null)
           {
-            if (aCurrentObject != null)
-            {
-              // The value of the first column is the script line
-              aPrintWriter.println (aCurrentObject.get (0).getValue ());
-            }
+            // The value of the first column is the script line
+            aPrintWriter.println (aCurrentObject.get (0).getValue ());
           }
         });
         aPrintWriter.flush ();

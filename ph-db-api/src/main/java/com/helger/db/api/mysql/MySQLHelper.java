@@ -50,9 +50,8 @@ public final class MySQLHelper
                                         @Nullable final Map <EMySQLConnectionProperty, String> aConnectionProperties)
   {
     ValueEnforcer.notEmpty (sJdbcURL, "JDBC URL");
-    ValueEnforcer.isTrue (sJdbcURL.startsWith (CJDBC_MySQL.CONNECTION_PREFIX), "The JDBC URL '" +
-                                                                               sJdbcURL +
-                                                                               "' does not seem to be a MySQL connection string!");
+    ValueEnforcer.isTrue (sJdbcURL.startsWith (CJDBC_MySQL.CONNECTION_PREFIX),
+                          "The JDBC URL '" + sJdbcURL + "' does not seem to be a MySQL connection string!");
 
     // Add the connection properties to the JDBC string
     final StringBuilder aSB = new StringBuilder ();

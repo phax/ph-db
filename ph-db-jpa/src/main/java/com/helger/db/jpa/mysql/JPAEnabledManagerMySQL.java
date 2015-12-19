@@ -24,7 +24,7 @@ import com.helger.db.jpa.JPAEnabledManager;
 
 /**
  * Special MySQL version of {@link JPAEnabledManager}
- * 
+ *
  * @author Philip Helger
  */
 @ThreadSafe

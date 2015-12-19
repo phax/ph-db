@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +116,7 @@ public abstract class AbstractConnector implements IHasDataSource, Closeable
         m_aDataSource.setUrl (getConnectionUrl ());
 
         // settings
-        m_aDataSource.setDefaultAutoCommit (isUseDefaultAutoCommit ());
+        m_aDataSource.setDefaultAutoCommit (Boolean.valueOf (isUseDefaultAutoCommit ()));
         m_aDataSource.setPoolPreparedStatements (isPoolPreparedStatements ());
       }
       return m_aDataSource;

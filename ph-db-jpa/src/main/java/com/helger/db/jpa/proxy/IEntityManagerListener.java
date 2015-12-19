@@ -18,7 +18,7 @@ package com.helger.db.jpa.proxy;
 
 /**
  * Base interface for EntityManager listeners.
- * 
+ *
  * @author helger
  */
 public interface IEntityManagerListener

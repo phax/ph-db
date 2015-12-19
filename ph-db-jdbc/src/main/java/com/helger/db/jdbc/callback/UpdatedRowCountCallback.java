@@ -22,7 +22,7 @@ import com.helger.commons.string.ToStringGenerator;
 
 /**
  * Default implementation of {@link IUpdatedRowCountCallback}.
- * 
+ *
  * @author Philip Helger
  */
 @NotThreadSafe

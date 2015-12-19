@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 
 /**
  * A simple provider interface for {@link DataSource} objects.
- * 
+ *
  * @author Philip Helger
  */
 public interface IHasDataSource
@@ -30,7 +30,7 @@ public interface IHasDataSource
    * Retrieve a data source. It is up to the implementation whether the same
    * data source is returned or whether a new data source object is created all
    * the time.
-   * 
+   *
    * @return A non-<code>null</code> data source.
    */
   @Nonnull

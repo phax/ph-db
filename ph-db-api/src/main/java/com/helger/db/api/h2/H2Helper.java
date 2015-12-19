@@ -56,9 +56,8 @@ public final class H2Helper
                                         @Nullable final Map <String, String> aConnectionProperties)
   {
     ValueEnforcer.notEmpty (sJdbcURL, "JDBC URL");
-    ValueEnforcer.isTrue (sJdbcURL.startsWith (CJDBC_H2.CONNECTION_PREFIX), "The JDBC URL '" +
-                                                                            sJdbcURL +
-                                                                            "' does not seem to be a H2 connection string!");
+    ValueEnforcer.isTrue (sJdbcURL.startsWith (CJDBC_H2.CONNECTION_PREFIX),
+                          "The JDBC URL '" + sJdbcURL + "' does not seem to be a H2 connection string!");
 
     // Add the connection properties to the JDBC string
     final StringBuilder aSB = new StringBuilder (sJdbcURL);

@@ -187,23 +187,19 @@ public class DBExecutor
   protected final ESuccess withStatementDo (@Nonnull final IWithStatementCallback aCB,
                                             @Nullable final IGeneratedKeysCallback aGeneratedKeysCB)
   {
-    return _withConnectionDo (new IWithConnectionCallback ()
-    {
-      public void run (@Nonnull final Connection aConnection) throws SQLException
+    return _withConnectionDo (aConnection -> {
+      Statement aStatement = null;
+      try
       {
-        Statement aStatement = null;
-        try
-        {
-          aStatement = aConnection.createStatement ();
-          aCB.run (aStatement);
+        aStatement = aConnection.createStatement ();
+        aCB.run (aStatement);
 
-          if (aGeneratedKeysCB != null)
-            handleGeneratedKeys (aStatement.getGeneratedKeys (), aGeneratedKeysCB);
-        }
-        finally
-        {
-          JDBCHelper.close (aStatement);
-        }
+        if (aGeneratedKeysCB != null)
+          handleGeneratedKeys (aStatement.getGeneratedKeys (), aGeneratedKeysCB);
+      }
+      finally
+      {
+        JDBCHelper.close (aStatement);
       }
     });
   }
@@ -215,43 +211,34 @@ public class DBExecutor
                                                     @Nullable final IUpdatedRowCountCallback aUpdatedRowCountCB,
                                                     @Nullable final IGeneratedKeysCallback aGeneratedKeysCB)
   {
-    return _withConnectionDo (new IWithConnectionCallback ()
-    {
-      public void run (@Nonnull final Connection aConnection) throws SQLException
+    return _withConnectionDo (aConnection -> {
+      try (final PreparedStatement aPS = aConnection.prepareStatement (sSQL, Statement.RETURN_GENERATED_KEYS))
       {
-        final PreparedStatement aPS = aConnection.prepareStatement (sSQL, Statement.RETURN_GENERATED_KEYS);
-        try
-        {
-          if (aPS.getParameterMetaData ().getParameterCount () != aPSDP.getValueCount ())
-            throw new IllegalArgumentException ("parameter count (" +
-                                                aPS.getParameterMetaData ().getParameterCount () +
-                                                ") does not match passed column name count (" +
-                                                aPSDP.getValueCount () +
-                                                ")");
+        if (aPS.getParameterMetaData ().getParameterCount () != aPSDP.getValueCount ())
+          throw new IllegalArgumentException ("parameter count (" +
+                                              aPS.getParameterMetaData ().getParameterCount () +
+                                              ") does not match passed column name count (" +
+                                              aPSDP.getValueCount () +
+                                              ")");
 
-          // assign values
-          int nIndex = 1;
-          for (final Object aArg : aPSDP.getObjectValues ())
-            aPS.setObject (nIndex++, aArg);
+        // assign values
+        int nIndex = 1;
+        for (final Object aArg : aPSDP.getObjectValues ())
+          aPS.setObject (nIndex++, aArg);
 
-          if (GlobalDebug.isDebugMode ())
-            s_aLogger.info ("Executing prepared statement: " + sSQL);
+        if (GlobalDebug.isDebugMode ())
+          s_aLogger.info ("Executing prepared statement: " + sSQL);
 
-          // call callback
-          aPSCallback.run (aPS);
+        // call callback
+        aPSCallback.run (aPS);
 
-          // Updated row count callback present?
-          if (aUpdatedRowCountCB != null)
-            aUpdatedRowCountCB.setUpdatedRowCount (aPS.getUpdateCount ());
+        // Updated row count callback present?
+        if (aUpdatedRowCountCB != null)
+          aUpdatedRowCountCB.setUpdatedRowCount (aPS.getUpdateCount ());
 
-          // retrieve generated keys?
-          if (aGeneratedKeysCB != null)
-            handleGeneratedKeys (aPS.getGeneratedKeys (), aGeneratedKeysCB);
-        }
-        finally
-        {
-          aPS.close ();
-        }
+        // retrieve generated keys?
+        if (aGeneratedKeysCB != null)
+          handleGeneratedKeys (aPS.getGeneratedKeys (), aGeneratedKeysCB);
       }
     });
   }
@@ -265,15 +252,11 @@ public class DBExecutor
   @Nonnull
   public ESuccess executeStatement (@Nonnull final String sSQL, @Nullable final IGeneratedKeysCallback aGeneratedKeysCB)
   {
-    return withStatementDo (new IWithStatementCallback ()
-    {
-      public void run (@Nonnull final Statement aStatement) throws SQLException
-      {
-        if (GlobalDebug.isDebugMode ())
-          s_aLogger.info ("Executing statement: " + sSQL);
-        aStatement.execute (sSQL);
-      }
-    }, aGeneratedKeysCB);
+    return withStatementDo (aStatement -> {
+      if (GlobalDebug.isDebugMode ())
+        s_aLogger.info ("Executing statement: " + sSQL);
+      aStatement.execute (sSQL);
+    } , aGeneratedKeysCB);
   }
 
   @Nonnull
@@ -289,13 +272,7 @@ public class DBExecutor
                                             @Nullable final IUpdatedRowCountCallback aURWCC,
                                             @Nullable final IGeneratedKeysCallback aGeneratedKeysCB)
   {
-    return withPreparedStatementDo (sSQL, aPSDP, new IWithPreparedStatementCallback ()
-    {
-      public void run (@Nonnull final PreparedStatement aPS) throws SQLException
-      {
-        aPS.execute ();
-      }
-    }, aURWCC, aGeneratedKeysCB);
+    return withPreparedStatementDo (sSQL, aPSDP, aPS -> aPS.execute (), aURWCC, aGeneratedKeysCB);
   }
 
   @Nullable
@@ -339,13 +316,7 @@ public class DBExecutor
     // We need this wrapper because the anonymous inner class cannot change
     // variables in outer scope.
     final IUpdatedRowCountCallback aURCCB = new UpdatedRowCountCallback ();
-    withPreparedStatementDo (sSQL, aPSDP, new IWithPreparedStatementCallback ()
-    {
-      public void run (@Nonnull final PreparedStatement aPS) throws SQLException
-      {
-        aPS.execute ();
-      }
-    }, aURCCB, aGeneratedKeysCB);
+    withPreparedStatementDo (sSQL, aPSDP, aPS -> aPS.execute (), aURCCB, aGeneratedKeysCB);
     return aURCCB.getUpdatedRowCount ();
   }
 
@@ -448,14 +419,10 @@ public class DBExecutor
   public ESuccess queryAll (@Nonnull @Nonempty final String sSQL,
                             @Nonnull final IResultSetRowCallback aResultItemCallback)
   {
-    return withStatementDo (new IWithStatementCallback ()
-    {
-      public void run (@Nonnull final Statement aStatement) throws SQLException
-      {
-        final ResultSet aResultSet = aStatement.executeQuery (sSQL);
-        iterateResultSet (aResultSet, aResultItemCallback);
-      }
-    }, null);
+    return withStatementDo (aStatement -> {
+      final ResultSet aResultSet = aStatement.executeQuery (sSQL);
+      iterateResultSet (aResultSet, aResultItemCallback);
+    } , null);
   }
 
   @Nonnull
@@ -463,29 +430,21 @@ public class DBExecutor
                             @Nonnull final IPreparedStatementDataProvider aPSDP,
                             @Nonnull final IResultSetRowCallback aResultItemCallback)
   {
-    return withPreparedStatementDo (sSQL, aPSDP, new IWithPreparedStatementCallback ()
-    {
-      public void run (@Nonnull final PreparedStatement aPreparedStatement) throws SQLException
-      {
-        final ResultSet aResultSet = aPreparedStatement.executeQuery ();
-        iterateResultSet (aResultSet, aResultItemCallback);
-      }
-    }, null, null);
+    return withPreparedStatementDo (sSQL, aPSDP, aPreparedStatement -> {
+      final ResultSet aResultSet = aPreparedStatement.executeQuery ();
+      iterateResultSet (aResultSet, aResultItemCallback);
+    } , null, null);
   }
 
   @Nullable
   public List <DBResultRow> queryAll (@Nonnull @Nonempty final String sSQL)
   {
     final List <DBResultRow> aAllResultRows = new ArrayList <DBResultRow> ();
-    return queryAll (sSQL, new IResultSetRowCallback ()
-    {
-      public void run (@Nullable final DBResultRow aCurrentObject)
+    return queryAll (sSQL, aCurrentObject -> {
+      if (aCurrentObject != null)
       {
-        if (aCurrentObject != null)
-        {
-          // We need to clone the object!
-          aAllResultRows.add (aCurrentObject.getClone ());
-        }
+        // We need to clone the object!
+        aAllResultRows.add (aCurrentObject.getClone ());
       }
     }).isFailure () ? null : aAllResultRows;
   }
@@ -495,15 +454,11 @@ public class DBExecutor
                                       @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
     final List <DBResultRow> aAllResultRows = new ArrayList <DBResultRow> ();
-    return queryAll (sSQL, aPSDP, new IResultSetRowCallback ()
-    {
-      public void run (@Nullable final DBResultRow aCurrentObject)
+    return queryAll (sSQL, aPSDP, aCurrentObject -> {
+      if (aCurrentObject != null)
       {
-        if (aCurrentObject != null)
-        {
-          // We need to clone the object!
-          aAllResultRows.add (aCurrentObject.getClone ());
-        }
+        // We need to clone the object!
+        aAllResultRows.add (aCurrentObject.getClone ());
       }
     }).isFailure () ? null : aAllResultRows;
   }

@@ -26,7 +26,7 @@ import com.helger.commons.string.ToStringGenerator;
 
 /**
  * A logging H2 event listener.
- * 
+ *
  * @author Philip Helger
  */
 public class LoggingH2EventListener implements DatabaseEventListener

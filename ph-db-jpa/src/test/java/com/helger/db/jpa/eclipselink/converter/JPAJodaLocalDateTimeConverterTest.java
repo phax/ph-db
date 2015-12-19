@@ -28,16 +28,18 @@ import com.helger.datetime.PDTFactory;
 
 /**
  * Test class for class {@link JPAJodaLocalDateTimeConverter}.
- * 
+ *
  * @author Philip Helger
  */
-public final class JPAJodaLocalDateTimeConverterTest {
+public final class JPAJodaLocalDateTimeConverterTest
+{
   @Test
-  public void testAll() {
-    final LocalDateTime aNow = PDTFactory.getCurrentLocalDateTime();
-    final JPAJodaLocalDateTimeConverter aConverter = new JPAJodaLocalDateTimeConverter();
-    final Timestamp aDataValue = aConverter.convertObjectValueToDataValue(aNow, null);
-    assertNotNull(aDataValue);
-    assertEquals(aNow, aConverter.convertDataValueToObjectValue(aDataValue, null));
+  public void testAll ()
+  {
+    final LocalDateTime aNow = PDTFactory.getCurrentLocalDateTime ();
+    final JPAJodaLocalDateTimeConverter aConverter = new JPAJodaLocalDateTimeConverter ();
+    final Timestamp aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
+    assertNotNull (aDataValue);
+    assertEquals (aNow, aConverter.convertDataValueToObjectValue (aDataValue, null));
   }
 }
