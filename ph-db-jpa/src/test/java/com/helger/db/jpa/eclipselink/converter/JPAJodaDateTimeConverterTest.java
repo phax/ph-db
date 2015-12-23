@@ -20,11 +20,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 
-import org.joda.time.DateTime;
 import org.junit.Test;
-
-import com.helger.datetime.PDTFactory;
 
 /**
  * Test class for class {@link JPAJodaDateTimeConverter}.
@@ -36,7 +34,7 @@ public final class JPAJodaDateTimeConverterTest
   @Test
   public void testAll ()
   {
-    final DateTime aNow = PDTFactory.getCurrentDateTime ();
+    final ZonedDateTime aNow = ZonedDateTime.now ();
     final JPAJodaDateTimeConverter aConverter = new JPAJodaDateTimeConverter ();
     final Timestamp aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
     assertNotNull (aDataValue);

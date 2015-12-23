@@ -20,11 +20,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.sql.Time;
+import java.time.Clock;
+import java.time.LocalTime;
 
-import org.joda.time.LocalTime;
 import org.junit.Test;
 
-import com.helger.datetime.PDTFactory;
+import com.helger.datetime.config.PDTConfig;
 
 /**
  * Test class for class {@link JPAJodaLocalTimeConverter}.
@@ -36,7 +37,8 @@ public final class JPAJodaLocalTimeConverterTest
   @Test
   public void testAll ()
   {
-    final LocalTime aNow = PDTFactory.getCurrentLocalTime ();
+    // Get a time without milliseconds
+    final LocalTime aNow = LocalTime.now (Clock.tickSeconds (PDTConfig.getDefaultZoneId ()));
     final JPAJodaLocalTimeConverter aConverter = new JPAJodaLocalTimeConverter ();
     final Time aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
     assertNotNull (aDataValue);

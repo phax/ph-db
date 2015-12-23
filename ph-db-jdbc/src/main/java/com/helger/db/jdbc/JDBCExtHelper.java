@@ -17,14 +17,13 @@
 package com.helger.db.jdbc;
 
 import java.sql.Types;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.db.api.jdbc.JDBCHelper;
@@ -54,7 +53,7 @@ public final class JDBCExtHelper
     ValueEnforcer.notNull (aClass, "Class");
 
     // Custom converters
-    if (aClass.equals (DateTime.class))
+    if (aClass.equals (ZonedDateTime.class))
       return Types.TIMESTAMP;
 
     if (aClass.equals (LocalDateTime.class))

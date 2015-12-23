@@ -20,11 +20,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
-import org.joda.time.LocalDate;
 import org.junit.Test;
-
-import com.helger.datetime.PDTFactory;
 
 /**
  * Test class for class {@link JPAJodaLocalDateConverter}.
@@ -36,7 +34,7 @@ public final class JPAJodaLocalDateConverterTest
   @Test
   public void testAll ()
   {
-    final LocalDate aNow = PDTFactory.getCurrentLocalDate ();
+    final LocalDate aNow = LocalDate.now ();
     final JPAJodaLocalDateConverter aConverter = new JPAJodaLocalDateConverter ();
     final Date aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
     assertNotNull (aDataValue);

@@ -18,6 +18,7 @@ package com.helger.db.jdbc.h2;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.time.Clock;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,7 +32,6 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.io.file.FileOperations;
 import com.helger.commons.state.ESuccess;
-import com.helger.datetime.PDTFactory;
 
 /**
  * This class handles some of the specialties of the H2 database.
@@ -105,7 +105,7 @@ public class H2FileConnector extends H2MemConnector
       {
         // Oops, we lost our data -> save file to avoid overwriting with another
         // compact call
-        String sUniqueFileName = "h2dump-" + PDTFactory.getCurrentMillis () + ".sql";
+        String sUniqueFileName = "h2dump-" + Clock.systemUTC ().millis () + ".sql";
         if (FileOperations.renameFile (aScriptFileName, new File (sUniqueFileName)).isFailure ())
           sUniqueFileName = sScriptFileName;
         s_aLogger.error ("Failed to delete and refill database. Data is contained in file '" +

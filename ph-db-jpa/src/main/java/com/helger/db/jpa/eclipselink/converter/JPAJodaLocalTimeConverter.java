@@ -17,6 +17,7 @@
 package com.helger.db.jpa.eclipselink.converter;
 
 import java.sql.Time;
+import java.time.LocalTime;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -26,12 +27,11 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.sessions.Session;
-import org.joda.time.LocalTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.lang.ClassHelper;
-import com.helger.datetime.config.PDTConfig;
+import com.helger.commons.typeconvert.TypeConverter;
 
 @Immutable
 public class JPAJodaLocalTimeConverter implements Converter
@@ -44,7 +44,8 @@ public class JPAJodaLocalTimeConverter implements Converter
   @Nullable
   public Time convertObjectValueToDataValue (final Object aObjectValue, final Session session)
   {
-    return aObjectValue == null ? null : new Time (((LocalTime) aObjectValue).toDateTimeToday ().getMillis ());
+    final java.util.Date aDate = TypeConverter.convertIfNecessary (aObjectValue, java.util.Date.class);
+    return aDate == null ? null : new Time (aDate.getTime ());
   }
 
   @Nullable
@@ -53,7 +54,7 @@ public class JPAJodaLocalTimeConverter implements Converter
     if (aDataValue != null)
       try
       {
-        return new LocalTime (aDataValue, PDTConfig.getDefaultChronology ());
+        return TypeConverter.convertIfNecessary (aDataValue, LocalTime.class);
       }
       catch (final IllegalArgumentException ex)
       {
