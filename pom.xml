@@ -56,7 +56,7 @@
     <h2.version>1.4.190</h2.version>
     <mysql.version>5.1.38</mysql.version>
     <!-- 2.6.0 requires a 1.7 runtime -->
-    <eclipselink.version>2.6.1</eclipselink.version>
+    <eclipselink.version>2.6.2</eclipselink.version>
   </properties>
 
   <developers>
