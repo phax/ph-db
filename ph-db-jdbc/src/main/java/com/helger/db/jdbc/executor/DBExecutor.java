@@ -24,8 +24,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.annotation.CheckForSigned;
 import javax.annotation.Nonnegative;
@@ -46,6 +44,7 @@ import com.helger.commons.callback.ICallback;
 import com.helger.commons.callback.exception.IExceptionCallback;
 import com.helger.commons.callback.exception.LoggingExceptionCallback;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.ToStringGenerator;
@@ -85,7 +84,7 @@ public class DBExecutor
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (DBExecutor.class);
 
-  private final ReadWriteLock m_aRWLock = new ReentrantReadWriteLock ();
+  private final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
   private final IHasConnection m_aConnectionProvider;
   @GuardedBy ("m_aRWLock")
   private IExceptionCallback <? super SQLException> m_aExceptionCallback = new LoggingExceptionCallback ();
@@ -105,29 +104,15 @@ public class DBExecutor
   {
     ValueEnforcer.notNull (aExceptionCallback, "ExceptionCallback");
 
-    m_aRWLock.writeLock ().lock ();
-    try
-    {
+    m_aRWLock.writeLocked ( () -> {
       m_aExceptionCallback = aExceptionCallback;
-    }
-    finally
-    {
-      m_aRWLock.writeLock ().unlock ();
-    }
+    });
   }
 
   @Nonnull
   public IExceptionCallback <? super SQLException> getSQLExceptionCallback ()
   {
-    m_aRWLock.readLock ().lock ();
-    try
-    {
-      return m_aExceptionCallback;
-    }
-    finally
-    {
-      m_aRWLock.readLock ().unlock ();
-    }
+    return m_aRWLock.readLocked ( () -> m_aExceptionCallback);
   }
 
   @CodingStyleguideUnaware ("Needs to be synchronized!")

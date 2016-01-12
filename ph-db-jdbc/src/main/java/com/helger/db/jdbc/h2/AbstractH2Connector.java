@@ -76,107 +76,51 @@ public abstract class AbstractH2Connector extends AbstractConnector
 
   public final int getTraceLevelFile ()
   {
-    getLock ().lock ();
-    try
-    {
-      return m_nTraceLevelFile;
-    }
-    finally
-    {
-      getLock ().unlock ();
-    }
+    return getLock ().locked ( () -> m_nTraceLevelFile);
   }
 
   public final void setTraceLevelFile (final int nTraceLevelFile)
   {
-    getLock ().lock ();
-    try
-    {
+    getLock ().locked ( () -> {
       m_nTraceLevelFile = nTraceLevelFile;
-    }
-    finally
-    {
-      getLock ().unlock ();
-    }
+    });
   }
 
   public final int getTraceLevelSysOut ()
   {
-    getLock ().lock ();
-    try
-    {
-      return m_nTraceLevelSysOut;
-    }
-    finally
-    {
-      getLock ().unlock ();
-    }
+    return getLock ().locked ( () -> m_nTraceLevelSysOut);
   }
 
   public final void setTraceLevelSysOut (final int nTraceLevelSysOut)
   {
-    getLock ().lock ();
-    try
-    {
+    getLock ().locked ( () -> {
       m_nTraceLevelSysOut = nTraceLevelSysOut;
-    }
-    finally
-    {
-      getLock ().unlock ();
-    }
+    });
   }
 
   @Nullable
   public final Class <? extends DatabaseEventListener> getEventListenerClass ()
   {
-    getLock ().lock ();
-    try
-    {
-      return m_aEventListenerClass;
-    }
-    finally
-    {
-      getLock ().unlock ();
-    }
+    return getLock ().locked ( () -> m_aEventListenerClass);
   }
 
   public final void setEventListenerClass (@Nullable final Class <? extends DatabaseEventListener> aEventListenerClass)
   {
-    getLock ().lock ();
-    try
-    {
+    getLock ().locked ( () -> {
       m_aEventListenerClass = aEventListenerClass;
-    }
-    finally
-    {
-      getLock ().unlock ();
-    }
+    });
   }
 
   public final boolean isCloseOnExit ()
   {
-    getLock ().lock ();
-    try
-    {
-      return m_bCloseOnExit;
-    }
-    finally
-    {
-      getLock ().unlock ();
-    }
+    return getLock ().locked ( () -> m_bCloseOnExit);
   }
 
   public final void setCloseOnExit (final boolean bCloseOnExit)
   {
-    getLock ().lock ();
-    try
-    {
+    getLock ().locked ( () -> {
       m_bCloseOnExit = bCloseOnExit;
-    }
-    finally
-    {
-      getLock ().unlock ();
-    }
+    });
   }
 
   @Override

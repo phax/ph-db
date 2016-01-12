@@ -76,9 +76,7 @@ public class H2FileConnector extends H2MemConnector
   @Nonnull
   public ESuccess compactDatabase (final boolean bDeleteTemporarySQLFile)
   {
-    getLock ().lock ();
-    try
-    {
+    return getLock ().locked ( () -> {
       // Close DB
       close ();
 
@@ -114,10 +112,6 @@ public class H2FileConnector extends H2MemConnector
                          ex);
       }
       return ESuccess.FAILURE;
-    }
-    finally
-    {
-      getLock ().unlock ();
-    }
+    });
   }
 }

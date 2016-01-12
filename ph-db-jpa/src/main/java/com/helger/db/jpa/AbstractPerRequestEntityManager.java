@@ -65,53 +65,37 @@ public abstract class AbstractPerRequestEntityManager extends AbstractRequestSin
   @Nonnull
   public EntityManager getEntityManager ()
   {
-    EntityManager ret;
-    m_aRWLock.readLock ().lock ();
-    try
-    {
+    final EntityManager ret = m_aRWLock.readLocked ( () -> {
       if (m_bDestroyed)
         throw new IllegalStateException ("This object was already destroyed and should not be re-used!");
-      ret = m_aEntityManager;
-    }
-    finally
-    {
-      m_aRWLock.readLock ().unlock ();
-    }
+      return m_aEntityManager;
+    });
+    if (ret != null)
+      return ret;
 
-    if (ret == null)
-    {
-      // No EntityManager present for this request
-      m_aRWLock.writeLock ().lock ();
-      try
+    // No EntityManager present for this request
+    return m_aRWLock.writeLocked ( () -> {
+      // Try again in write lock
+      EntityManager ret2 = m_aEntityManager;
+      if (ret2 == null)
       {
-        // Try again in write lock
-        ret = m_aEntityManager;
-        if (ret == null)
-        {
-          ret = createEntityManager ();
-          if (ret == null)
-            throw new IllegalStateException ("Failed to create EntityManager!");
-          m_aEntityManager = ret;
+        ret2 = createEntityManager ();
+        if (ret2 == null)
+          throw new IllegalStateException ("Failed to create EntityManager!");
+        m_aEntityManager = ret2;
 
-          if (s_aLogger.isDebugEnabled ())
-            s_aLogger.debug ("EntityManager created");
-        }
+        if (s_aLogger.isDebugEnabled ())
+          s_aLogger.debug ("EntityManager created");
       }
-      finally
-      {
-        m_aRWLock.writeLock ().unlock ();
-      }
-    }
-    return ret;
+      return ret2;
+    });
   }
 
   @Override
   @OverridingMethodsMustInvokeSuper
   protected void onDestroy (@Nonnull final IScope aScopeInDestruction)
   {
-    m_aRWLock.writeLock ().lock ();
-    try
-    {
+    m_aRWLock.writeLocked ( () -> {
       // Close EntityManager, if present
       final EntityManager aEM = m_aEntityManager;
       if (aEM != null)
@@ -123,10 +107,6 @@ public abstract class AbstractPerRequestEntityManager extends AbstractRequestSin
           s_aLogger.debug ("EntityManager destroyed");
       }
       m_bDestroyed = true;
-    }
-    finally
-    {
-      m_aRWLock.writeLock ().unlock ();
-    }
+    });
   }
 }

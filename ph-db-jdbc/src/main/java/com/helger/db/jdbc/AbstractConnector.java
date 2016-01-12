@@ -18,8 +18,6 @@ package com.helger.db.jdbc;
 
 import java.io.Closeable;
 import java.sql.SQLException;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
+import com.helger.commons.concurrent.SimpleLock;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
@@ -45,14 +44,14 @@ public abstract class AbstractConnector implements IHasDataSource, Closeable
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractConnector.class);
 
-  private final Lock m_aLock = new ReentrantLock ();
+  private final SimpleLock m_aLock = new SimpleLock ();
   protected BasicDataSource m_aDataSource;
 
   public AbstractConnector ()
   {}
 
   @Nonnull
-  protected final Lock getLock ()
+  protected final SimpleLock getLock ()
   {
     return m_aLock;
   }
@@ -101,9 +100,7 @@ public abstract class AbstractConnector implements IHasDataSource, Closeable
   @Nonnull
   public final DataSource getDataSource ()
   {
-    m_aLock.lock ();
-    try
-    {
+    return m_aLock.locked ( () -> {
       if (m_aDataSource == null)
       {
         // build data source
@@ -120,18 +117,12 @@ public abstract class AbstractConnector implements IHasDataSource, Closeable
         m_aDataSource.setPoolPreparedStatements (isPoolPreparedStatements ());
       }
       return m_aDataSource;
-    }
-    finally
-    {
-      m_aLock.unlock ();
-    }
+    });
   }
 
   public final void close ()
   {
-    m_aLock.lock ();
-    try
-    {
+    m_aLock.locked ( () -> {
       if (m_aDataSource != null)
       {
         try
@@ -147,11 +138,7 @@ public abstract class AbstractConnector implements IHasDataSource, Closeable
         if (s_aLogger.isDebugEnabled ())
           s_aLogger.debug ("Closed database connection to '" + getDatabaseName () + "'");
       }
-    }
-    finally
-    {
-      m_aLock.unlock ();
-    }
+    });
   }
 
   @Override

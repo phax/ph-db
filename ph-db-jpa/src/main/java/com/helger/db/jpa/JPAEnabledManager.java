@@ -19,8 +19,6 @@ package com.helger.db.jpa;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -40,6 +38,7 @@ import com.helger.commons.callback.adapter.AdapterRunnableToCallable;
 import com.helger.commons.callback.adapter.AdapterRunnableToThrowingRunnable;
 import com.helger.commons.callback.adapter.AdapterThrowingRunnableToCallable;
 import com.helger.commons.callback.exception.IExceptionCallback;
+import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.statistics.IMutableStatisticsHandlerCounter;
 import com.helger.commons.statistics.IMutableStatisticsHandlerTimer;
 import com.helger.commons.statistics.StatisticsManager;
@@ -82,7 +81,7 @@ public class JPAEnabledManager
   private static final IMutableStatisticsHandlerTimer s_aStatsTimerExecutionError = StatisticsManager.getTimerHandler (JPAEnabledManager.class.getName () +
                                                                                                                        "$execError");
 
-  protected static final ReadWriteLock s_aRWLock = new ReentrantReadWriteLock ();
+  protected static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
   private static IExceptionCallback <Throwable> s_aExceptionCallback;
   private static final AtomicInteger s_aExecutionWarnTime = new AtomicInteger (DEFAULT_EXECUTION_WARN_TIME_MS);
   private static IExecutionTimeExceededCallback s_aExecutionTimeExceededHandler = new LoggingExecutionTimeExceededCallback (true);
@@ -170,15 +169,9 @@ public class JPAEnabledManager
    */
   public static final void setCustomExceptionCallback (@Nullable final IExceptionCallback <Throwable> aExceptionCallback)
   {
-    s_aRWLock.writeLock ().lock ();
-    try
-    {
+    s_aRWLock.writeLocked ( () -> {
       s_aExceptionCallback = aExceptionCallback;
-    }
-    finally
-    {
-      s_aRWLock.writeLock ().unlock ();
-    }
+    });
   }
 
   /**
@@ -189,15 +182,7 @@ public class JPAEnabledManager
   @Nullable
   public static final IExceptionCallback <Throwable> getCustomExceptionCallback ()
   {
-    s_aRWLock.readLock ().lock ();
-    try
-    {
-      return s_aExceptionCallback;
-    }
-    finally
-    {
-      s_aRWLock.readLock ().unlock ();
-    }
+    return s_aRWLock.readLocked ( () -> s_aExceptionCallback);
   }
 
   /**
@@ -250,15 +235,9 @@ public class JPAEnabledManager
 
   public static final void setExecutionTimeExceededHandler (@Nullable final IExecutionTimeExceededCallback aExecutionTimeExceededHandler)
   {
-    s_aRWLock.writeLock ().lock ();
-    try
-    {
+    s_aRWLock.writeLocked ( () -> {
       s_aExecutionTimeExceededHandler = aExecutionTimeExceededHandler;
-    }
-    finally
-    {
-      s_aRWLock.writeLock ().unlock ();
-    }
+    });
   }
 
   /**
@@ -269,15 +248,7 @@ public class JPAEnabledManager
   @Nullable
   public static final IExecutionTimeExceededCallback getExecutionTimeExceededHandler ()
   {
-    s_aRWLock.readLock ().lock ();
-    try
-    {
-      return s_aExecutionTimeExceededHandler;
-    }
-    finally
-    {
-      s_aRWLock.readLock ().unlock ();
-    }
+    return s_aRWLock.readLocked ( () -> s_aExecutionTimeExceededHandler);
   }
 
   public static final void onExecutionTimeExceeded (@Nonnull final String sMsg,
