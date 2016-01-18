@@ -24,6 +24,7 @@ import javax.sql.DataSource;
  *
  * @author Philip Helger
  */
+@FunctionalInterface
 public interface IHasDataSource
 {
   /**

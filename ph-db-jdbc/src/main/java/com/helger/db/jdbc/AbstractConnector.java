@@ -122,23 +122,23 @@ public abstract class AbstractConnector implements IHasDataSource, Closeable
 
   public final void close ()
   {
-    m_aLock.locked ( () -> {
-      if (m_aDataSource != null)
-      {
-        try
+    try
+    {
+      m_aLock.lockedThrowing ( () -> {
+        if (m_aDataSource != null)
         {
           m_aDataSource.close ();
           m_aDataSource = null;
-        }
-        catch (final SQLException ex)
-        {
-          throw new IllegalStateException ("Failed to close DataSource " + m_aDataSource, ex);
-        }
 
-        if (s_aLogger.isDebugEnabled ())
-          s_aLogger.debug ("Closed database connection to '" + getDatabaseName () + "'");
-      }
-    });
+          if (s_aLogger.isDebugEnabled ())
+            s_aLogger.debug ("Closed database connection to '" + getDatabaseName () + "'");
+        }
+      });
+    }
+    catch (final SQLException ex)
+    {
+      throw new IllegalStateException ("Failed to close DataSource " + m_aDataSource, ex);
+    }
   }
 
   @Override

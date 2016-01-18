@@ -27,6 +27,7 @@ import com.helger.commons.callback.ICallback;
  *
  * @author Philip Helger
  */
+@FunctionalInterface
 public interface IGeneratedKeysCallback extends ICallback
 {
   /**

@@ -26,6 +26,7 @@ import com.helger.db.jdbc.executor.DBResultRow;
  *
  * @author Philip Helger
  */
+@FunctionalInterface
 public interface IResultSetRowCallback extends INonThrowingRunnableWithParameter <DBResultRow>, ICallback
 {
   /* empty */
