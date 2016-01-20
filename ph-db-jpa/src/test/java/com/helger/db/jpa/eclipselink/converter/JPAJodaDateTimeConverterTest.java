@@ -24,6 +24,8 @@ import java.time.ZonedDateTime;
 
 import org.junit.Test;
 
+import com.helger.datetime.config.PDTConfig;
+
 /**
  * Test class for class {@link JPAJodaDateTimeConverter}.
  *
@@ -34,6 +36,9 @@ public final class JPAJodaDateTimeConverterTest
   @Test
   public void testAll ()
   {
+    // Ensure the default time zone is set :(
+    PDTConfig.getDefaultTimeZone ();
+
     final ZonedDateTime aNow = ZonedDateTime.now ();
     final JPAJodaDateTimeConverter aConverter = new JPAJodaDateTimeConverter ();
     final Timestamp aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
