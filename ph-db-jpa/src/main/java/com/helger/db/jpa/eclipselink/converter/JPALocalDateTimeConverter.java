@@ -34,11 +34,11 @@ import com.helger.commons.lang.ClassHelper;
 import com.helger.commons.typeconvert.TypeConverter;
 
 @Immutable
-public class JPAJodaLocalDateTimeConverter implements Converter
+public class JPALocalDateTimeConverter implements Converter
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (JPAJodaLocalDateTimeConverter.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (JPALocalDateTimeConverter.class);
 
-  public JPAJodaLocalDateTimeConverter ()
+  public JPALocalDateTimeConverter ()
   {}
 
   @Nullable

@@ -339,7 +339,7 @@ public class JPAEnabledManager
       s_aStatsCounterError.increment ();
       s_aStatsTimerExecutionError.addTime (aSW.stopAndGetMillis ());
       _invokeCustomExceptionCallback (t);
-      return JPAExecutionResult.<T> createFailure (t);
+      return JPAExecutionResult.createFailure (t);
     }
     finally
     {

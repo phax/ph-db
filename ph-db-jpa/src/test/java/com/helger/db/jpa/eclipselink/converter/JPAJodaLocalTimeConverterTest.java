@@ -28,7 +28,7 @@ import org.junit.Test;
 import com.helger.datetime.config.PDTConfig;
 
 /**
- * Test class for class {@link JPAJodaLocalTimeConverter}.
+ * Test class for class {@link JPALocalTimeConverter}.
  *
  * @author Philip Helger
  */
@@ -39,7 +39,7 @@ public final class JPAJodaLocalTimeConverterTest
   {
     // Get a time without milliseconds
     final LocalTime aNow = LocalTime.now (Clock.tickSeconds (PDTConfig.getDefaultZoneId ()));
-    final JPAJodaLocalTimeConverter aConverter = new JPAJodaLocalTimeConverter ();
+    final JPALocalTimeConverter aConverter = new JPALocalTimeConverter ();
     final Time aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
     assertNotNull (aDataValue);
     assertEquals (aNow, aConverter.convertDataValueToObjectValue (aDataValue, null));

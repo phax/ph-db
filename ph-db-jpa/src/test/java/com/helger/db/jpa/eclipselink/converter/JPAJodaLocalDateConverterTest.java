@@ -25,7 +25,7 @@ import java.time.LocalDate;
 import org.junit.Test;
 
 /**
- * Test class for class {@link JPAJodaLocalDateConverter}.
+ * Test class for class {@link JPALocalDateConverter}.
  *
  * @author Philip Helger
  */
@@ -35,7 +35,7 @@ public final class JPAJodaLocalDateConverterTest
   public void testAll ()
   {
     final LocalDate aNow = LocalDate.now ();
-    final JPAJodaLocalDateConverter aConverter = new JPAJodaLocalDateConverter ();
+    final JPALocalDateConverter aConverter = new JPALocalDateConverter ();
     final Date aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
     assertNotNull (aDataValue);
     assertEquals (aNow, aConverter.convertDataValueToObjectValue (aDataValue, null));

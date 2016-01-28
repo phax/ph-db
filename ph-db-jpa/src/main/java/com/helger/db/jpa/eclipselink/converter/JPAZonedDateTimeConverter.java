@@ -34,11 +34,11 @@ import com.helger.commons.lang.ClassHelper;
 import com.helger.commons.typeconvert.TypeConverter;
 
 @Immutable
-public class JPAJodaDateTimeConverter implements Converter
+public class JPAZonedDateTimeConverter implements Converter
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (JPAJodaDateTimeConverter.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (JPAZonedDateTimeConverter.class);
 
-  public JPAJodaDateTimeConverter ()
+  public JPAZonedDateTimeConverter ()
   {}
 
   @Nullable

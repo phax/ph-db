@@ -21,6 +21,7 @@ package com.helger.db.jpa.proxy;
  *
  * @author helger
  */
+@FunctionalInterface
 public interface IEntityManagerListener
 {
   /**

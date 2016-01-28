@@ -35,7 +35,7 @@ public class EntityManagerWithListener extends EntityManagerProxy
   }
 
   @Nullable
-  public IEntityManagerListener getListener ()
+  public IEntityManagerListener getCloseListener ()
   {
     return m_aListener;
   }

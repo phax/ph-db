@@ -27,7 +27,7 @@ import org.junit.Test;
 import com.helger.datetime.config.PDTConfig;
 
 /**
- * Test class for class {@link JPAJodaDateTimeConverter}.
+ * Test class for class {@link JPAZonedDateTimeConverter}.
  *
  * @author Philip Helger
  */
@@ -40,7 +40,7 @@ public final class JPAJodaDateTimeConverterTest
     PDTConfig.getDefaultTimeZone ();
 
     final ZonedDateTime aNow = ZonedDateTime.now ();
-    final JPAJodaDateTimeConverter aConverter = new JPAJodaDateTimeConverter ();
+    final JPAZonedDateTimeConverter aConverter = new JPAZonedDateTimeConverter ();
     final Timestamp aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
     assertNotNull (aDataValue);
     assertEquals (aNow, aConverter.convertDataValueToObjectValue (aDataValue, null));
