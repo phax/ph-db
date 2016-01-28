@@ -67,16 +67,19 @@ import com.helger.db.jdbc.callback.UpdatedRowCountCallback;
 @NotThreadSafe
 public class DBExecutor
 {
+  @FunctionalInterface
   protected interface IWithConnectionCallback extends ICallback
   {
     void run (@Nonnull Connection aConnection) throws SQLException;
   }
 
+  @FunctionalInterface
   protected interface IWithStatementCallback extends ICallback
   {
     void run (@Nonnull Statement aStatement) throws SQLException;
   }
 
+  @FunctionalInterface
   protected interface IWithPreparedStatementCallback extends ICallback
   {
     void run (@Nonnull PreparedStatement aPreparedStatement) throws SQLException;
@@ -104,9 +107,7 @@ public class DBExecutor
   {
     ValueEnforcer.notNull (aExceptionCallback, "ExceptionCallback");
 
-    m_aRWLock.writeLocked ( () -> {
-      m_aExceptionCallback = aExceptionCallback;
-    });
+    m_aRWLock.writeLocked ( () -> m_aExceptionCallback = aExceptionCallback);
   }
 
   @Nonnull
@@ -424,7 +425,7 @@ public class DBExecutor
   @Nullable
   public List <DBResultRow> queryAll (@Nonnull @Nonempty final String sSQL)
   {
-    final List <DBResultRow> aAllResultRows = new ArrayList <DBResultRow> ();
+    final List <DBResultRow> aAllResultRows = new ArrayList <> ();
     return queryAll (sSQL, aCurrentObject -> {
       if (aCurrentObject != null)
       {
@@ -438,7 +439,7 @@ public class DBExecutor
   public List <DBResultRow> queryAll (@Nonnull @Nonempty final String sSQL,
                                       @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
-    final List <DBResultRow> aAllResultRows = new ArrayList <DBResultRow> ();
+    final List <DBResultRow> aAllResultRows = new ArrayList <> ();
     return queryAll (sSQL, aPSDP, aCurrentObject -> {
       if (aCurrentObject != null)
       {
