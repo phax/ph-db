@@ -170,6 +170,21 @@ public final class JDBCHelper
 
       if (aClass.equals (java.sql.Timestamp.class))
         return Types.TIMESTAMP;
+
+      if (aClass.equals (java.time.ZonedDateTime.class))
+        return Types.TIMESTAMP;
+
+      if (aClass.equals (java.time.OffsetDateTime.class))
+        return Types.TIMESTAMP;
+
+      if (aClass.equals (java.time.LocalDateTime.class))
+        return Types.TIMESTAMP;
+
+      if (aClass.equals (java.time.LocalDate.class))
+        return Types.DATE;
+
+      if (aClass.equals (java.time.LocalTime.class))
+        return Types.TIME;
     }
     else
     {
