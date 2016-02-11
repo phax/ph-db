@@ -24,6 +24,7 @@ import javax.annotation.concurrent.Immutable;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.url.SimpleURL;
 import com.helger.db.api.CJDBC_MySQL;
 
 @Immutable
@@ -54,17 +55,11 @@ public final class MySQLHelper
                           "The JDBC URL '" + sJdbcURL + "' does not seem to be a MySQL connection string!");
 
     // Add the connection properties to the JDBC string
-    final StringBuilder aSB = new StringBuilder ();
+    final SimpleURL aURL = new SimpleURL (sJdbcURL);
     if (aConnectionProperties != null)
       for (final Map.Entry <EMySQLConnectionProperty, String> aEntry : aConnectionProperties.entrySet ())
-      {
-        if (aSB.length () == 0)
-          aSB.append ('?');
-        else
-          aSB.append ('&');
-        aSB.append (aEntry.getKey ().getName ()).append ('=').append (aEntry.getValue ());
-      }
-    return aSB.insert (0, sJdbcURL).toString ();
+        aURL.add (aEntry.getKey ().getName (), aEntry.getValue ());
+    return aURL.getAsStringWithoutEncodedParameters ();
   }
 
 }
