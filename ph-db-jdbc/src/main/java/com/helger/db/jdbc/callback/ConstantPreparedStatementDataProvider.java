@@ -41,7 +41,7 @@ public final class ConstantPreparedStatementDataProvider implements IPreparedSta
 
   public ConstantPreparedStatementDataProvider ()
   {
-    m_aValues = new ArrayList <Object> ();
+    m_aValues = new ArrayList <> ();
   }
 
   public ConstantPreparedStatementDataProvider (@Nonnull final Iterable <?> aValues)
