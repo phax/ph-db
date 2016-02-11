@@ -260,6 +260,13 @@ public final class JDBCHelper
         return "NCLOB";
       case Types.SQLXML:
         return "SQLXML";
+      // JDBC 4.2
+      case Types.REF_CURSOR:
+        return "REF_CURSOR";
+      case Types.TIME_WITH_TIMEZONE:
+        return "TIME_WITH_TIMEZONE";
+      case Types.TIMESTAMP_WITH_TIMEZONE:
+        return "TIMESTAMP_WITH_TIMEZONE";
     }
     s_aLogger.warn ("Unsupported JDBC type " + nType);
     return null;
