@@ -38,26 +38,26 @@ public final class ThirdPartyModuleProvider_ph_db_jdbc implements IThirdPartyMod
   public static final IThirdPartyModule COMMONS_POOL = new ThirdPartyModule ("Apache Commons Pool",
                                                                              "Apache",
                                                                              ELicense.APACHE2,
-                                                                             new Version (1, 6, 0),
+                                                                             new Version (2, 4, 2),
                                                                              "http://commons.apache.org/pool/");
   /** Apache commons-dbcp */
   public static final IThirdPartyModule COMMONS_DBCP = new ThirdPartyModule ("Apache Commons DBCP",
                                                                              "Apache",
                                                                              ELicense.APACHE2,
-                                                                             new Version (1, 4, 0),
+                                                                             new Version (2, 1, 1),
                                                                              "http://commons.apache.org/dbcp/");
   /** H2 database */
   public static final IThirdPartyModule H2 = new ThirdPartyModule ("H2 Database Engine",
                                                                    "Eclipse Foundation",
                                                                    ELicense.EPL10,
-                                                                   new Version (1, 4, 190),
+                                                                   new Version (1, 4, 191),
                                                                    "http://www.h2database.com/",
                                                                    true);
   /** MySQL connector */
   public static final IThirdPartyModule MYSQL = new ThirdPartyModule ("MySQL Connector/J",
                                                                       "Oracle",
                                                                       ELicense.GPL20,
-                                                                      new Version (5, 1, 37),
+                                                                      new Version (5, 1, 38),
                                                                       "http://www.mysql.com/",
                                                                       true);
 
