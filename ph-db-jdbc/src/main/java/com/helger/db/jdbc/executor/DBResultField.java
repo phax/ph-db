@@ -16,16 +16,6 @@
  */
 package com.helger.db.jdbc.executor;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.Date;
-import java.sql.NClob;
-import java.sql.RowId;
-import java.sql.Time;
-import java.sql.Timestamp;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -33,8 +23,7 @@ import javax.annotation.concurrent.Immutable;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.string.ToStringGenerator;
-import com.helger.commons.typeconvert.TypeConverter;
-import com.helger.commons.typeconvert.TypeConverterException;
+import com.helger.commons.traits.IConvertibleTrait;
 import com.helger.db.api.jdbc.JDBCHelper;
 
 /**
@@ -43,7 +32,7 @@ import com.helger.db.api.jdbc.JDBCHelper;
  * @author Philip Helger
  */
 @Immutable
-public class DBResultField
+public class DBResultField implements IConvertibleTrait
 {
   private final String m_sColumnName;
   private final int m_nColumnType;
@@ -87,200 +76,6 @@ public class DBResultField
   public Object getValue ()
   {
     return m_aValue;
-  }
-
-  @Nullable
-  public String getAsString () throws TypeConverterException
-  {
-    return TypeConverter.convertIfNecessary (m_aValue, String.class);
-  }
-
-  @Nullable
-  public BigDecimal getAsBigDecimal () throws TypeConverterException
-  {
-    return TypeConverter.convertIfNecessary (m_aValue, BigDecimal.class);
-  }
-
-  @Nullable
-  public BigInteger getAsBigInteger () throws TypeConverterException
-  {
-    return TypeConverter.convertIfNecessary (m_aValue, BigInteger.class);
-  }
-
-  public boolean getAsBoolean () throws TypeConverterException
-  {
-    return TypeConverter.convertToBoolean (m_aValue);
-  }
-
-  public boolean getAsBoolean (final boolean bDefault)
-  {
-    return m_aValue == null ? bDefault : getAsBoolean ();
-  }
-
-  public byte getAsByte () throws TypeConverterException
-  {
-    return TypeConverter.convertToByte (m_aValue);
-  }
-
-  public byte getAsByte (final byte nDefault)
-  {
-    return m_aValue == null ? nDefault : getAsByte ();
-  }
-
-  @Nullable
-  public byte [] getAsByteArray () throws TypeConverterException
-  {
-    return TypeConverter.convertIfNecessary (m_aValue, byte [].class);
-  }
-
-  public char getAsChar () throws TypeConverterException
-  {
-    return TypeConverter.convertToChar (m_aValue);
-  }
-
-  public char getAsChar (final char cDefault)
-  {
-    return m_aValue == null ? cDefault : getAsChar ();
-  }
-
-  public double getAsDouble () throws TypeConverterException
-  {
-    return TypeConverter.convertToDouble (m_aValue);
-  }
-
-  public double getAsDouble (final double dDefault)
-  {
-    return m_aValue == null ? dDefault : getAsDouble ();
-  }
-
-  public float getAsFloat () throws TypeConverterException
-  {
-    return TypeConverter.convertToFloat (m_aValue);
-  }
-
-  public float getAsFloat (final float fDefault)
-  {
-    return m_aValue == null ? fDefault : getAsFloat ();
-  }
-
-  public int getAsInt () throws TypeConverterException
-  {
-    return TypeConverter.convertToInt (m_aValue);
-  }
-
-  public int getAsInt (final int nDefault)
-  {
-    return m_aValue == null ? nDefault : getAsInt ();
-  }
-
-  public long getAsLong () throws TypeConverterException
-  {
-    return TypeConverter.convertToLong (m_aValue);
-  }
-
-  public long getAsLong (final long nDefault)
-  {
-    return m_aValue == null ? nDefault : getAsLong ();
-  }
-
-  public short getAsShort () throws TypeConverterException
-  {
-    return TypeConverter.convertToShort (m_aValue);
-  }
-
-  public short getAsShort (final short nDefault)
-  {
-    return m_aValue == null ? nDefault : getAsShort ();
-  }
-
-  @Nullable
-  public Boolean getAsBooleanObj () throws TypeConverterException
-  {
-    return TypeConverter.convertIfNecessary (m_aValue, Boolean.class);
-  }
-
-  @Nullable
-  public Byte getAsByteObj () throws TypeConverterException
-  {
-    return TypeConverter.convertIfNecessary (m_aValue, Byte.class);
-  }
-
-  @Nullable
-  public Character getAsCharObj () throws TypeConverterException
-  {
-    return TypeConverter.convertIfNecessary (m_aValue, Character.class);
-  }
-
-  @Nullable
-  public Double getAsDoubleObj ()
-  {
-    return TypeConverter.convertIfNecessary (m_aValue, Double.class);
-  }
-
-  @Nullable
-  public Float getAsFloatObj () throws TypeConverterException
-  {
-    return TypeConverter.convertIfNecessary (m_aValue, Float.class);
-  }
-
-  @Nullable
-  public Integer getAsIntObj () throws TypeConverterException
-  {
-    return TypeConverter.convertIfNecessary (m_aValue, Integer.class);
-  }
-
-  @Nullable
-  public Long getAsLongObj () throws TypeConverterException
-  {
-    return TypeConverter.convertIfNecessary (m_aValue, Long.class);
-  }
-
-  @Nullable
-  public Short getAsShortObj () throws TypeConverterException
-  {
-    return TypeConverter.convertIfNecessary (m_aValue, Short.class);
-  }
-
-  @Nullable
-  public Blob getAsBlob () throws ClassCastException
-  {
-    return (Blob) m_aValue;
-  }
-
-  @Nullable
-  public Clob getAsClob () throws ClassCastException
-  {
-    return (Clob) m_aValue;
-  }
-
-  @Nullable
-  public Date getAsDate () throws ClassCastException
-  {
-    return (Date) m_aValue;
-  }
-
-  @Nullable
-  public NClob getAsNClob () throws ClassCastException
-  {
-    return (NClob) m_aValue;
-  }
-
-  @Nullable
-  public RowId getAsRowId () throws ClassCastException
-  {
-    return (RowId) m_aValue;
-  }
-
-  @Nullable
-  public Time getAsTime () throws ClassCastException
-  {
-    return (Time) m_aValue;
-  }
-
-  @Nullable
-  public Timestamp getAsTimestamp () throws ClassCastException
-  {
-    return (Timestamp) m_aValue;
   }
 
   @Override
