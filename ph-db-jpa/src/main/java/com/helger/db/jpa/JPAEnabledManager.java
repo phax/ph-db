@@ -169,9 +169,7 @@ public class JPAEnabledManager
    */
   public static final void setCustomExceptionCallback (@Nullable final IExceptionCallback <Throwable> aExceptionCallback)
   {
-    s_aRWLock.writeLocked ( () -> {
-      s_aExceptionCallback = aExceptionCallback;
-    });
+    s_aRWLock.writeLocked ( () -> s_aExceptionCallback = aExceptionCallback);
   }
 
   /**
@@ -235,9 +233,7 @@ public class JPAEnabledManager
 
   public static final void setExecutionTimeExceededHandler (@Nullable final IExecutionTimeExceededCallback aExecutionTimeExceededHandler)
   {
-    s_aRWLock.writeLocked ( () -> {
-      s_aExecutionTimeExceededHandler = aExecutionTimeExceededHandler;
-    });
+    s_aRWLock.writeLocked ( () -> s_aExecutionTimeExceededHandler = aExecutionTimeExceededHandler);
   }
 
   /**

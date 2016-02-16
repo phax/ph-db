@@ -20,22 +20,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import org.junit.Test;
 
 /**
- * Test class for class {@link JPALocalDateTimeConverter}.
+ * Test class for class {@link JPAZonedDateTimeConverter}.
  *
  * @author Philip Helger
  */
-public final class JPAJodaLocalDateTimeConverterTest
+public final class JPAZonedDateTimeConverterTest
 {
   @Test
   public void testAll ()
   {
-    final LocalDateTime aNow = LocalDateTime.now ();
-    final JPALocalDateTimeConverter aConverter = new JPALocalDateTimeConverter ();
+    final ZonedDateTime aNow = ZonedDateTime.now ();
+    final JPAZonedDateTimeConverter aConverter = new JPAZonedDateTimeConverter ();
     final Timestamp aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
     assertNotNull (aDataValue);
     assertEquals (aNow, aConverter.convertDataValueToObjectValue (aDataValue, null));

@@ -105,7 +105,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
                     sUserName +
                     "'");
 
-    final Map <String, Object> aFactoryProps = new HashMap <String, Object> ();
+    final Map <String, Object> aFactoryProps = new HashMap <> ();
     aFactoryProps.put (PersistenceUnitProperties.JDBC_DRIVER, sJdbcDriverClass);
     aFactoryProps.put (PersistenceUnitProperties.JDBC_URL, sJdbcURL);
     aFactoryProps.put (PersistenceUnitProperties.JDBC_USER, sUserName);

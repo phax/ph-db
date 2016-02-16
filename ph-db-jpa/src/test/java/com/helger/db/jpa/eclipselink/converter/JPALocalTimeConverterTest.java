@@ -32,7 +32,7 @@ import com.helger.datetime.config.PDTConfig;
  *
  * @author Philip Helger
  */
-public final class JPAJodaLocalTimeConverterTest
+public final class JPALocalTimeConverterTest
 {
   @Test
   public void testAll ()

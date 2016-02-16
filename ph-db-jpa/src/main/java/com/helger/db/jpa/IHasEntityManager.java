@@ -24,6 +24,7 @@ import javax.persistence.EntityManager;
  *
  * @author Philip Helger
  */
+@FunctionalInterface
 public interface IHasEntityManager
 {
   /**

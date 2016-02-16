@@ -20,27 +20,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.sql.Timestamp;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 
 import org.junit.Test;
 
-import com.helger.datetime.config.PDTConfig;
-
 /**
- * Test class for class {@link JPAZonedDateTimeConverter}.
+ * Test class for class {@link JPAOffsetDateTimeConverter}.
  *
  * @author Philip Helger
  */
-public final class JPAJodaDateTimeConverterTest
+public final class JPAOffsetDateTimeConverterTest
 {
   @Test
   public void testAll ()
   {
-    // Ensure the default time zone is set :(
-    PDTConfig.getDefaultTimeZone ();
-
-    final ZonedDateTime aNow = ZonedDateTime.now ();
-    final JPAZonedDateTimeConverter aConverter = new JPAZonedDateTimeConverter ();
+    final OffsetDateTime aNow = OffsetDateTime.now ();
+    final JPAOffsetDateTimeConverter aConverter = new JPAOffsetDateTimeConverter ();
     final Timestamp aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
     assertNotNull (aDataValue);
     assertEquals (aNow, aConverter.convertDataValueToObjectValue (aDataValue, null));

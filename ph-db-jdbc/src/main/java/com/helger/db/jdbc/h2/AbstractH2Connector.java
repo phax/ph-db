@@ -81,9 +81,7 @@ public abstract class AbstractH2Connector extends AbstractConnector
 
   public final void setTraceLevelFile (final int nTraceLevelFile)
   {
-    getLock ().locked ( () -> {
-      m_nTraceLevelFile = nTraceLevelFile;
-    });
+    getLock ().locked ( () -> m_nTraceLevelFile = nTraceLevelFile);
   }
 
   public final int getTraceLevelSysOut ()
@@ -93,9 +91,7 @@ public abstract class AbstractH2Connector extends AbstractConnector
 
   public final void setTraceLevelSysOut (final int nTraceLevelSysOut)
   {
-    getLock ().locked ( () -> {
-      m_nTraceLevelSysOut = nTraceLevelSysOut;
-    });
+    getLock ().locked ( () -> m_nTraceLevelSysOut = nTraceLevelSysOut);
   }
 
   @Nullable
@@ -106,9 +102,7 @@ public abstract class AbstractH2Connector extends AbstractConnector
 
   public final void setEventListenerClass (@Nullable final Class <? extends DatabaseEventListener> aEventListenerClass)
   {
-    getLock ().locked ( () -> {
-      m_aEventListenerClass = aEventListenerClass;
-    });
+    getLock ().locked ( () -> m_aEventListenerClass = aEventListenerClass);
   }
 
   public final boolean isCloseOnExit ()
@@ -118,9 +112,7 @@ public abstract class AbstractH2Connector extends AbstractConnector
 
   public final void setCloseOnExit (final boolean bCloseOnExit)
   {
-    getLock ().locked ( () -> {
-      m_bCloseOnExit = bCloseOnExit;
-    });
+    getLock ().locked ( () -> m_bCloseOnExit = bCloseOnExit);
   }
 
   @Override

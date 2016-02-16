@@ -29,7 +29,7 @@ import org.junit.Test;
  *
  * @author Philip Helger
  */
-public final class JPAJodaLocalDateConverterTest
+public final class JPALocalDateConverterTest
 {
   @Test
   public void testAll ()

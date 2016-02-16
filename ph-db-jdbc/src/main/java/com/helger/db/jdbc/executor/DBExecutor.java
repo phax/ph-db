@@ -158,7 +158,7 @@ public class DBExecutor
                                              @Nonnull final IGeneratedKeysCallback aGeneratedKeysCB) throws SQLException
   {
     final int nCols = aGeneratedKeysRS.getMetaData ().getColumnCount ();
-    final List <List <Object>> aValues = new ArrayList <List <Object>> ();
+    final List <List <Object>> aValues = new ArrayList <> ();
     while (aGeneratedKeysRS.next ())
     {
       final List <Object> aRow = new ArrayList <Object> (nCols);
