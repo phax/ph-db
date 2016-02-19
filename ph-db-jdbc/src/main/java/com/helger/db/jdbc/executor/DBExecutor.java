@@ -43,9 +43,11 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.callback.ICallback;
 import com.helger.commons.callback.exception.IExceptionCallback;
 import com.helger.commons.callback.exception.LoggingExceptionCallback;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.debug.GlobalDebug;
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.db.api.jdbc.JDBCHelper;
@@ -185,7 +187,8 @@ public class DBExecutor
       }
       finally
       {
-        JDBCHelper.close (aStatement);
+        final Statement aStatement1 = aStatement;
+        StreamHelper.close (aStatement1);
       }
     });
   }
@@ -423,9 +426,9 @@ public class DBExecutor
   }
 
   @Nullable
-  public List <DBResultRow> queryAll (@Nonnull @Nonempty final String sSQL)
+  public ICommonsList <DBResultRow> queryAll (@Nonnull @Nonempty final String sSQL)
   {
-    final List <DBResultRow> aAllResultRows = new ArrayList <> ();
+    final ICommonsList <DBResultRow> aAllResultRows = new CommonsArrayList <> ();
     return queryAll (sSQL, aCurrentObject -> {
       if (aCurrentObject != null)
       {
@@ -436,10 +439,10 @@ public class DBExecutor
   }
 
   @Nullable
-  public List <DBResultRow> queryAll (@Nonnull @Nonempty final String sSQL,
-                                      @Nonnull final IPreparedStatementDataProvider aPSDP)
+  public ICommonsList <DBResultRow> queryAll (@Nonnull @Nonempty final String sSQL,
+                                              @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
-    final List <DBResultRow> aAllResultRows = new ArrayList <> ();
+    final ICommonsList <DBResultRow> aAllResultRows = new CommonsArrayList <> ();
     return queryAll (sSQL, aPSDP, aCurrentObject -> {
       if (aCurrentObject != null)
       {
@@ -452,24 +455,24 @@ public class DBExecutor
   @Nullable
   public DBResultRow querySingle (@Nonnull @Nonempty final String sSQL)
   {
-    final List <DBResultRow> aAllResultRows = queryAll (sSQL);
+    final ICommonsList <DBResultRow> aAllResultRows = queryAll (sSQL);
     if (aAllResultRows == null)
       return null;
     if (aAllResultRows.size () > 1)
       throw new IllegalStateException ("Found more than 1 result row (" + aAllResultRows.size () + ")!");
-    return CollectionHelper.getFirstElement (aAllResultRows);
+    return aAllResultRows.getFirst ();
   }
 
   @Nullable
   public DBResultRow querySingle (@Nonnull @Nonempty final String sSQL,
                                   @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
-    final List <DBResultRow> aAllResultRows = queryAll (sSQL, aPSDP);
+    final ICommonsList <DBResultRow> aAllResultRows = queryAll (sSQL, aPSDP);
     if (aAllResultRows == null)
       return null;
     if (aAllResultRows.size () > 1)
       throw new IllegalStateException ("Found more than 1 result row (" + aAllResultRows.size () + ")!");
-    return CollectionHelper.getFirstElement (aAllResultRows);
+    return aAllResultRows.getFirst ();
   }
 
   @CheckForSigned

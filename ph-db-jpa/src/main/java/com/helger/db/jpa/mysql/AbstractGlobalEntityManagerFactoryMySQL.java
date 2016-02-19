@@ -16,7 +16,6 @@
  */
 package com.helger.db.jpa.mysql;
 
-import java.util.EnumMap;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -25,7 +24,8 @@ import javax.annotation.Nullable;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
 
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsEnumMap;
+import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.db.api.mysql.EMySQLConnectionProperty;
 import com.helger.db.api.mysql.MySQLHelper;
 import com.helger.db.jpa.AbstractGlobalEntityManagerFactory;
@@ -37,7 +37,7 @@ import com.helger.db.jpa.AbstractGlobalEntityManagerFactory;
  */
 public abstract class AbstractGlobalEntityManagerFactoryMySQL extends AbstractGlobalEntityManagerFactory
 {
-  private static final Map <EMySQLConnectionProperty, String> s_aDefaultConnectionProperties = new EnumMap <EMySQLConnectionProperty, String> (EMySQLConnectionProperty.class);
+  private static final ICommonsMap <EMySQLConnectionProperty, String> s_aDefaultConnectionProperties = new CommonsEnumMap <> (EMySQLConnectionProperty.class);
 
   @Nonnull
   @Nonempty
@@ -45,9 +45,8 @@ public abstract class AbstractGlobalEntityManagerFactoryMySQL extends AbstractGl
                                           @Nullable final Map <EMySQLConnectionProperty, String> aConnectionProperties)
   {
     // Build connection properties from default values and the optional ones
-    final Map <EMySQLConnectionProperty, String> aProps = CollectionHelper.newMap (s_aDefaultConnectionProperties);
-    if (aConnectionProperties != null)
-      aProps.putAll (aConnectionProperties);
+    final ICommonsMap <EMySQLConnectionProperty, String> aProps = s_aDefaultConnectionProperties.getClone ();
+    aProps.addAll (aConnectionProperties);
 
     return MySQLHelper.buildJDBCString (sJdbcURL, aProps);
   }

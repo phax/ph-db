@@ -16,8 +16,6 @@
  */
 package com.helger.db.jpa.eclipselink;
 
-import java.util.List;
-
 import javax.annotation.Nonnull;
 
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -26,6 +24,7 @@ import org.eclipse.persistence.logging.SessionLogEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.ENewLineMode;
@@ -48,8 +47,8 @@ public class EclipseLinkLogger extends AbstractSessionLog
       return;
 
     // JPA uses the System property for adding line breaks
-    final List <String> aMsgLines = StringHelper.getExploded (ENewLineMode.DEFAULT.getText (),
-                                                              formatMessage (aSessionLogEntry));
+    final ICommonsList <String> aMsgLines = StringHelper.getExploded (ENewLineMode.DEFAULT.getText (),
+                                                                      formatMessage (aSessionLogEntry));
     final int nMaxIndex = aMsgLines.size ();
     for (int i = 0; i < nMaxIndex; ++i)
     {

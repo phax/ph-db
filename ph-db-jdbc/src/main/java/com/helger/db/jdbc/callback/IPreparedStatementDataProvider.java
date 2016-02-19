@@ -16,10 +16,10 @@
  */
 package com.helger.db.jdbc.callback;
 
-import java.util.List;
-
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+
+import com.helger.commons.collection.ext.ICommonsList;
 
 /**
  * Interface for objects that deliver content to pass parameters to a prepared
@@ -41,5 +41,5 @@ public interface IPreparedStatementDataProvider
    *         .
    */
   @Nonnull
-  List <Object> getObjectValues ();
+  ICommonsList <Object> getObjectValues ();
 }

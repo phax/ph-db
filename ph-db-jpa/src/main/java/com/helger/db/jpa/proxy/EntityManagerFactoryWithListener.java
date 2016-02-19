@@ -33,7 +33,7 @@ import javax.persistence.SynchronizationType;
  */
 public class EntityManagerFactoryWithListener extends EntityManagerFactoryProxy implements IEntityManagerListener
 {
-  private static final ThreadLocal <EntityManagerWithListener> s_aTL = new ThreadLocal <EntityManagerWithListener> ();
+  private static final ThreadLocal <EntityManagerWithListener> s_aTL = new ThreadLocal <> ();
 
   public EntityManagerFactoryWithListener (@Nonnull final EntityManagerFactory aEntityMgrFactory)
   {

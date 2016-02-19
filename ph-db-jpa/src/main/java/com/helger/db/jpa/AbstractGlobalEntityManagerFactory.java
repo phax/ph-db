@@ -16,7 +16,6 @@
  */
 package com.helger.db.jpa;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -34,7 +33,8 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsHashMap;
+import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.scope.IScope;
 import com.helger.commons.scope.singleton.AbstractGlobalSingleton;
 import com.helger.db.jpa.eclipselink.EclipseLinkLogger;
@@ -58,7 +58,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
   }
 
   private final String m_sPersistenceUnitName;
-  private final Map <String, Object> m_aFactoryProps;
+  private final ICommonsMap <String, Object> m_aFactoryProps;
   private EntityManagerFactory m_aFactory;
 
   /**
@@ -105,7 +105,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
                     sUserName +
                     "'");
 
-    final Map <String, Object> aFactoryProps = new HashMap <> ();
+    final ICommonsMap <String, Object> aFactoryProps = new CommonsHashMap <> ();
     aFactoryProps.put (PersistenceUnitProperties.JDBC_DRIVER, sJdbcDriverClass);
     aFactoryProps.put (PersistenceUnitProperties.JDBC_URL, sJdbcURL);
     aFactoryProps.put (PersistenceUnitProperties.JDBC_USER, sUserName);
@@ -122,8 +122,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
     // configurations are present
 
     // Add parameter properties
-    if (aAdditionalFactoryProperties != null)
-      aFactoryProps.putAll (aAdditionalFactoryProperties);
+    aFactoryProps.addAll (aAdditionalFactoryProperties);
 
     // Consistency check if no explicit DDL generation mode is specified!
     if (aFactoryProps.containsKey (PersistenceUnitProperties.DDL_GENERATION) &&
@@ -245,9 +244,9 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
    */
   @Nonnull
   @ReturnsMutableCopy
-  public final Map <String, Object> getAllFactoryProperties ()
+  public final ICommonsMap <String, Object> getAllFactoryProperties ()
   {
-    return CollectionHelper.newMap (m_aFactoryProps);
+    return m_aFactoryProps.getClone ();
   }
 
   /**

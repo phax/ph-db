@@ -25,8 +25,6 @@ import java.sql.NClob;
 import java.sql.RowId;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -37,6 +35,8 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.ArrayHelper;
+import com.helger.commons.collection.ext.CommonsHashMap;
+import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.lang.ICloneable;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -314,9 +314,9 @@ public class DBResultRow implements ICloneable <DBResultRow>
    */
   @Nonnull
   @ReturnsMutableCopy
-  public Map <String, Integer> getColumnNameToIndexMap ()
+  public ICommonsMap <String, Integer> getColumnNameToIndexMap ()
   {
-    final Map <String, Integer> ret = new HashMap <String, Integer> ();
+    final ICommonsMap <String, Integer> ret = new CommonsHashMap <> ();
     for (int i = 0; i < m_aCols.length; ++i)
       ret.put (m_aCols[i].getColumnName (), Integer.valueOf (i));
     return ret;

@@ -16,17 +16,14 @@
  */
 package com.helger.db.jdbc.callback;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
@@ -37,22 +34,21 @@ import com.helger.commons.string.ToStringGenerator;
  */
 public final class ConstantPreparedStatementDataProvider implements IPreparedStatementDataProvider
 {
-  private final List <Object> m_aValues;
+  private final ICommonsList <Object> m_aValues;
 
   public ConstantPreparedStatementDataProvider ()
   {
-    m_aValues = new ArrayList <> ();
+    m_aValues = new CommonsArrayList <> ();
   }
 
   public ConstantPreparedStatementDataProvider (@Nonnull final Iterable <?> aValues)
   {
-    m_aValues = CollectionHelper.newList (aValues);
+    m_aValues = new CommonsArrayList <> (aValues);
   }
 
   public ConstantPreparedStatementDataProvider (@Nonnull @Nonempty final Object... aValues)
   {
-    ValueEnforcer.notEmpty (aValues, "Values");
-    m_aValues = CollectionHelper.newList (aValues);
+    m_aValues = new CommonsArrayList <> (aValues);
   }
 
   @Nonnull
@@ -70,9 +66,9 @@ public final class ConstantPreparedStatementDataProvider implements IPreparedSta
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <Object> getObjectValues ()
+  public ICommonsList <Object> getObjectValues ()
   {
-    return CollectionHelper.newList (m_aValues);
+    return m_aValues.getClone ();
   }
 
   @Override

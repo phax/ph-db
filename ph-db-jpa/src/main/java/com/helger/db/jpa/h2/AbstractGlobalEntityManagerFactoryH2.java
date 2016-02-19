@@ -16,7 +16,6 @@
  */
 package com.helger.db.jpa.h2;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -26,7 +25,8 @@ import javax.persistence.EntityManagerFactory;
 import org.eclipse.persistence.platform.database.H2Platform;
 
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsHashMap;
+import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.db.api.h2.H2Helper;
 import com.helger.db.jpa.AbstractGlobalEntityManagerFactory;
 
@@ -37,7 +37,7 @@ import com.helger.db.jpa.AbstractGlobalEntityManagerFactory;
  */
 public abstract class AbstractGlobalEntityManagerFactoryH2 extends AbstractGlobalEntityManagerFactory
 {
-  private static final Map <String, String> s_aDefaultConnectionProperties = new HashMap <String, String> ();
+  private static final ICommonsMap <String, String> s_aDefaultConnectionProperties = new CommonsHashMap <> ();
 
   @Nonnull
   @Nonempty
@@ -45,7 +45,7 @@ public abstract class AbstractGlobalEntityManagerFactoryH2 extends AbstractGloba
                                           @Nullable final Map <String, String> aConnectionProperties)
   {
     // Build connection properties from default values and the optional ones
-    final Map <String, String> aProps = CollectionHelper.newMap (s_aDefaultConnectionProperties);
+    final Map <String, String> aProps = s_aDefaultConnectionProperties.getClone ();
     if (aConnectionProperties != null)
       aProps.putAll (aConnectionProperties);
 

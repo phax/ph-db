@@ -19,7 +19,6 @@ package com.helger.db.api.jdbc;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Types;
 
 import javax.annotation.Nonnull;
@@ -97,21 +96,6 @@ public final class JDBCHelper
       catch (final SQLException ex)
       {
         s_aLogger.warn ("Error closing connection " + aConnection, ex);
-      }
-    }
-  }
-
-  public static void close (@Nullable final Statement aStatement)
-  {
-    if (aStatement != null)
-    {
-      try
-      {
-        aStatement.close ();
-      }
-      catch (final SQLException ex)
-      {
-        s_aLogger.warn ("Error closing statement " + aStatement, ex);
       }
     }
   }
