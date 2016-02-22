@@ -269,43 +269,43 @@ public class DBResultRow implements ICloneable <DBResultRow>
   @Nullable
   public Blob getAsBlob (@Nonnegative final int nIndex)
   {
-    return get (nIndex).getAsBlob ();
+    return get (nIndex).getAsSqlBlob ();
   }
 
   @Nullable
   public Clob getAsClob (@Nonnegative final int nIndex)
   {
-    return get (nIndex).getAsClob ();
+    return get (nIndex).getAsSqlClob ();
   }
 
   @Nullable
   public Date getAsDate (@Nonnegative final int nIndex)
   {
-    return get (nIndex).getAsDate ();
+    return get (nIndex).getAsSqlDate ();
   }
 
   @Nullable
   public NClob getAsNClob (@Nonnegative final int nIndex)
   {
-    return get (nIndex).getAsNClob ();
+    return get (nIndex).getAsSqlNClob ();
   }
 
   @Nullable
   public RowId getAsRowId (@Nonnegative final int nIndex)
   {
-    return get (nIndex).getAsRowId ();
+    return get (nIndex).getAsSqlRowId ();
   }
 
   @Nullable
   public Time getAsTime (@Nonnegative final int nIndex)
   {
-    return get (nIndex).getAsTime ();
+    return get (nIndex).getAsSqlTime ();
   }
 
   @Nullable
   public Timestamp getAsTimestamp (@Nonnegative final int nIndex)
   {
-    return get (nIndex).getAsTimestamp ();
+    return get (nIndex).getAsSqlTimestamp ();
   }
 
   /**
