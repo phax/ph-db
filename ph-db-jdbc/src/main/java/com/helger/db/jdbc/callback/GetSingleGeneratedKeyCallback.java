@@ -16,12 +16,11 @@
  */
 package com.helger.db.jdbc.callback;
 
-import java.util.List;
-
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
@@ -38,7 +37,7 @@ public class GetSingleGeneratedKeyCallback implements IGeneratedKeysCallback
   public GetSingleGeneratedKeyCallback ()
   {}
 
-  public void onGeneratedKeys (@Nonnull final List <List <Object>> aGeneratedValues)
+  public void onGeneratedKeys (@Nonnull final ICommonsList <ICommonsList <Object>> aGeneratedValues)
   {
     ValueEnforcer.notNull (aGeneratedValues, "GeneratedValues");
 
@@ -46,12 +45,12 @@ public class GetSingleGeneratedKeyCallback implements IGeneratedKeysCallback
       throw new IllegalArgumentException ("Found not exactly 1 generated value row but " +
                                           aGeneratedValues.size () +
                                           " rows!");
-    final List <Object> aRow = aGeneratedValues.get (0);
+    final ICommonsList <Object> aRow = aGeneratedValues.getFirst ();
     if (aRow.size () != 1)
       throw new IllegalArgumentException ("The generated row does not contain exactly 1 item but " +
                                           aRow.size () +
                                           " items!");
-    m_aGeneratedKey = aRow.get (0);
+    m_aGeneratedKey = aRow.getFirst ();
   }
 
   @Nonnull

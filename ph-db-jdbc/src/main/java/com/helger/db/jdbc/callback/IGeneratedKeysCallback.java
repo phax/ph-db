@@ -16,11 +16,10 @@
  */
 package com.helger.db.jdbc.callback;
 
-import java.util.List;
-
 import javax.annotation.Nonnull;
 
 import com.helger.commons.callback.ICallback;
+import com.helger.commons.collection.ext.ICommonsList;
 
 /**
  * This callback is used to retrieve generated keys upon insertion.
@@ -37,5 +36,5 @@ public interface IGeneratedKeysCallback extends ICallback
    *        The first list represents all rows, whereas the nested lists
    *        represents all columns containing the different values.
    */
-  void onGeneratedKeys (@Nonnull List <List <Object>> aGeneratedKeys);
+  void onGeneratedKeys (@Nonnull ICommonsList <ICommonsList <Object>> aGeneratedKeys);
 }
