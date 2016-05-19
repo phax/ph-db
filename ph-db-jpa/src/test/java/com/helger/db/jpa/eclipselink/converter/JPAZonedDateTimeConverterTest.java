@@ -24,6 +24,8 @@ import java.time.ZonedDateTime;
 
 import org.junit.Test;
 
+import com.helger.datetime.PDTFactory;
+
 /**
  * Test class for class {@link JPAZonedDateTimeConverter}.
  *
@@ -34,7 +36,7 @@ public final class JPAZonedDateTimeConverterTest
   @Test
   public void testAll ()
   {
-    final ZonedDateTime aNow = ZonedDateTime.now ();
+    final ZonedDateTime aNow = PDTFactory.getCurrentZonedDateTime ();
     final JPAZonedDateTimeConverter aConverter = new JPAZonedDateTimeConverter ();
     final Timestamp aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
     assertNotNull (aDataValue);

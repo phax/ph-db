@@ -24,6 +24,8 @@ import java.time.OffsetDateTime;
 
 import org.junit.Test;
 
+import com.helger.datetime.PDTFactory;
+
 /**
  * Test class for class {@link JPAOffsetDateTimeConverter}.
  *
@@ -34,7 +36,7 @@ public final class JPAOffsetDateTimeConverterTest
   @Test
   public void testAll ()
   {
-    final OffsetDateTime aNow = OffsetDateTime.now ();
+    final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTime ();
     final JPAOffsetDateTimeConverter aConverter = new JPAOffsetDateTimeConverter ();
     final Timestamp aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
     assertNotNull (aDataValue);

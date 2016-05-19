@@ -24,6 +24,8 @@ import java.time.LocalDate;
 
 import org.junit.Test;
 
+import com.helger.datetime.PDTFactory;
+
 /**
  * Test class for class {@link JPALocalDateConverter}.
  *
@@ -34,7 +36,7 @@ public final class JPALocalDateConverterTest
   @Test
   public void testAll ()
   {
-    final LocalDate aNow = LocalDate.now ();
+    final LocalDate aNow = PDTFactory.getCurrentLocalDate ();
     final JPALocalDateConverter aConverter = new JPALocalDateConverter ();
     final Date aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
     assertNotNull (aDataValue);
