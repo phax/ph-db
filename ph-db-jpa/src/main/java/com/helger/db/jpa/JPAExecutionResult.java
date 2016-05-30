@@ -119,12 +119,12 @@ public class JPAExecutionResult <DATATYPE> extends SuccessWithValue <DATATYPE>
   @Nonnull
   public static <T> JPAExecutionResult <T> createSuccess (@Nonnull final T aObj)
   {
-    return new JPAExecutionResult <T> (ESuccess.SUCCESS, aObj, null);
+    return new JPAExecutionResult <> (ESuccess.SUCCESS, aObj, null);
   }
 
   @Nonnull
   public static <T> JPAExecutionResult <T> createFailure (@Nullable final Throwable t)
   {
-    return new JPAExecutionResult <T> (ESuccess.FAILURE, null, t);
+    return new JPAExecutionResult <> (ESuccess.FAILURE, null, t);
   }
 }
