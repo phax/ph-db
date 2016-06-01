@@ -25,7 +25,7 @@ import java.time.LocalTime;
 
 import org.junit.Test;
 
-import com.helger.datetime.config.PDTConfig;
+import com.helger.commons.datetime.PDTConfig;
 
 /**
  * Test class for class {@link JPALocalTimeConverter}.
