@@ -30,6 +30,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.CodingStyleguideUnaware;
 
 /**
  * Proxy implementation of the {@link EntityManagerFactory} interface.
@@ -92,6 +93,7 @@ public class EntityManagerFactoryProxy implements EntityManagerFactory
     return m_aEntityMgrFactory.getMetamodel ();
   }
 
+  @CodingStyleguideUnaware
   public Map <String, Object> getProperties ()
   {
     return m_aEntityMgrFactory.getProperties ();

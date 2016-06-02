@@ -36,6 +36,7 @@ import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.metamodel.Metamodel;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.CodingStyleguideUnaware;
 
 /**
  * Proxy implementation of the {@link EntityManager} interface.
@@ -221,6 +222,7 @@ public class EntityManagerProxy implements EntityManager
     m_aEntityMgr.setProperty (propertyName, value);
   }
 
+  @CodingStyleguideUnaware
   public Map <String, Object> getProperties ()
   {
     return m_aEntityMgr.getProperties ();
@@ -311,6 +313,7 @@ public class EntityManagerProxy implements EntityManager
     return m_aEntityMgr.getEntityGraph (graphName);
   }
 
+  @CodingStyleguideUnaware
   public <T> List <EntityGraph <? super T>> getEntityGraphs (final Class <T> entityClass)
   {
     return m_aEntityMgr.getEntityGraphs (entityClass);
