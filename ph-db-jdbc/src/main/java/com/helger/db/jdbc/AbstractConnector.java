@@ -44,6 +44,7 @@ public abstract class AbstractConnector implements IHasDataSource, Closeable
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractConnector.class);
 
+  @Nonnull
   private final SimpleLock m_aLock = new SimpleLock ();
   protected BasicDataSource m_aDataSource;
 

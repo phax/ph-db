@@ -382,7 +382,9 @@ public enum EMySQLConnectionProperty implements IHasName
    * Should the driver close result sets on Statement.close() as required by the
    * JDBC specification?
    */
-  holdResultsOpenOverStatementClose ("holdResultsOpenOverStatementClose", Boolean.FALSE.toString (), new Version (3, 1, 7)),
+  holdResultsOpenOverStatementClose ("holdResultsOpenOverStatementClose", Boolean.FALSE.toString (), new Version (3,
+                                                                                                                  1,
+                                                                                                                  7)),
   /**
    * What size result set row should the JDBC driver consider "large", and thus
    * use a more memory-efficient way of representing the row internally?
@@ -521,7 +523,9 @@ public enum EMySQLConnectionProperty implements IHasName
    * com.mysql.jdbc.JDBC4ClientInfoProvider interface in order to support
    * JDBC-4.0's Connection.get/setClientInfo() methods
    */
-  clientInfoProvider ("clientInfoProvider", com.mysql.jdbc.JDBC4CommentClientInfoProvider.class.getName (), new Version (5, 1, 0)),
+  clientInfoProvider ("clientInfoProvider", com.mysql.jdbc.JDBC4CommentClientInfoProvider.class.getName (), new Version (5,
+                                                                                                                         1,
+                                                                                                                         0)),
   /**
    * Should the driver dump the field-level metadata of a result set into the
    * exception message when ResultSet.findColumn() fails?
@@ -548,19 +552,25 @@ public enum EMySQLConnectionProperty implements IHasName
    * Include the output of "SHOW ENGINE INNODB STATUS" in exception messages
    * when deadlock exceptions are detected?
    */
-  includeInnodbStatusInDeadlockExceptions ("includeInnodbStatusInDeadlockExceptions", Boolean.FALSE.toString (), new Version (5, 0, 7)),
+  includeInnodbStatusInDeadlockExceptions ("includeInnodbStatusInDeadlockExceptions", Boolean.FALSE.toString (), new Version (5,
+                                                                                                                              0,
+                                                                                                                              7)),
   /**
    * Include a current Java thread dump in exception messages when deadlock
    * exceptions are detected?
    */
-  includeThreadDumpInDeadlockExceptions ("includeThreadDumpInDeadlockExceptions", Boolean.FALSE.toString (), new Version (5, 1, 15)),
+  includeThreadDumpInDeadlockExceptions ("includeThreadDumpInDeadlockExceptions", Boolean.FALSE.toString (), new Version (5,
+                                                                                                                          1,
+                                                                                                                          15)),
   /**
    * Include the name of the current thread as a comment visible in
    * "SHOW PROCESSLIST", or in Innodb deadlock dumps, useful in correlation with
    * "includeInnodbStatusInDeadlockExceptions=true" and
    * "includeThreadDumpInDeadlockExceptions=true".
    */
-  includeThreadNamesAsStatementComment ("includeThreadNamesAsStatementComment", Boolean.FALSE.toString (), new Version (5, 1, 15)),
+  includeThreadNamesAsStatementComment ("includeThreadNamesAsStatementComment", Boolean.FALSE.toString (), new Version (5,
+                                                                                                                        1,
+                                                                                                                        15)),
   /**
    * Should queries that take longer than 'slowQueryThresholdMillis' be logged?
    */
@@ -575,7 +585,9 @@ public enum EMySQLConnectionProperty implements IHasName
    * com.mysql.jdbc.profiler.ProfilerEventHandler that will be used to handle
    * profiling/tracing events.
    */
-  profilerEventHandler ("profilerEventHandler", com.mysql.jdbc.profiler.LoggingProfilerEventHandler.class.getName (), new Version (5, 1, 6)),
+  profilerEventHandler ("profilerEventHandler", com.mysql.jdbc.profiler.LoggingProfilerEventHandler.class.getName (), new Version (5,
+                                                                                                                                   1,
+                                                                                                                                   6)),
   /**
    * If the usage advisor is enabled, how many rows should a result set contain
    * before the driver warns that it is suspiciously large?
@@ -690,7 +702,9 @@ public enum EMySQLConnectionProperty implements IHasName
    * Should the driver compensate for the update counts of "ON DUPLICATE KEY"
    * INSERT statements (2 = 1, 0 = 1) when using prepared statements?
    */
-  compensateOnDuplicateKeyUpdateCounts ("compensateOnDuplicateKeyUpdateCounts", Boolean.FALSE.toString (), new Version (5, 1, 7)),
+  compensateOnDuplicateKeyUpdateCounts ("compensateOnDuplicateKeyUpdateCounts", Boolean.FALSE.toString (), new Version (5,
+                                                                                                                        1,
+                                                                                                                        7)),
   /**
    * Should the driver continue processing batch commands if one statement
    * fails. The JDBC spec allows either way (defaults to 'true').
@@ -788,7 +802,9 @@ public enum EMySQLConnectionProperty implements IHasName
    * to inspect SQLExceptions and determine whether they should trigger
    * fail-over to another host in a load-balanced deployment.
    */
-  loadBalanceExceptionChecker ("loadBalanceExceptionChecker", com.mysql.jdbc.StandardLoadBalanceExceptionChecker.class.getName (), new Version (5, 1, 13)),
+  loadBalanceExceptionChecker ("loadBalanceExceptionChecker", com.mysql.jdbc.StandardLoadBalanceExceptionChecker.class.getName (), new Version (5,
+                                                                                                                                                1,
+                                                                                                                                                13)),
   /**
    * Time in milliseconds to wait for ping response from each of load-balanced
    * physical connections when using load-balanced Connection.
@@ -812,7 +828,9 @@ public enum EMySQLConnectionProperty implements IHasName
    * Should the load-balanced Connection explicitly check whether the connection
    * is live when swapping to a new physical connection at commit/rollback?
    */
-  loadBalanceValidateConnectionOnSwapServer ("loadBalanceValidateConnectionOnSwapServer", Boolean.FALSE.toString (), new Version (5, 1, 13)),
+  loadBalanceValidateConnectionOnSwapServer ("loadBalanceValidateConnectionOnSwapServer", Boolean.FALSE.toString (), new Version (5,
+                                                                                                                                  1,
+                                                                                                                                  13)),
   /**
    * The maximum number of rows to return (0, the default means return all
    * rows).
@@ -863,7 +881,9 @@ public enum EMySQLConnectionProperty implements IHasName
    * SQL specification states that this facility contains much more than just
    * foreign key support (one such application being OpenOffice)?
    */
-  overrideSupportsIntegrityEnhancementFacility ("overrideSupportsIntegrityEnhancementFacility", Boolean.FALSE.toString (), new Version (3, 1, 12)),
+  overrideSupportsIntegrityEnhancementFacility ("overrideSupportsIntegrityEnhancementFacility", Boolean.FALSE.toString (), new Version (3,
+                                                                                                                                        1,
+                                                                                                                                        12)),
   /**
    * If a result set column has the CHAR type and the value does not fill the
    * amount of characters specified in the DDL for the column, should the driver
@@ -889,7 +909,9 @@ public enum EMySQLConnectionProperty implements IHasName
    * refreshRow() which pulls back default values and/or values changed by
    * triggers.
    */
-  populateInsertRowWithDefaultValues ("populateInsertRowWithDefaultValues", Boolean.FALSE.toString (), new Version (5, 0, 5)),
+  populateInsertRowWithDefaultValues ("populateInsertRowWithDefaultValues", Boolean.FALSE.toString (), new Version (5,
+                                                                                                                    0,
+                                                                                                                    5)),
   /** Should the driver process escape codes in queries that are prepared? */
   processEscapeCodesForPrepStmts ("processEscapeCodesForPrepStmts", Boolean.TRUE.toString (), new Version (3, 1, 12)),
   /**
@@ -909,7 +931,9 @@ public enum EMySQLConnectionProperty implements IHasName
    * ResultSet.close() has been called. This is not JDBC-compliant after
    * JDBC-4.0.
    */
-  retainStatementAfterResultSetClose ("retainStatementAfterResultSetClose", Boolean.FALSE.toString (), new Version (3, 1, 11)),
+  retainStatementAfterResultSetClose ("retainStatementAfterResultSetClose", Boolean.FALSE.toString (), new Version (3,
+                                                                                                                    1,
+                                                                                                                    11)),
   /**
    * Should the driver issue a rollback() when the logical connection in a pool
    * is closed?
