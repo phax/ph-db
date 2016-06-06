@@ -60,10 +60,6 @@
     </dependency>
     <dependency>
       <groupId>com.helger</groupId>
-      <artifactId>ph-datetime</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.helger</groupId>
       <artifactId>ph-db-api</artifactId>
     </dependency>
 
