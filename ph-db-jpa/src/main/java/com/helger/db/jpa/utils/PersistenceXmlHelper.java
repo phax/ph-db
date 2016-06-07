@@ -28,10 +28,10 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.io.resource.URLResource;
 import com.helger.commons.lang.ClassLoaderHelper;
 import com.helger.commons.lang.GenericReflection;
-import com.helger.commons.microdom.IMicroDocument;
-import com.helger.commons.microdom.IMicroElement;
-import com.helger.commons.microdom.serialize.MicroReader;
 import com.helger.commons.string.StringHelper;
+import com.helger.xml.microdom.IMicroDocument;
+import com.helger.xml.microdom.IMicroElement;
+import com.helger.xml.microdom.serialize.MicroReader;
 
 /**
  * Utility class that scans all META-INF/persistence.xml files available, and
