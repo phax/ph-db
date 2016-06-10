@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.persistence.EntityManager;
@@ -33,6 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.ReturnsMutableObject;
+import com.helger.commons.callback.CallbackList;
 import com.helger.commons.callback.IThrowingRunnable;
 import com.helger.commons.callback.adapter.AdapterRunnableToCallable;
 import com.helger.commons.callback.adapter.AdapterRunnableToThrowingRunnable;
@@ -82,9 +83,16 @@ public class JPAEnabledManager
                                                                                                                        "$execError");
 
   protected static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
-  private static IExceptionCallback <Throwable> s_aExceptionCallback;
+  private static final CallbackList <IExceptionCallback <Throwable>> s_aExceptionCallbacks = new CallbackList <> ();
   private static final AtomicInteger s_aExecutionWarnTime = new AtomicInteger (DEFAULT_EXECUTION_WARN_TIME_MS);
-  private static IExecutionTimeExceededCallback s_aExecutionTimeExceededHandler = new LoggingExecutionTimeExceededCallback (true);
+  private static final CallbackList <IExecutionTimeExceededCallback> s_aExecutionTimeExceededHandlers = new CallbackList <> ();
+
+  static
+  {
+    // Add default handler
+    s_aExceptionCallbacks.addCallback (x -> s_aLogger.error ("Failed to perform something in a JPAEnabledManager!", x));
+    s_aExecutionTimeExceededHandlers.addCallback (new LoggingExecutionTimeExceededCallback (true));
+  }
 
   private final IHasEntityManager m_aEntityManagerProvider;
   private final AtomicBoolean m_aSyncEntityMgr = new AtomicBoolean (DEFAULT_SYNC_ENTITY_MGR);
@@ -160,27 +168,15 @@ public class JPAEnabledManager
   }
 
   /**
-   * Set a custom exception handler that is called in case performing some
-   * operation fails.
-   *
-   * @param aExceptionCallback
-   *        The exception handler to be set. May be <code>null</code> to
-   *        indicate no custom exception handler.
-   */
-  public static final void setCustomExceptionCallback (@Nullable final IExceptionCallback <Throwable> aExceptionCallback)
-  {
-    s_aRWLock.writeLocked ( () -> s_aExceptionCallback = aExceptionCallback);
-  }
-
-  /**
-   * Get the custom exception handler.
+   * Get the custom exception handler list for modification.
    *
    * @return <code>null</code> if non is set
    */
-  @Nullable
-  public static final IExceptionCallback <Throwable> getCustomExceptionCallback ()
+  @Nonnull
+  @ReturnsMutableObject ("by design")
+  public static final CallbackList <IExceptionCallback <Throwable>> getCustomExceptionCallbacks ()
   {
-    return s_aRWLock.readLocked ( () -> s_aExceptionCallback);
+    return s_aExceptionCallbacks;
   }
 
   /**
@@ -191,21 +187,7 @@ public class JPAEnabledManager
    */
   private static void _invokeCustomExceptionCallback (@Nonnull final Throwable t)
   {
-    final IExceptionCallback <Throwable> aExceptionCallback = getCustomExceptionCallback ();
-    if (aExceptionCallback == null)
-    {
-      // By default: log something :)
-      s_aLogger.error ("Failed to perform something in a JPAEnabledManager!", t);
-    }
-    else
-      try
-      {
-        aExceptionCallback.onException (t);
-      }
-      catch (final Throwable t2)
-      {
-        s_aLogger.error ("Error in JPAEnabledManager custom exception handler " + aExceptionCallback, t2);
-      }
+    s_aExceptionCallbacks.forEach (x -> x.onException (t));
   }
 
   /**
@@ -231,36 +213,21 @@ public class JPAEnabledManager
     s_aExecutionWarnTime.set (nMillis);
   }
 
-  public static final void setExecutionTimeExceededHandler (@Nullable final IExecutionTimeExceededCallback aExecutionTimeExceededHandler)
-  {
-    s_aRWLock.writeLocked ( () -> s_aExecutionTimeExceededHandler = aExecutionTimeExceededHandler);
-  }
-
   /**
-   * Get the custom exception handler.
+   * Get the custom exception handler list.
    *
-   * @return <code>null</code> if non is set
+   * @return Never <code>null</code>.
    */
-  @Nullable
-  public static final IExecutionTimeExceededCallback getExecutionTimeExceededHandler ()
+  @Nonnull
+  public static final CallbackList <IExecutionTimeExceededCallback> getExecutionTimeExceededHandlers ()
   {
-    return s_aRWLock.readLocked ( () -> s_aExecutionTimeExceededHandler);
+    return s_aExecutionTimeExceededHandlers;
   }
 
   public static final void onExecutionTimeExceeded (@Nonnull final String sMsg,
                                                     @Nonnegative final long nExecutionMillis)
   {
-    final IExecutionTimeExceededCallback aHdl = getExecutionTimeExceededHandler ();
-    if (aHdl != null)
-      try
-      {
-        // Invoke the handler
-        aHdl.onExecutionTimeExceeded (sMsg, nExecutionMillis);
-      }
-      catch (final Throwable t)
-      {
-        s_aLogger.error ("Failed to invoke exceution time exceeded handler " + aHdl, t);
-      }
+    s_aExecutionTimeExceededHandlers.forEach (x -> x.onExecutionTimeExceeded (sMsg, nExecutionMillis));
   }
 
   @Nonnull

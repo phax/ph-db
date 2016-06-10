@@ -256,9 +256,10 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
   @Nonnull
   public final EntityManagerFactory getEntityManagerFactory ()
   {
-    if (m_aFactory == null)
+    final EntityManagerFactory ret = m_aFactory;
+    if (ret == null)
       throw new IllegalStateException ("No EntityManagerFactory present!");
-    return m_aFactory;
+    return ret;
   }
 
   /**

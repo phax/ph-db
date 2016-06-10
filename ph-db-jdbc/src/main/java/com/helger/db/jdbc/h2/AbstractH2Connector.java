@@ -157,9 +157,8 @@ public abstract class AbstractH2Connector extends AbstractConnector
     try
     {
       s_aLogger.info ("Dumping database '" + getDatabaseName () + "' to OutputStream");
-      final PrintWriter aPrintWriter = new PrintWriter (new NonBlockingBufferedWriter (StreamHelper.createWriter (aOS,
-                                                                                                                  CCharset.CHARSET_UTF_8_OBJ)));
-      try
+      try (final PrintWriter aPrintWriter = new PrintWriter (new NonBlockingBufferedWriter (StreamHelper.createWriter (aOS,
+                                                                                                                       CCharset.CHARSET_UTF_8_OBJ))))
       {
         final DBExecutor aExecutor = new DBExecutor (this);
         final ESuccess ret = aExecutor.queryAll ("SCRIPT SIMPLE", aCurrentObject -> {
@@ -171,10 +170,6 @@ public abstract class AbstractH2Connector extends AbstractConnector
         });
         aPrintWriter.flush ();
         return ret;
-      }
-      finally
-      {
-        StreamHelper.close (aPrintWriter);
       }
     }
     finally

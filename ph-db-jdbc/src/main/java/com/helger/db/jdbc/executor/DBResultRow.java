@@ -63,14 +63,14 @@ public class DBResultRow implements ICloneable <DBResultRow>
     m_nIndex = 0;
   }
 
-  void clear ()
+  protected void internalClear ()
   {
     for (int i = 0; i < m_aCols.length; ++i)
       m_aCols[i] = null;
     m_nIndex = 0;
   }
 
-  void add (@Nonnull final DBResultField aResultField)
+  protected void internalAdd (@Nonnull final DBResultField aResultField)
   {
     ValueEnforcer.notNull (aResultField, "ResultField");
 
@@ -90,7 +90,7 @@ public class DBResultRow implements ICloneable <DBResultRow>
   }
 
   @Nullable
-  public DBResultField get (@Nonnegative final int nIndex)
+  public DBResultField get (@Nonnegative final int nIndex) throws ArrayIndexOutOfBoundsException
   {
     return m_aCols[nIndex];
   }

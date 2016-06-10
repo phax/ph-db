@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Optional;
 
 import javax.annotation.CheckForSigned;
 import javax.annotation.Nonnegative;
@@ -124,15 +125,20 @@ public class DBExecutor
     ESuccess eCommited = ESuccess.FAILURE;
     try
     {
+      // Get connection
       aConnection = m_aConnectionProvider.getConnection ();
       if (aConnection == null)
         throw new IllegalStateException ("Failed to get a connection");
 
+      // Perform action
       aCB.run (aConnection);
+
+      // Commit
       eCommited = JDBCHelper.commit (aConnection);
     }
     catch (final SQLException ex)
     {
+      // Invoke callback
       try
       {
         getSQLExceptionCallback ().onException (ex);
@@ -145,9 +151,11 @@ public class DBExecutor
     }
     finally
     {
+      // Failure? Roll back!
       if (eCommited.isFailure ())
         JDBCHelper.rollback (aConnection);
 
+      // Close connection again (if necessary)
       if (m_aConnectionProvider.shouldCloseConnection ())
         JDBCHelper.close (aConnection);
     }
@@ -158,10 +166,10 @@ public class DBExecutor
                                              @Nonnull final IGeneratedKeysCallback aGeneratedKeysCB) throws SQLException
   {
     final int nCols = aGeneratedKeysRS.getMetaData ().getColumnCount ();
-    final ICommonsList <ICommonsList <Object>> aValues = new CommonsArrayList<> ();
+    final ICommonsList <ICommonsList <Object>> aValues = new CommonsArrayList <> ();
     while (aGeneratedKeysRS.next ())
     {
-      final ICommonsList <Object> aRow = new CommonsArrayList<> (nCols);
+      final ICommonsList <Object> aRow = new CommonsArrayList <> (nCols);
       for (int i = 1; i <= nCols; ++i)
         aRow.add (aGeneratedKeysRS.getObject (i));
       aValues.add (aRow);
@@ -185,8 +193,7 @@ public class DBExecutor
       }
       finally
       {
-        final Statement aStatement1 = aStatement;
-        StreamHelper.close (aStatement1);
+        StreamHelper.close (aStatement);
       }
     });
   }
@@ -243,7 +250,7 @@ public class DBExecutor
       if (GlobalDebug.isDebugMode ())
         s_aLogger.info ("Executing statement: " + sSQL);
       aStatement.execute (sSQL);
-    }, aGeneratedKeysCB);
+    } , aGeneratedKeysCB);
   }
 
   @Nonnull
@@ -263,11 +270,13 @@ public class DBExecutor
   }
 
   @Nullable
-  public Object executePreparedStatementAndGetGeneratedKey (@Nonnull final String sSQL,
-                                                            @Nonnull final IPreparedStatementDataProvider aPSDP)
+  public Optional <Object> executePreparedStatementAndGetGeneratedKey (@Nonnull final String sSQL,
+                                                                       @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
     final GetSingleGeneratedKeyCallback aCB = new GetSingleGeneratedKeyCallback ();
-    return executePreparedStatement (sSQL, aPSDP, null, aCB).isSuccess () ? aCB.getGeneratedKey () : null;
+    if (executePreparedStatement (sSQL, aPSDP, null, aCB).isFailure ())
+      return Optional.empty ();
+    return Optional.of (aCB.getGeneratedKey ());
   }
 
   /**
@@ -384,15 +393,15 @@ public class DBExecutor
       // for all result set elements
       while (aRS.next ())
       {
-        // fill map
-        aRow.clear ();
+        // fill result row
+        aRow.internalClear ();
         for (int i = 1; i <= nCols; ++i)
         {
           final Object aColumnValue = aRS.getObject (i);
-          aRow.add (new DBResultField (aColumnNames[i - 1], aColumnTypes[i - 1], aColumnValue));
+          aRow.internalAdd (new DBResultField (aColumnNames[i - 1], aColumnTypes[i - 1], aColumnValue));
         }
 
-        // add result object
+        // handle result row
         aCallback.run (aRow);
       }
     }
@@ -409,7 +418,7 @@ public class DBExecutor
     return withStatementDo (aStatement -> {
       final ResultSet aResultSet = aStatement.executeQuery (sSQL);
       iterateResultSet (aResultSet, aResultItemCallback);
-    }, null);
+    } , (IGeneratedKeysCallback) null);
   }
 
   @Nonnull
@@ -420,71 +429,67 @@ public class DBExecutor
     return withPreparedStatementDo (sSQL, aPSDP, aPreparedStatement -> {
       final ResultSet aResultSet = aPreparedStatement.executeQuery ();
       iterateResultSet (aResultSet, aResultItemCallback);
-    }, null, null);
+    } , (IUpdatedRowCountCallback) null, (IGeneratedKeysCallback) null);
   }
 
   @Nullable
-  public ICommonsList <DBResultRow> queryAll (@Nonnull @Nonempty final String sSQL)
+  public Optional <ICommonsList <DBResultRow>> queryAll (@Nonnull @Nonempty final String sSQL)
   {
-    final ICommonsList <DBResultRow> aAllResultRows = new CommonsArrayList<> ();
-    return queryAll (sSQL, aCurrentObject -> {
+    final ICommonsList <DBResultRow> aAllResultRows = new CommonsArrayList <> ();
+    if (queryAll (sSQL, aCurrentObject -> {
       if (aCurrentObject != null)
       {
         // We need to clone the object!
         aAllResultRows.add (aCurrentObject.getClone ());
       }
-    }).isFailure () ? null : aAllResultRows;
+    }).isFailure ())
+      return Optional.empty ();
+    return Optional.of (aAllResultRows);
   }
 
   @Nullable
-  public ICommonsList <DBResultRow> queryAll (@Nonnull @Nonempty final String sSQL,
-                                              @Nonnull final IPreparedStatementDataProvider aPSDP)
+  public Optional <ICommonsList <DBResultRow>> queryAll (@Nonnull @Nonempty final String sSQL,
+                                                         @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
-    final ICommonsList <DBResultRow> aAllResultRows = new CommonsArrayList<> ();
-    return queryAll (sSQL, aPSDP, aCurrentObject -> {
+    final ICommonsList <DBResultRow> aAllResultRows = new CommonsArrayList <> ();
+    if (queryAll (sSQL, aPSDP, aCurrentObject -> {
       if (aCurrentObject != null)
       {
         // We need to clone the object!
         aAllResultRows.add (aCurrentObject.getClone ());
       }
-    }).isFailure () ? null : aAllResultRows;
+    }).isFailure ())
+      return Optional.empty ();
+    return Optional.of (aAllResultRows);
   }
 
   @Nullable
-  public DBResultRow querySingle (@Nonnull @Nonempty final String sSQL)
+  public Optional <DBResultRow> querySingle (@Nonnull @Nonempty final String sSQL)
   {
-    final ICommonsList <DBResultRow> aAllResultRows = queryAll (sSQL);
-    if (aAllResultRows == null)
-      return null;
-    if (aAllResultRows.size () > 1)
-      throw new IllegalStateException ("Found more than 1 result row (" + aAllResultRows.size () + ")!");
-    return aAllResultRows.getFirst ();
+    return queryAll (sSQL).map (x -> x.getFirst ());
   }
 
   @Nullable
-  public DBResultRow querySingle (@Nonnull @Nonempty final String sSQL,
-                                  @Nonnull final IPreparedStatementDataProvider aPSDP)
+  public Optional <DBResultRow> querySingle (@Nonnull @Nonempty final String sSQL,
+                                             @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
-    final ICommonsList <DBResultRow> aAllResultRows = queryAll (sSQL, aPSDP);
-    if (aAllResultRows == null)
-      return null;
-    if (aAllResultRows.size () > 1)
-      throw new IllegalStateException ("Found more than 1 result row (" + aAllResultRows.size () + ")!");
-    return aAllResultRows.getFirst ();
+    return queryAll (sSQL, aPSDP).map (x -> x.getFirst ());
   }
 
   @CheckForSigned
   public int queryCount (@Nonnull final String sSQL)
   {
-    final DBResultRow aResult = querySingle (sSQL);
-    return aResult == null ? CGlobal.ILLEGAL_UINT : ((Number) aResult.getValue (0)).intValue ();
+    return querySingle (sSQL).map (x -> (Number) x.getValue (0))
+                             .orElse (Integer.valueOf (CGlobal.ILLEGAL_UINT))
+                             .intValue ();
   }
 
   @CheckForSigned
   public int queryCount (@Nonnull final String sSQL, @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
-    final DBResultRow aResult = querySingle (sSQL, aPSDP);
-    return aResult == null ? CGlobal.ILLEGAL_UINT : ((Number) aResult.getValue (0)).intValue ();
+    return querySingle (sSQL, aPSDP).map (x -> (Number) x.getValue (0))
+                                    .orElse (Integer.valueOf (CGlobal.ILLEGAL_UINT))
+                                    .intValue ();
   }
 
   @Override
