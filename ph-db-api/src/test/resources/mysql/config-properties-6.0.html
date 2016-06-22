@@ -1,0 +1,5824 @@
+<!--
+
+    Copyright (C) 2014-2016 Philip Helger (www.helger.com)
+    philip[at]helger[dot]com
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<!DOCTYPE html>
+<html lang="en" class="svg no-js">
+<head>
+    <meta charset="utf-8" />
+    <!--[if IE ]>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MySQL :: MySQL Connector/J 6.0 Developer Guide :: 6.1 Driver/Datasource Class Names, URL Syntax and Configuration Properties
+        for Connector/J</title>
+    <link rel="stylesheet" media="all" href="//www-jp.mysql.com/common/css/main-20160413.min.css" />
+            <link rel="stylesheet" media="all" href="//www-jp.mysql.com/common/css/docs-20160413.min.css" />
+    
+    
+    <link rel="stylesheet" media="print" href="//www-jp.mysql.com/common/css/print-20160413.min.css" />
+
+    
+    
+    
+            <link rel="contents" href="index.html" title="MySQL Connector/J 6.0 Developer Guide" />
+<link rel="start" href="index.html" title="MySQL Connector/J 6.0 Developer Guide" />
+<link rel="prev" href="connector-j-reference.html" title="6 Connector/J (JDBC) Reference" />
+<link rel="next" href="connector-j-useconfigs.html?ff=nopfpls" title="6.1.1 Properties Files for the useConfigs Option" />
+<link rel="up" href="connector-j-reference.html" title="6 Connector/J (JDBC) Reference" />
+
+    
+    <link rel="shortcut icon" href="/common/themes/sakila/favicon.ico" />
+    <script>(function(H){ H.className=H.className.replace(/\bno-js\b/,'js') })(document.documentElement)</script>
+    <script src="//www-jp.mysql.com/common/js/site-20160129.min.js"></script>
+
+    
+    
+    
+    <!--[if lt IE 9]>
+        <script src="//www-jp.mysql.com/common/js/polyfills/html5shiv-printshiv-3.7.2.min.js"></script>
+        <script src="//www-jp.mysql.com/common/js/polyfills/respond-1.4.2.min.js"></script>
+    <![endif]-->
+        <!--[if IE 9]>
+        <style>#docs-sidebar-toc { box-sizing: content-box; }</style>
+    <![endif]-->
+    </head>
+
+<body class="no-sidebar full-page dev">
+    <header>
+
+                        <a href="http://dev.mysql.com/" title="MySQL" id="l1-home-link"></a>
+        
+        <div id="l1-nav-container">
+            <div>
+                <div id="l1-search-auth">
+                    <div id="l1-auth-links">
+                        <a href="http://www.mysql.com/about/contact/"><strong>Contact MySQL</strong></a>
+                        <span id="l1-contact-separator">&nbsp;|&nbsp;</span>
+                        <span id="l1-contact-separator-br"><br /></span>
+                                                     <a href="https://dev.mysql.com/auth/login/?dest=http%3A%2F%2Fdev.mysql.com%2Fdoc%2Fconnector-j%2F6.0%2Fen%2Fconnector-j-reference-configuration-properties.html">Login</a> &nbsp;|&nbsp;
+                             <a href="https://dev.mysql.com/auth/register/">Register</a>
+                                            </div>
+                    <div id="l1-search-box">
+                        <form id="l1-search-form" method="get" action="https://search.oracle.com/search/search">
+                        <input type="hidden" name="group" value="MySQL" />
+                        <input type="text" id="l1-search-input" name="q" />
+                        <button type="submit" class="l1-search-btn" title="Search"><span class="icon-search"></span></button>
+                        </form>
+                    </div>
+                </div>
+                <div class="social-icons">
+                    <a title="Join us on Facebook" href="http://www.facebook.com/mysql"><span class="icon-facebook-square"></span></a>
+                    <a title="Follow us on Twitter" href="https://twitter.com/#!/mysql"><span class="icon-twitter-square"></span></a>
+                    <a title="Join Google+ to follow MySQL" href="https://plus.google.com/+mysql"><span class="icon-google-plus-square"></span></a>
+                    <a title="Visit our YouTube channel" href="http://www.youtube.com/mysqlchannel"><span class="icon-youtube-square"></span></a>
+                </div>
+                <div id="l1-slogan">
+                    The world's most popular open source database
+                </div>
+            </div>
+            <div>
+                <ul id="l1-nav">
+                    <li>
+                        <a href="http://www.mysql.com/"><!-- <span class="icon-sakila"></span>  -->MySQL.com</a>
+                    </li><li>
+                        <a href="http://www.mysql.com/downloads/"><!-- <span class="icon-download-thin"></span>  -->Downloads</a>
+                    </li><li class="active">
+                        <a href="/doc/"><!-- <span class="icon-books"></span>  -->Documentation</a>
+                    </li><li>
+                        <a href="/"><!-- <span class="icon-code"></span>  -->Developer Zone</a>
+                    </li>                </ul>
+            </div>
+        </div>
+        <div id="sub-header">
+            <div id="l2-nav-container">
+                <div id="l2-nav-toggle">
+                    <span class="icon-three-bars"></span>
+                </div>
+                                                                                        <a class="button nav-button-3" href="/"><span class="icon-code"></span> Developer Zone</a>
+                                                                                                                                    <a class="button nav-button-2" href="http://www.mysql.com/downloads/"><span class="icon-download-thin"></span> Downloads</a>
+                                                                                                <a class="button nav-button-1" href="http://www.mysql.com/"><span class="icon-sakila"></span> MySQL.com</a>
+                                                                        <div id="l2-search-toggle">
+                    <span class="icon-search"></span>
+                </div>
+                <div id="l2-site-icon">
+                                                                                                                                                                                                    <span class="icon-books"></span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div>
+                <div id="l1-section-title">
+                    <span id="l1-section-label">
+                        <a href="/doc/">Documentation</a>
+                    </span>
+                </div>
+                <nav>
+                    
+
+<ul id="l2-nav">
+        	<li class=""><a  href="/doc/refman/en/">MySQL Server</a>
+
+			</li>
+	    	<li class=""><a  href="/doc/index-enterprise.html">MySQL Enterprise</a>
+
+			</li>
+	    	<li class=""><a  href="/doc/workbench/en/">Workbench</a>
+
+			</li>
+	    	<li class=""><a  href="/doc/mysql-router/en/">Router</a>
+
+			</li>
+	    	<li class=""><a  href="/doc/index-utils-fabric.html">Utilities/Fabric</a>
+
+			</li>
+	    	<li class=""><a  href="/doc/index-cluster.html">Cluster</a>
+
+			</li>
+	    	<li class="active"><a class="active " href="/doc/index-connectors.html">Connectors</a>
+
+			</li>
+	    	<li class=" last"><a  href="/doc/index-other.html">More</a>
+
+			</li>
+	                        <li class="other-section"><a href="http://www.mysql.com/">MySQL.com</a></li>
+                            <li class="other-section"><a href="http://www.mysql.com/downloads/">Downloads</a></li>
+                                        <li class="other-section"><a href="/">Developer Zone</a></li>
+            </ul>
+                </nav>
+            </div>
+            <div id="l3-search-container"></div>
+            <div id="top-orange"><span id="section-nav">Section Menu: &nbsp; </span></div>
+        </div>
+    </header>
+    <div id="page">
+                        <div role="main" id="main">
+
+            
+                
+            
+<div>
+    <div id="docs-sidebar-toc" class="">
+    <div id="docs-toc-inner">
+        <div class="docs-sidebar-header" id="docs-nav-header">
+            <a class="docs-show-hide-nav" id="docs-hide-nav" href="" title="Hide Sidebar"><span class="icon-arrow-small-left"></span></a>
+            <div class="docs-nav-links">
+                                    
+    <a href="connector-j-reference.html"
+        title="Previous: Connector/J (JDBC) Reference"><span
+        class="icon-chevron-left"></span></a>
+<a href="index.html" title="Start"><span class="icon-book-open"></span></a>
+        <a href="connector-j-reference.html" title="Up: Connector/J (JDBC) Reference"><span class="icon-chevron-up"></span></a>
+    <a href="connector-j-useconfigs.html"
+        title="Next: Properties Files for the useConfigs Option"><span
+        class="icon-chevron-right"></span></a>
+                            </div>
+        </div>
+                    
+<div id="docs-sidebar-search-container">
+    <div id="docs-sidebar-search-box">
+        <form method="get" action="/doc/search/">
+            <input type="hidden" name="d" id="d" value="191" />
+            <input type="hidden" name="p" id="p" value="1" />
+            <input type="text" name="q" id="q"
+                value="Search this Manual"
+                style="color: #bbb;"
+                onfocus="if(this.value == 'Search this Manual') {this.value='';this.style.color='#555';}"
+                onblur="if(this.value == '') {this.value='Search this Manual';this.style.color='#bbb';}" />
+
+            <button class="docs-sidebar-search-btn" title="Search" type="submit">
+                <span class="icon-search"></span>
+            </button>
+        </form>
+    </div>
+</div>
+                <div class="docs-sidebar-nav">
+            <a class="docs-icon-home" href="/doc/"><span class="icon-home"></span>Documentation Home</a><hr />
+            <div class="docs-sidebar-mtitle">MySQL Connector/J 6.0 Developer Guide</div>
+            <nav class="doctoc" id="doc-191">
+                                    
+    <ul>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="preface.html">Preface and Legal Notices</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-overview.html">Overview of MySQL Connector/J</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-versions.html">Connector/J Versions, and the MySQL and Java Versions They Support</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-whats-new.html">What&#039;s New in Connector/J 6.0?</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><a class="expandable  loaded" href=""><span class="icon-chevron-right"></span></a></div><div class="docs-sidebar-nav-link"><a href="connector-j-installing.html">Connector/J Installation</a></div></div>                        <div class="docs-submenu hidden">
+                                    
+    <ul>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-binary-installation.html">Installing Connector/J from a Binary Distribution</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-installing-classpath.html">Installing the Driver and Configuring the CLASSPATH</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><a class="expandable  loaded" href=""><span class="icon-chevron-right"></span></a></div><div class="docs-sidebar-nav-link"><a href="connector-j-installing-upgrading.html">Upgrading from an Older Version</a></div></div>                        <div class="docs-submenu hidden">
+                                    
+    <ul>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><a class="expandable  loaded" href=""><span class="icon-chevron-right"></span></a></div><div class="docs-sidebar-nav-link"><a href="connector-j-upgrading-to-6.0.html">Upgrading to MySQL Connector/J 6.0</a></div></div>                        <div class="docs-submenu hidden">
+                                    
+    <ul>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="ch04s03s01s01.html">Running on the Java 8 Platform</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-properties-changed.html">Changes in Connection Properties</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-api-changes.html">Changes in the Connector/J API</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-build-props-changes.html">Changes for Build Properties</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-test-props-changes.html">Change for Test Properties</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="ch04s03s01s06.html">Other Changes</a></div></div>                    </li>
+        </ul>
+                            </div>
+                    </li>
+        </ul>
+                            </div>
+                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-installing-source.html">Installing from the Development Source Tree</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-testing.html">Testing Connector/J</a></div></div>                    </li>
+        </ul>
+                            </div>
+                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-examples.html">Connector/J Examples</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><a class="expandable  loaded" href=""><span class="icon-chevron-down"></span></a></div><div class="docs-sidebar-nav-link"><a href="connector-j-reference.html">Connector/J (JDBC) Reference</a></div></div>                        <div class="docs-submenu">
+                                    
+    <ul>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><a class="expandable  loaded" href=""><span class="icon-chevron-down"></span></a></div><div class="docs-sidebar-nav-link current"><a href="connector-j-reference-configuration-properties.html">Driver/Datasource Class Names, URL Syntax and Configuration Properties
+        for Connector/J</a></div></div>                        <div class="docs-submenu">
+                                    
+    <ul>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-useconfigs.html">Properties Files for the useConfigs Option</a></div></div>                    </li>
+        </ul>
+                            </div>
+                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-reference-implementation-notes.html">JDBC API Implementation Notes</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-reference-type-conversions.html">Java, JDBC and MySQL Types</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-reference-charsets.html">Using Character Sets and Unicode</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-reference-using-ssl.html">Connecting Securely Using SSL</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-using-pam.html">Connecting Using PAM Authentication</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-reference-replication-connection.html">Using Master/Slave Replication with ReplicationConnection</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-reference-error-sqlstates.html">Mapping MySQL Error Numbers to JDBC SQLState Codes</a></div></div>                    </li>
+        </ul>
+                            </div>
+                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><a class="expandable  loaded" href=""><span class="icon-chevron-right"></span></a></div><div class="docs-sidebar-nav-link"><a href="connector-j-usagenotes-basic.html">JDBC Concepts</a></div></div>                        <div class="docs-submenu hidden">
+                                    
+    <ul>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-usagenotes-connect-drivermanager.html">Connecting to MySQL Using the JDBC DriverManager
+        Interface</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-usagenotes-statements.html">Using JDBC Statement Objects to Execute SQL</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-usagenotes-statements-callable.html">Using JDBC CallableStatements to Execute Stored
+        Procedures</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-usagenotes-last-insert-id.html">Retrieving AUTO_INCREMENT Column Values through JDBC</a></div></div>                    </li>
+        </ul>
+                            </div>
+                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-usagenotes-j2ee-concepts-connection-pooling.html">Connection Pooling with Connector/J</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><a class="expandable  loaded" href=""><span class="icon-chevron-right"></span></a></div><div class="docs-sidebar-nav-link"><a href="connector-j-multi-host-connections.html">Multi-Host Connections</a></div></div>                        <div class="docs-submenu hidden">
+                                    
+    <ul>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-config-failover.html">Configuring Server Failover</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-usagenotes-j2ee-concepts-managing-load-balanced-connections.html">Configuring Load Balancing with Connector/J</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-master-slave-replication-connection.html">Configuring Master/Slave Replication with Connector/J</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-usagenotes-j2ee-concepts-load-balancing-failover.html">Advanced Load-balancing and Failover Configuration</a></div></div>                    </li>
+        </ul>
+                            </div>
+                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-interceptors.html">Using the Connector/J Interceptor Classes</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-usagenotes-tomcat.html">Using Connector/J with Tomcat</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-usagenotes-jboss.html">Using Connector/J with JBoss</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><a class="expandable  loaded" href=""><span class="icon-chevron-right"></span></a></div><div class="docs-sidebar-nav-link"><a href="connector-j-usagenotes-spring-config.html">Using Connector/J with Spring</a></div></div>                        <div class="docs-submenu hidden">
+                                    
+    <ul>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-usagenotes-spring-config-jdbctemplate.html">Using JdbcTemplate</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-usagenotes-spring-config-transactional.html">Transactional JDBC Access</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-usagenotes-spring-config-connpooling.html">Connection Pooling with Spring</a></div></div>                    </li>
+        </ul>
+                            </div>
+                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-usagenotes-fabric.html">Using Connector/J with MySQL Fabric</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-usagenotes-troubleshooting.html">Troubleshooting Connector/J Applications</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><a class="expandable  loaded" href=""><span class="icon-chevron-right"></span></a></div><div class="docs-sidebar-nav-link"><a href="connector-j-support.html">Connector/J Support</a></div></div>                        <div class="docs-submenu hidden">
+                                    
+    <ul>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-support-community.html">Connector/J Community Support</a></div></div>                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="connector-j-support-bug-report.html">How to Report Connector/J Bugs or Problems</a></div></div>                    </li>
+        </ul>
+                            </div>
+                    </li>
+            <li>
+            <div><div class="docs-sidebar-nav-icon"><span class="icon-dot"></span></div><div class="docs-sidebar-nav-link"><a href="ix01.html">Index</a></div></div>                    </li>
+        </ul>
+                            </nav>
+        </div>
+
+        
+<a class="docs-sidebar-section" href=""><span class="icon-related"></span>
+    <span class="text">Related Documentation</span></a>
+<div class="docs-sidebar-accordian open">
+    <div class="text">
+        <a href="/doc/relnotes/connector-j/6.0/en/">MySQL Connector/J 6.0 Release Notes</a><br />
+        </div>
+</div>
+
+    <a class="docs-sidebar-section" href=""><span class="icon-download-thin"></span>
+        <span class="text">
+            Download
+                            this Manual
+                    </span>
+    </a>
+    <div class="docs-sidebar-accordian open">
+        <div class="text">
+                        <a href="http://downloads.mysql.com/docs/connector-j-6.0-en.pdf">PDF (US Ltr)</a>
+            - 428.1Kb<br />
+                        <a href="http://downloads.mysql.com/docs/connector-j-6.0-en.a4.pdf">PDF (A4)</a>
+            - 434.3Kb<br />
+                        <a href="http://downloads.mysql.com/docs/connector-j-6.0-en.epub">EPUB</a>
+            - 131.9Kb<br />
+                        <a href="http://downloads.mysql.com/docs/connector-j-6.0-en.html-chapter.tar.gz">HTML Download (TGZ)</a>
+            - 108.8Kb<br />
+                        <a href="http://downloads.mysql.com/docs/connector-j-6.0-en.html-chapter.zip">HTML Download (Zip)</a>
+            - 135.1Kb<br />
+                    </div>
+    </div>
+
+
+
+        <br /><span id="wkr"><br /></span>
+    </div>
+    </div>
+
+    <div id="docs-main" class="has-toc">
+    <div id="docs-main-inner">
+
+                <div class="right" id="docs-version-nav">
+            <a href="" id="docs-version-nav-toggle">version 6.0
+            <span class="icon-chevron-down"></span></a>
+            <div id="docs-version-list">
+                                                                                            <a                         href="/doc/connector-j/5.1/en/connector-j-reference-configuration-properties.html">
+                        5.1
+                                                &nbsp;current
+                                            </a><br />
+                                                                </div>
+        </div>
+        
+        <div id="docs-show-nav" class="left hidden" style="margin-right: 15px;">
+            <a class="docs-show-hide-nav" href=""
+                title="Show Sidebar"><span class="icon-arrow-small-right"></span></a>
+        </div>
+
+                        <div id="docs-breadcrumbs">
+            <a href="/doc/connector-j/6.0/en/">MySQL Connector/J 6.0 Developer Guide</a> &nbsp;/&nbsp;
+                                                        <a href="connector-j-reference.html">Connector/J (JDBC) Reference</a> &nbsp;/&nbsp;
+                                                                                    Driver/Datasource Class Names, URL Syntax and Configuration Properties
+        for Connector/J
+                                    </div>
+        
+        <div id="docs-body">
+        
+<div class="status-header"><p class="alert">Beta Draft: 2016-06-21</p></div><div class="section">
+<div class="titlepage"><div><div><h2 class="title">
+<a name="connector-j-reference-configuration-properties"></a>6.1 Driver/Datasource Class Names, URL Syntax and Configuration Properties
+        for Connector/J</h2></div></div></div>
+<div class="toc"><p><small>[<a href="#" class="tocdetail" onclick="toggle('tocdetail-0'); return false;" onkeypress="if (event.keyCode == 13) { toggle('tocdetail-0'); return false;}">+/-</a>]</small></p><dl id="tocdetail-0"><dt><span class="section"><a href="connector-j-useconfigs.html">6.1.1 Properties Files for the <code class="literal">useConfigs</code> Option</a></span></dt></dl></div>
+<a class="indexterm" name="idm140131077878256"></a><a class="indexterm" name="idm140131077876864"></a><p>
+        The name of the class that implements
+        <code class="literal">java.sql.Driver</code> in MySQL Connector/J is
+        <code class="literal">com.mysql.cj.jdbc.Driver</code>.
+      </p>
+<h3>
+<a name="connector-j-reference-url-format"></a>JDBC URL Format</h3>
+<a class="indexterm" name="idm140131077872976"></a><p>
+        The general format for a JDBC URL for connecting to a MySQL
+        server is as follows, with items in square brackets ([ ]) being
+        optional:
+      </p>
+<pre class="programlisting">
+jdbc:mysql://[<em class="replaceable"><code>host1</code></em>][:<em class="replaceable"><code>port1</code></em>][,[<em class="replaceable"><code>host2</code></em>][:<em class="replaceable"><code>port2</code></em>]]...[/[<em class="replaceable"><code>database</code></em>]] »
+[?<em class="replaceable"><code>propertyName1</code></em>=<em class="replaceable"><code>propertyValue1</code></em>[&amp;<em class="replaceable"><code>propertyName2</code></em>=<em class="replaceable"><code>propertyValue2</code></em>]...]
+</pre>
+<p>
+        Here is a simple example for a connection URL:
+      </p>
+<pre class="programlisting">
+jdbc:mysql://localhost:3306/sakila?profileSQL=true
+</pre>
+<p>
+        Supply multiple hosts for a server failover setup (see
+        <a class="xref" href="connector-j-multi-host-connections.html" title="Chapter 9 Multi-Host Connections">Chapter 9, <i>Multi-Host Connections</i></a> for
+        details):
+      </p>
+<pre class="programlisting">
+# Connection URL for a server failover setup: 
+jdbc:mysql//primaryhost,secondaryhost1,secondaryhost2/test</pre>
+<p>
+        There are specialized URL schemes for configuring Connector/J's
+        multi-host functions like load balancing and replication; here
+        are some examples (see
+        <a class="xref" href="connector-j-multi-host-connections.html" title="Chapter 9 Multi-Host Connections">Chapter 9, <i>Multi-Host Connections</i></a> for
+        details):
+
+</p>
+<pre class="programlisting">
+# Connection URL for load balancing: 
+jdbc:mysql:loadbalance://localhost:3306,localhost:3310/sakila
+
+# Connection URL for server replication: 
+jdbc:mysql:replication://master,slave1,slave2,slave3/test
+</pre>
+<p>
+      </p>
+<h3>
+<a name="idm140131077862288"></a>Host and Port</h3>
+<p>
+        If no hosts are not specified, the host name defaults to
+        <code class="literal">127.0.0.1</code>. If the port for a host is not
+        specified, it defaults to <code class="literal">3306</code>, the default
+        port number for MySQL servers.
+      </p>
+<h3>
+<a name="idm140131077859776"></a>Initial Database for Connection</h3>
+<p>
+        If the database is not specified, the connection is made with no
+        default database. In this case, either call the
+        <code class="function">setCatalog()</code> method on the Connection
+        instance, or fully specify table names using the database name
+        (that is, <code class="literal">SELECT
+        <em class="replaceable"><code>dbname</code></em>.<em class="replaceable"><code>tablename</code></em>.<em class="replaceable"><code>colname</code></em>
+        FROM dbname.tablename...</code>) in your SQL. Opening a
+        connection without specifying the database to use is generally
+        only useful when building tools that work with multiple
+        databases, such as GUI database managers.
+      </p>
+<div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+<div class="admon-title">Note</div>
+<p>
+          Always use the <code class="literal">Connection.setCatalog()</code>
+          method to specify the desired database in JDBC applications,
+          rather than the <code class="literal">USE
+          <em class="replaceable"><code>database</code></em></code> statement.
+        </p>
+</div>
+<h3>
+<a name="connector-j-alternate-url"></a>Alternate Format for JDBC URLs</h3>
+<a class="indexterm" name="idm140131077852592"></a><a class="indexterm" name="idm140131077851200"></a><p>
+        The following is an alternate format for JDBC URLs connecting to
+        a MySQL server, which is mandatory for IPv6 connections, but can
+        also be used with IPv4 (items in square brackets ([ ]) are
+        optional):
+
+</p>
+<pre class="programlisting">
+jdbc:mysql://address=(<em class="replaceable"><code>key1</code></em>=<em class="replaceable"><code>value</code></em>)[(<em class="replaceable"><code>key2</code></em>=<em class="replaceable"><code>value</code></em>)]...[,address=(key3=value)[(key4=value)]...]...[/[<em class="replaceable"><code>database</code></em>]]»
+[?<em class="replaceable"><code>propertyName1</code></em>=<em class="replaceable"><code>propertyValue1</code></em>[&amp;<em class="replaceable"><code>propertyName2</code></em>=<em class="replaceable"><code>propertyValue2</code></em>]...] 
+</pre>
+<p>
+
+        Supported key-value pairs include:
+      </p>
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem"><p>
+            <code class="literal">(protocol=tcp)</code>, or
+            <code class="literal">(protocol=pipe)</code> for named pipes on
+            Windows.
+          </p></li>
+<li class="listitem"><p>
+            <code class="literal">(path=<em class="replaceable"><code>path_to_pipe</code></em>)</code>
+            for path of named pipes. Default value for the path is
+            <code class="filename">\\.\pipe\MySQL</code>. Use the key-value pair
+            to specify a custom named pipe.
+          </p></li>
+<li class="listitem"><p>
+            <code class="literal">(host=<em class="replaceable"><code>hostname</code></em>)</code>
+            for TCP connections.
+          </p></li>
+<li class="listitem"><p>
+            <code class="literal">(port=<em class="replaceable"><code>port_number</code></em>)</code>
+            for TCP connections.
+          </p></li>
+</ul></div>
+<p>
+        For example:
+      </p>
+<pre class="programlisting">
+jdbc:mysql://address=(protocol=tcp)(host=localhost)(port=3306)/db 
+</pre>
+<p>
+        Notice that the alternate format greatly simplifies the URL for
+        a named pipe connection on Windows. For example, to use the
+        default named pipe of
+        <span class="quote">“<span class="quote"><code class="filename">\\.\pipe\MySQL</code>,</span>”</span> just
+        specifies:
+
+</p>
+<pre class="programlisting">jdbc:mysql://address=(protocol=pipe)/test</pre>
+<p>
+      </p>
+<p>
+        To use the custom named pipe of
+        <span class="quote">“<span class="quote"><code class="filename">\\.\pipe\MySQL57</code></span>”</span> :
+      </p>
+<pre class="programlisting">jdbc:mysql://address=(protocol=pipe)(path=\\.\pipe\MySQL57)/test</pre>
+<p>
+        Keys other than <code class="literal">protocol</code>,
+        <code class="literal">path</code>, <code class="literal">host</code>, and
+        <code class="literal">port</code> are treated as host-specific
+        configuration properties, which allow per-host overrides of
+        configuration properties set for multi-host connections (that
+        is, when using failover, load balancing, or replication). For
+        example:
+
+</p>
+<pre class="programlisting">
+# Connection URL in the alternate format for a server failover setup: 
+jdbc:mysql://address=(protocol=tcp)(host=primaryhost)(port=3306),»
+address=(protocol=tcp)(host=secondaryhost1)(port=3310)(user=test2)/test
+
+# Connection URL in the alternate format for a load balancing setup: 
+jdbc:mysql:loadbalance://address=(protocol=tcp)(host=localhost)(port=3306)(user=test1),»
+address=(protocol=tcp)(host=localhost)(port=3310)(user=test2)/sakila
+
+# Connection URL in the alternate format for a server replication setup: 
+jdbc:mysql:replication://address=(protocol=tcp)(host=master)(port=3306)(user=test1),»
+address=(protocol=tcp)(host=slave1)(port=3310)(user=test2)/test
+</pre>
+<p>
+
+        Limit the overrides to user, password, network timeouts, and
+        statement and metadata cache sizes; the effects of other
+        per-host overrides are not defined.
+      </p>
+<p>
+        The ways to set other configuration properties for the
+        connection are the same for the general and the alternate URL
+        formats; see
+        <a class="xref" href="connector-j-reference-configuration-properties.html#connector-j-reference-set-config" title="Setting Configuration Properties">Setting Configuration Properties</a>.
+      </p>
+<p></p>
+<h3>
+<a name="connector-j-reference-set-config"></a>Setting Configuration Properties</h3>
+<p>
+        Configuration properties define how Connector/J will make a
+        connection to a MySQL server. Unless otherwise noted, properties
+        can be set for a <code class="literal">DataSource</code> object or for a
+        <code class="literal">Connection</code> object.
+      </p>
+<p>
+        Configuration properties can be set in one of the following
+        ways:
+      </p>
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem">
+<p>
+            Using the <code class="literal">set*()</code> methods on MySQL
+            implementations of <code class="literal">java.sql.DataSource</code>
+            (which is the preferred method when using implementations of
+            <code class="literal">java.sql.DataSource</code>):
+          </p>
+<div class="itemizedlist"><ul class="itemizedlist" type="circle">
+<li class="listitem"><p>
+                <code class="literal">com.mysql.cj.jdbc.jdbc2.optional.MysqlDataSource</code>
+              </p></li>
+<li class="listitem"><p>
+                <code class="literal">com.mysql.cj.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource</code>
+              </p></li>
+</ul></div>
+</li>
+<li class="listitem"><p>
+            As a key/value pair in the
+            <code class="literal">java.util.Properties</code> instance passed to
+            <code class="literal">DriverManager.getConnection()</code> or
+            <code class="literal">Driver.connect()</code>
+          </p></li>
+<li class="listitem">
+<p>
+            As a JDBC URL parameter in the URL given to
+            <code class="literal">java.sql.DriverManager.getConnection()</code>,
+            <code class="literal">java.sql.Driver.connect()</code> or the MySQL
+            implementations of the
+            <code class="literal">javax.sql.DataSource</code>
+            <code class="function">setURL()</code> method. If you specify a
+            configuration property in the URL without providing a value
+            for it, nothing will be set; for example, adding
+            <code class="literal">useServerPrepStmts</code> alone to the URL does
+            not make Connector/J use server-side prepared statements;
+            you need to add <code class="literal">useServerPrepStmts=true</code>.
+          </p>
+<div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+<div class="admon-title">Note</div>
+<p>
+              If the mechanism you use to configure a JDBC URL is
+              XML-based, use the XML character literal
+              <code class="literal">&amp;amp;</code> to separate configuration
+              parameters, as the ampersand is a reserved character for
+              XML.
+            </p>
+</div>
+</li>
+</ul></div>
+<p>
+        The properties are listed in the following tables.
+      </p>
+<p><b>Authentication. </b>
+      </p>
+<div class="informaltable"><table class="informaltable" summary="This table lists Connector/J Authentication connection
+          properties." border="1">
+<colgroup><col class="Properties"></colgroup>
+<thead><tr><th scope="col"><span class="bold"><strong>Properties and Descriptions</strong></span></th></tr></thead>
+<tbody>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>user</strong></span>
+                </p>
+
+
+
+                <p>
+                  The user to connect as
+                </p>
+
+
+
+                <p>
+                  Since version: all versions
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>password</strong></span>
+                </p>
+
+
+
+                <p>
+                  The password to use when connecting
+                </p>
+
+
+
+                <p>
+                  Since version: all versions
+                </p>
+</td></tr>
+</tbody>
+</table></div>
+<p>
+    </p>
+<p><b>Connection. </b>
+      </p>
+<div class="informaltable"><table class="informaltable" summary="This table lists Connector/J Connection connection
+          properties." border="1">
+<colgroup><col class="Properties"></colgroup>
+<thead><tr><th scope="col"><span class="bold"><strong>Properties and Descriptions</strong></span></th></tr></thead>
+<tbody>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>connectionAttributes</strong></span>
+                </p>
+
+
+
+                <p>
+                  A comma-delimited list of user-defined key:value pairs
+                  (in addition to standard MySQL-defined key:value
+                  pairs) to be passed to MySQL Server for display as
+                  connection attributes in the
+                  PERFORMANCE_SCHEMA.SESSION_CONNECT_ATTRS table.
+                  Example usage:
+                  connectionAttributes=key1:value1,key2:value2 This
+                  functionality is available for use with MySQL Server
+                  version 5.6 or later only. Earlier versions of MySQL
+                  Server do not support connection attributes, causing
+                  this configuration option to be ignored. Setting
+                  connectionAttributes=none will cause connection
+                  attribute processing to be bypassed, for situations
+                  where Connection creation/initialization speed is
+                  critical.
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.25
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>connectionLifecycleInterceptors</strong></span>
+                </p>
+
+
+
+                <p>
+                  A comma-delimited list of classes that implement
+                  "com.mysql.cj.api.jdbc.interceptors.ConnectionLifecycleInterceptor"
+                  that should notified of connection lifecycle events
+                  (creation, destruction, commit, rollback, setCatalog
+                  and setAutoCommit) and potentially alter the execution
+                  of these commands. ConnectionLifecycleInterceptors are
+                  "stackable", more than one interceptor may be
+                  specified via the configuration property as a
+                  comma-delimited list, with the interceptors executed
+                  in order from left to right.
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.4
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>useConfigs</strong></span>
+                </p>
+
+
+
+                <p>
+                  Load the comma-delimited list of configuration
+                  properties before parsing the URL or applying
+                  user-specified properties. These configurations are
+                  explained in the 'Configurations' of the
+                  documentation.
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.5
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>authenticationPlugins</strong></span>
+                </p>
+
+
+
+                <p>
+                  Comma-delimited list of classes that implement
+                  com.mysql.cj.api.mysqla.authentication.AuthenticationPlugin
+                  and which will be used for authentication unless
+                  disabled by "disabledAuthenticationPlugins" property.
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.19
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>createDatabaseIfNotExist</strong></span>
+                </p>
+
+
+
+                <p>
+                  Creates the database given in the URL if it doesn't
+                  yet exist. Assumes the configured user has permissions
+                  to create databases.
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.9
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>defaultAuthenticationPlugin</strong></span>
+                </p>
+
+
+
+                <p>
+                  Name of a class implementing
+                  com.mysql.cj.api.mysqla.authentication.AuthenticationPlugin
+                  which will be used as the default authentication
+                  plugin (see below). It is an error to use a class
+                  which is not listed in "authenticationPlugins" nor it
+                  is one of the built-in plugins. It is an error to set
+                  as default a plugin which was disabled with
+                  "disabledAuthenticationPlugins" property. It is an
+                  error to set this value to null or the empty string
+                  (i.e. there must be at least a valid default
+                  authentication plugin specified for the connection,
+                  meeting all constraints listed above).
+                </p>
+
+
+
+                <p>
+                  Default:
+                  com.mysql.cj.mysqla.authentication.MysqlNativePasswordPlugin
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.19
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>detectCustomCollations</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver detect custom charsets/collations
+                  installed on server (true/false, defaults to 'false').
+                  If this option set to 'true' driver gets actual
+                  charsets/collations from server each time connection
+                  establishes. This could slow down connection
+                  initialization significantly.
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.29
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>disabledAuthenticationPlugins</strong></span>
+                </p>
+
+
+
+                <p>
+                  Comma-delimited list of classes implementing
+                  com.mysql.cj.api.mysqla.authentication.AuthenticationPlugin
+                  or mechanisms, i.e. "mysql_native_password". The
+                  authentication plugins or mechanisms listed will not
+                  be used for authentication which will fail if it
+                  requires one of them. It is an error to disable the
+                  default authentication plugin (either the one named by
+                  "defaultAuthenticationPlugin" property or the
+                  hard-coded one if "defaultAuthenticationPlugin"
+                  property is not set).
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.19
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>disconnectOnExpiredPasswords</strong></span>
+                </p>
+
+
+
+                <p>
+                  If "disconnectOnExpiredPasswords" is set to "false"
+                  and password is expired then server enters "sandbox"
+                  mode and sends ERR(08001, ER_MUST_CHANGE_PASSWORD) for
+                  all commands that are not needed to set a new password
+                  until a new password is set.
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.23
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>interactiveClient</strong></span>
+                </p>
+
+
+
+                <p>
+                  Set the CLIENT_INTERACTIVE flag, which tells MySQL to
+                  timeout connections based on INTERACTIVE_TIMEOUT
+                  instead of WAIT_TIMEOUT
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.0
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>passwordCharacterEncoding</strong></span>
+                </p>
+
+
+
+                <p>
+                  What character encoding is used for passwords? Leaving
+                  this set to the default value (null), uses the value
+                  set in "characterEncoding" if there is one, otherwise
+                  uses UTF-8 as default encoding. If the password
+                  contains non-ASCII characters, the password encoding
+                  must match what server encoding was set to when the
+                  password was created. For passwords in other character
+                  encodings, the encoding will have to be specified with
+                  this property (or with "characterEncoding"), as it's
+                  not possible for the driver to auto-detect this.
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.7
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>propertiesTransform</strong></span>
+                </p>
+
+
+
+                <p>
+                  An implementation of
+                  com.mysql.cj.api.conf.ConnectionPropertiesTransform
+                  that the driver will use to modify URL properties
+                  passed to the driver before attempting a connection
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.4
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>rollbackOnPooledClose</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver issue a rollback() when the logical
+                  connection in a pool is closed?
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.15
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>useAffectedRows</strong></span>
+                </p>
+
+
+
+                <p>
+                  Don't set the CLIENT_FOUND_ROWS flag when connecting
+                  to the server (not JDBC-compliant, will break most
+                  applications that rely on "found" rows vs. "affected
+                  rows" for DML statements), but does cause "correct"
+                  update counts from "INSERT ... ON DUPLICATE KEY
+                  UPDATE" statements to be returned by the server.
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.7
+                </p>
+</td></tr>
+</tbody>
+</table></div>
+<p>
+    </p>
+<p><b>Session. </b>
+      </p>
+<div class="informaltable"><table class="informaltable" summary="This table lists Connector/J Session connection
+          properties." border="1">
+<colgroup><col class="Properties"></colgroup>
+<thead><tr><th scope="col"><span class="bold"><strong>Properties and Descriptions</strong></span></th></tr></thead>
+<tbody>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>characterEncoding</strong></span>
+                </p>
+
+
+
+                <p>
+                  What character encoding should the driver use when
+                  dealing with strings? (defaults is to 'autodetect')
+                </p>
+
+
+
+                <p>
+                  Since version: 1.1g
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>characterSetResults</strong></span>
+                </p>
+
+
+
+                <p>
+                  Character set to tell the server to return results as.
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.13
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>connectionCollation</strong></span>
+                </p>
+
+
+
+                <p>
+                  If set, tells the server to use this collation via
+                  'set collation_connection'
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.13
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>sessionVariables</strong></span>
+                </p>
+
+
+
+                <p>
+                  A comma-separated list of name/value pairs to be sent
+                  as SET SESSION ... to the server when the driver
+                  connects.
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.8
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>useOldUTF8Behavior</strong></span>
+                </p>
+
+
+
+                <p>
+                  Use the UTF-8 behavior the driver did when
+                  communicating with 4.0 and older servers
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.6
+                </p>
+</td></tr>
+</tbody>
+</table></div>
+<p>
+    </p>
+<p><b>Networking. </b>
+      </p>
+<div class="informaltable"><table class="informaltable" summary="This table lists Connector/J Networking connection
+          properties." border="1">
+<colgroup><col class="Properties"></colgroup>
+<thead><tr><th scope="col"><span class="bold"><strong>Properties and Descriptions</strong></span></th></tr></thead>
+<tbody>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>socksProxyHost</strong></span>
+                </p>
+
+
+
+                <p>
+                  Name or IP address of SOCKS host to connect through.
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.34
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>socksProxyPort</strong></span>
+                </p>
+
+
+
+                <p>
+                  Port of SOCKS server.
+                </p>
+
+
+
+                <p>
+                  Default: 1080
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.34
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>socketFactory</strong></span>
+                </p>
+
+
+
+                <p>
+                  The name of the class that the driver should use for
+                  creating socket connections to the server. This class
+                  must implement the interface
+                  'com.mysql.cj.api.io.SocketFactory' and have public
+                  no-args constructor.
+                </p>
+
+
+
+                <p>
+                  Default: com.mysql.cj.core.io.StandardSocketFactory
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.3
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>connectTimeout</strong></span>
+                </p>
+
+
+
+                <p>
+                  Timeout for socket connect (in milliseconds), with 0
+                  being no timeout. Only works on JDK-1.4 or newer.
+                  Defaults to '0'.
+                </p>
+
+
+
+                <p>
+                  Default: 0
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.1
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>socketTimeout</strong></span>
+                </p>
+
+
+
+                <p>
+                  Timeout on network socket operations (0, the default
+                  means no timeout).
+                </p>
+
+
+
+                <p>
+                  Default: 0
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.1
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>localSocketAddress</strong></span>
+                </p>
+
+
+
+                <p>
+                  Hostname or IP address given to explicitly configure
+                  the interface that the driver will bind the client
+                  side of the TCP/IP connection to when connecting.
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.5
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>maxAllowedPacket</strong></span>
+                </p>
+
+
+
+                <p>
+                  Maximum allowed packet size to send to server. If not
+                  set, the value of system variable 'max_allowed_packet'
+                  will be used to initialize this upon connecting. This
+                  value will not take effect if set larger than the
+                  value of 'max_allowed_packet'. Also, due to an
+                  internal dependency with the property
+                  "blobSendChunkSize", this setting has a minimum value
+                  of "8203" if "useServerPrepStmts" is set to "true".
+                </p>
+
+
+
+                <p>
+                  Default: 65535
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.8
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>tcpKeepAlive</strong></span>
+                </p>
+
+
+
+                <p>
+                  If connecting using TCP/IP, should the driver set
+                  SO_KEEPALIVE?
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.7
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>tcpNoDelay</strong></span>
+                </p>
+
+
+
+                <p>
+                  If connecting using TCP/IP, should the driver set
+                  SO_TCP_NODELAY (disabling the Nagle Algorithm)?
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.7
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>tcpRcvBuf</strong></span>
+                </p>
+
+
+
+                <p>
+                  If connecting using TCP/IP, should the driver set
+                  SO_RCV_BUF to the given value? The default value of
+                  '0', means use the platform default value for this
+                  property)
+                </p>
+
+
+
+                <p>
+                  Default: 0
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.7
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>tcpSndBuf</strong></span>
+                </p>
+
+
+
+                <p>
+                  If connecting using TCP/IP, should the driver set
+                  SO_SND_BUF to the given value? The default value of
+                  '0', means use the platform default value for this
+                  property)
+                </p>
+
+
+
+                <p>
+                  Default: 0
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.7
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>tcpTrafficClass</strong></span>
+                </p>
+
+
+
+                <p>
+                  If connecting using TCP/IP, should the driver set
+                  traffic class or type-of-service fields ?See the
+                  documentation for java.net.Socket.setTrafficClass()
+                  for more information.
+                </p>
+
+
+
+                <p>
+                  Default: 0
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.7
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>useCompression</strong></span>
+                </p>
+
+
+
+                <p>
+                  Use zlib compression when communicating with the
+                  server (true/false)? Defaults to 'false'.
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.17
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>useUnbufferedInput</strong></span>
+                </p>
+
+
+
+                <p>
+                  Don't use BufferedInputStream for reading data from
+                  the server
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.11
+                </p>
+</td></tr>
+</tbody>
+</table></div>
+<p>
+    </p>
+<p><b>Security. </b>
+      </p>
+<div class="informaltable"><table class="informaltable" summary="This table lists Connector/J Security connection
+          properties." border="1">
+<colgroup><col class="Properties"></colgroup>
+<thead><tr><th scope="col"><span class="bold"><strong>Properties and Descriptions</strong></span></th></tr></thead>
+<tbody>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>allowMultiQueries</strong></span>
+                </p>
+
+
+
+                <p>
+                  Allow the use of ';' to delimit multiple queries
+                  during one statement (true/false), defaults to
+                  'false', and does not affect the addBatch() and
+                  executeBatch() methods, which instead rely on
+                  rewriteBatchStatements.
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.1
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>useSSL</strong></span>
+                </p>
+
+
+
+                <p>
+                  Use SSL when communicating with the server
+                  (true/false), default is 'true' when connecting to
+                  MySQL 5.5.45+, 5.6.26+ or 5.7.6+, otherwise default is
+                  'false'
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.2
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>requireSSL</strong></span>
+                </p>
+
+
+
+                <p>
+                  Require server support of SSL connection if
+                  useSSL=true? (defaults to 'false').
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.0
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>verifyServerCertificate</strong></span>
+                </p>
+
+
+
+                <p>
+                  If "useSSL" is set to "true", should the driver verify
+                  the server's certificate? When using this feature, the
+                  keystore parameters should be specified by the
+                  "clientCertificateKeyStore*" properties, rather than
+                  system properties. Default is 'false' when connecting
+                  to MySQL 5.5.45+, 5.6.26+ or 5.7.6+ and "useSSL" was
+                  not explicitly set to "true". Otherwise default is
+                  'true'
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.6
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>clientCertificateKeyStoreUrl</strong></span>
+                </p>
+
+
+
+                <p>
+                  URL to the client certificate KeyStore (if not
+                  specified, use defaults)
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.0
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>clientCertificateKeyStoreType</strong></span>
+                </p>
+
+
+
+                <p>
+                  KeyStore type for client certificates (NULL or empty
+                  means use the default, which is "JKS". Standard
+                  keystore types supported by the JVM are "JKS" and
+                  "PKCS12", your environment may have more available
+                  depending on what security products are installed and
+                  available to the JVM.
+                </p>
+
+
+
+                <p>
+                  Default: JKS
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.0
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>clientCertificateKeyStorePassword</strong></span>
+                </p>
+
+
+
+                <p>
+                  Password for the client certificates KeyStore
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.0
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>trustCertificateKeyStoreUrl</strong></span>
+                </p>
+
+
+
+                <p>
+                  URL to the trusted root certificate KeyStore (if not
+                  specified, use defaults)
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.0
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>trustCertificateKeyStoreType</strong></span>
+                </p>
+
+
+
+                <p>
+                  KeyStore type for trusted root certificates (NULL or
+                  empty means use the default, which is "JKS". Standard
+                  keystore types supported by the JVM are "JKS" and
+                  "PKCS12", your environment may have more available
+                  depending on what security products are installed and
+                  available to the JVM.
+                </p>
+
+
+
+                <p>
+                  Default: JKS
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.0
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>trustCertificateKeyStorePassword</strong></span>
+                </p>
+
+
+
+                <p>
+                  Password for the trusted root certificates KeyStore
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.0
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>enabledSSLCipherSuites</strong></span>
+                </p>
+
+
+
+                <p>
+                  If "useSSL" is set to "true", overrides the cipher
+                  suites enabled for use on the underlying SSL sockets.
+                  This may be required when using external JSSE
+                  providers or to specify cipher suites compatible with
+                  both MySQL server and used JVM.
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.35
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>allowLoadLocalInfile</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver allow use of 'LOAD DATA LOCAL
+                  INFILE...' (defaults to 'true').
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.3
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>allowUrlInLocalInfile</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver allow URLs in 'LOAD DATA LOCAL
+                  INFILE' statements?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.4
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>allowPublicKeyRetrieval</strong></span>
+                </p>
+
+
+
+                <p>
+                  Allows special handshake roundtrip to get server RSA
+                  public key directly from server.
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.31
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>paranoid</strong></span>
+                </p>
+
+
+
+                <p>
+                  Take measures to prevent exposure sensitive
+                  information in error messages and clear data
+                  structures holding sensitive data when possible?
+                  (defaults to 'false')
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.1
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>serverRSAPublicKeyFile</strong></span>
+                </p>
+
+
+
+                <p>
+                  File path to the server RSA public key file for
+                  sha256_password authentication. If not specified, the
+                  public key will be retrieved from the server.
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.31
+                </p>
+</td></tr>
+</tbody>
+</table></div>
+<p>
+    </p>
+<p><b>Statements. </b>
+      </p>
+<div class="informaltable"><table class="informaltable" summary="This table lists Connector/J Statements connection
+          properties." border="1">
+<colgroup><col class="Properties"></colgroup>
+<thead><tr><th scope="col"><span class="bold"><strong>Properties and Descriptions</strong></span></th></tr></thead>
+<tbody>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>continueBatchOnError</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver continue processing batch commands
+                  if one statement fails. The JDBC spec allows either
+                  way (defaults to 'true').
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.3
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>dontTrackOpenResources</strong></span>
+                </p>
+
+
+
+                <p>
+                  The JDBC specification requires the driver to
+                  automatically track and close resources, however if
+                  your application doesn't do a good job of explicitly
+                  calling close() on statements or result sets, this can
+                  cause memory leakage. Setting this property to true
+                  relaxes this constraint, and can be more memory
+                  efficient for some applications. Also the automatic
+                  closing of the Statement and current ResultSet in
+                  Statement.closeOnCompletion() and
+                  Statement.getMoreResults
+                  ([Statement.CLOSE_CURRENT_RESULT |
+                  Statement.CLOSE_ALL_RESULTS]), respectively, ceases to
+                  happen. This property automatically sets
+                  holdResultsOpenOverStatementClose=true.
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.7
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>queryTimeoutKillsConnection</strong></span>
+                </p>
+
+
+
+                <p>
+                  If the timeout given in Statement.setQueryTimeout()
+                  expires, should the driver forcibly abort the
+                  Connection instead of attempting to abort the query?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.9
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>statementInterceptors</strong></span>
+                </p>
+
+
+
+                <p>
+                  A comma-delimited list of classes that implement
+                  "com.mysql.cj.api.jdbc.interceptors.StatementInterceptor"
+                  that should be placed "in between" query execution to
+                  influence the results. StatementInterceptors are
+                  "chainable", the results returned by the "current"
+                  interceptor will be passed on to the next in in the
+                  chain, from left-to-right order, as specified in this
+                  property.
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.1
+                </p>
+</td></tr>
+</tbody>
+</table></div>
+<p>
+    </p>
+<p><b>Prepared Statements. </b>
+      </p>
+<div class="informaltable"><table class="informaltable" summary="This table lists Connector/J Prepared Statements
+          connection properties." border="1">
+<colgroup><col class="Properties"></colgroup>
+<thead><tr><th scope="col"><span class="bold"><strong>Properties and Descriptions</strong></span></th></tr></thead>
+<tbody>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>allowNanAndInf</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver allow NaN or +/- INF values in
+                  PreparedStatement.setDouble()?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.5
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>autoClosePStmtStreams</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver automatically call .close() on
+                  streams/readers passed as arguments via set*()
+                  methods?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.12
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>compensateOnDuplicateKeyUpdateCounts</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver compensate for the update counts of
+                  "ON DUPLICATE KEY" INSERT statements (2 = 1, 0 = 1)
+                  when using prepared statements?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.7
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>emulateUnsupportedPstmts</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver detect prepared statements that are
+                  not supported by the server, and replace them with
+                  client-side emulated versions?
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.7
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>generateSimpleParameterMetadata</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver generate simplified parameter
+                  metadata for PreparedStatements when no metadata is
+                  available either because the server couldn't support
+                  preparing the statement, or server-side prepared
+                  statements are disabled?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.5
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>processEscapeCodesForPrepStmts</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver process escape codes in queries that
+                  are prepared? Default escape processing behavior in
+                  non-prepared statements must be defined with the
+                  property 'enableEscapeProcessing'.
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.12
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>useServerPrepStmts</strong></span>
+                </p>
+
+
+
+                <p>
+                  Use server-side prepared statements if the server
+                  supports them?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.0
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>useStreamLengthsInPrepStmts</strong></span>
+                </p>
+
+
+
+                <p>
+                  Honor stream length parameter in
+                  PreparedStatement/ResultSet.setXXXStream() method
+                  calls (true/false, defaults to 'true')?
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.2
+                </p>
+</td></tr>
+</tbody>
+</table></div>
+<p>
+    </p>
+<p><b>Result Sets. </b>
+      </p>
+<div class="informaltable"><table class="informaltable" summary="This table lists Connector/J Result Sets connection
+          properties." border="1">
+<colgroup><col class="Properties"></colgroup>
+<thead><tr><th scope="col"><span class="bold"><strong>Properties and Descriptions</strong></span></th></tr></thead>
+<tbody>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>clobberStreamingResults</strong></span>
+                </p>
+
+
+
+                <p>
+                  This will cause a 'streaming' ResultSet to be
+                  automatically closed, and any outstanding data still
+                  streaming from the server to be discarded if another
+                  query is executed before all the data has been read
+                  from the server.
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.9
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>emptyStringsConvertToZero</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver allow conversions from empty string
+                  fields to numeric values of '0'?
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.8
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>holdResultsOpenOverStatementClose</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver close result sets on
+                  Statement.close() as required by the JDBC
+                  specification?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.7
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>jdbcCompliantTruncation</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver throw java.sql.DataTruncation
+                  exceptions when data is truncated as is required by
+                  the JDBC specification when connected to a server that
+                  supports warnings (MySQL 4.1.0 and newer)? This
+                  property has no effect if the server sql-mode includes
+                  STRICT_TRANS_TABLES.
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.2
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>maxRows</strong></span>
+                </p>
+
+
+
+                <p>
+                  The maximum number of rows to return (0, the default
+                  means return all rows).
+                </p>
+
+
+
+                <p>
+                  Default: -1
+                </p>
+
+
+
+                <p>
+                  Since version: all versions
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>netTimeoutForStreamingResults</strong></span>
+                </p>
+
+
+
+                <p>
+                  What value should the driver automatically set the
+                  server setting 'net_write_timeout' to when the
+                  streaming result sets feature is in use? (value has
+                  unit of seconds, the value '0' means the driver will
+                  not try and adjust this value)
+                </p>
+
+
+
+                <p>
+                  Default: 600
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.0
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>padCharsWithSpace</strong></span>
+                </p>
+
+
+
+                <p>
+                  If a result set column has the CHAR type and the value
+                  does not fill the amount of characters specified in
+                  the DDL for the column, should the driver pad the
+                  remaining characters with space (for ANSI compliance)?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.6
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>populateInsertRowWithDefaultValues</strong></span>
+                </p>
+
+
+
+                <p>
+                  When using ResultSets that are CONCUR_UPDATABLE,
+                  should the driver pre-populate the "insert" row with
+                  default values from the DDL for the table used in the
+                  query so those values are immediately available for
+                  ResultSet accessors? This functionality requires a
+                  call to the database for metadata each time a result
+                  set of this type is created. If disabled (the
+                  default), the default values will be populated by the
+                  an internal call to refreshRow() which pulls back
+                  default values and/or values changed by triggers.
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.5
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>strictUpdates</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver do strict checking (all primary keys
+                  selected) of updatable result sets (true, false,
+                  defaults to 'true')?
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.4
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>tinyInt1isBit</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver treat the datatype TINYINT(1) as the
+                  BIT type (because the server silently converts BIT
+                  -&gt; TINYINT(1) when creating tables)?
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.16
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>transformedBitIsBoolean</strong></span>
+                </p>
+
+
+
+                <p>
+                  If the driver converts TINYINT(1) to a different type,
+                  should it use BOOLEAN instead of BIT for future
+                  compatibility with MySQL-5.0, as MySQL-5.0 has a BIT
+                  type?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.9
+                </p>
+</td></tr>
+</tbody>
+</table></div>
+<p>
+    </p>
+<p><b>Metadata. </b>
+      </p>
+<div class="informaltable"><table class="informaltable" summary="This table lists Connector/J Metadata connection
+          properties." border="1">
+<colgroup><col class="Properties"></colgroup>
+<thead><tr><th scope="col"><span class="bold"><strong>Properties and Descriptions</strong></span></th></tr></thead>
+<tbody>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>getProceduresReturnsFunctions</strong></span>
+                </p>
+
+
+
+                <p>
+                  Pre-JDBC4 DatabaseMetaData API has only the
+                  getProcedures() and getProcedureColumns() methods, so
+                  they return metadata info for both stored procedures
+                  and functions. JDBC4 was extended with the
+                  getFunctions() and getFunctionColumns() methods and
+                  the expected behaviours of previous methods are not
+                  well defined. For JDBC4 and higher, default 'true'
+                  value of the option means that calls of
+                  DatabaseMetaData.getProcedures() and
+                  DatabaseMetaData.getProcedureColumns() return metadata
+                  for both procedures and functions as before, keeping
+                  backward compatibility. Setting this property to
+                  'false' decouples Connector/J from its pre-JDBC4
+                  behaviours for DatabaseMetaData.getProcedures() and
+                  DatabaseMetaData.getProcedureColumns(), forcing them
+                  to return metadata for procedures only.
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.26
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>noAccessToProcedureBodies</strong></span>
+                </p>
+
+
+
+                <p>
+                  When determining procedure parameter types for
+                  CallableStatements, and the connected user can't
+                  access procedure bodies through "SHOW CREATE
+                  PROCEDURE" or select on mysql.proc should the driver
+                  instead create basic metadata (all parameters reported
+                  as INOUT VARCHARs) instead of throwing an exception?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.3
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>nullCatalogMeansCurrent</strong></span>
+                </p>
+
+
+
+                <p>
+                  When DatabaseMetadataMethods ask for a 'catalog'
+                  parameter, does the value null mean use the current
+                  catalog? (this is not JDBC-compliant, but follows
+                  legacy behavior from earlier versions of the driver)
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.8
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>nullNamePatternMatchesAll</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should DatabaseMetaData methods that accept *pattern
+                  parameters treat null the same as '%' (this is not
+                  JDBC-compliant, however older versions of the driver
+                  accepted this departure from the specification)
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.8
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>useHostsInPrivileges</strong></span>
+                </p>
+
+
+
+                <p>
+                  Add '@hostname' to users in
+                  DatabaseMetaData.getColumn/TablePrivileges()
+                  (true/false), defaults to 'true'.
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.2
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>useInformationSchema</strong></span>
+                </p>
+
+
+
+                <p>
+                  When connected to MySQL-5.0.7 or newer, should the
+                  driver use the INFORMATION_SCHEMA to derive
+                  information used by DatabaseMetaData?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.0
+                </p>
+</td></tr>
+</tbody>
+</table></div>
+<p>
+    </p>
+<p><b>BLOB/CLOB processing. </b>
+      </p>
+<div class="informaltable"><table class="informaltable" summary="This table lists Connector/J BLOB/CLOB processing
+          connection properties." border="1">
+<colgroup><col class="Properties"></colgroup>
+<thead><tr><th scope="col"><span class="bold"><strong>Properties and Descriptions</strong></span></th></tr></thead>
+<tbody>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>autoDeserialize</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver automatically detect and
+                  de-serialize objects stored in BLOB fields?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.5
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>blobSendChunkSize</strong></span>
+                </p>
+
+
+
+                <p>
+                  Chunk size to use when sending BLOB/CLOBs via
+                  ServerPreparedStatements. Note that this value cannot
+                  exceed the value of "maxAllowedPacket" and, if that is
+                  the case, then this value will be corrected
+                  automatically.
+                </p>
+
+
+
+                <p>
+                  Default: 1048576
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.9
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>blobsAreStrings</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver always treat BLOBs as Strings -
+                  specifically to work around dubious metadata returned
+                  by the server for GROUP BY clauses?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.8
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>clobCharacterEncoding</strong></span>
+                </p>
+
+
+
+                <p>
+                  The character encoding to use for sending and
+                  retrieving TEXT, MEDIUMTEXT and LONGTEXT values
+                  instead of the configured connection characterEncoding
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.0
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>emulateLocators</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver emulate java.sql.Blobs with
+                  locators? With this feature enabled, the driver will
+                  delay loading the actual Blob data until the one of
+                  the retrieval methods (getInputStream(), getBytes(),
+                  and so forth) on the blob data stream has been
+                  accessed. For this to work, you must use a column
+                  alias with the value of the column to the actual name
+                  of the Blob. The feature also has the following
+                  restrictions: The SELECT that created the result set
+                  must reference only one table, the table must have a
+                  primary key; the SELECT must alias the original blob
+                  column name, specified as a string, to an alternate
+                  name; the SELECT must cover all columns that make up
+                  the primary key.
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.0
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>functionsNeverReturnBlobs</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver always treat data from functions
+                  returning BLOBs as Strings - specifically to work
+                  around dubious metadata returned by the server for
+                  GROUP BY clauses?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.8
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>locatorFetchBufferSize</strong></span>
+                </p>
+
+
+
+                <p>
+                  If 'emulateLocators' is configured to 'true', what
+                  size buffer should be used when fetching BLOB data for
+                  getBinaryInputStream?
+                </p>
+
+
+
+                <p>
+                  Default: 1048576
+                </p>
+
+
+
+                <p>
+                  Since version: 3.2.1
+                </p>
+</td></tr>
+</tbody>
+</table></div>
+<p>
+    </p>
+<p><b>Datetime types processing. </b>
+      </p>
+<div class="informaltable"><table class="informaltable" summary="This table lists Connector/J Datetime types processing
+          connection properties." border="1">
+<colgroup><col class="Properties"></colgroup>
+<thead><tr><th scope="col"><span class="bold"><strong>Properties and Descriptions</strong></span></th></tr></thead>
+<tbody>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>noDatetimeStringSync</strong></span>
+                </p>
+
+
+
+                <p>
+                  Don't ensure that
+                  ResultSet.getDatetimeType().toString().equals(ResultSet.getString())
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.7
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>sendFractionalSeconds</strong></span>
+                </p>
+
+
+
+                <p>
+                  Send fractional part from TIMESTAMP seconds. If set to
+                  false, the nanoseconds value of TIMESTAMP values will
+                  be truncated before sending any data to the server.
+                  This option applies only to prepared statements,
+                  callable statements or updatable result sets.
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.37
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>serverTimezone</strong></span>
+                </p>
+
+
+
+                <p>
+                  Override detection/mapping of time zone. Used when
+                  time zone from server doesn't map to Java time zone
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.2
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>treatUtilDateAsTimestamp</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver treat java.util.Date as a TIMESTAMP
+                  for the purposes of PreparedStatement.setObject()?
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.5
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>yearIsDateType</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the JDBC driver treat the MySQL type "YEAR" as
+                  a java.sql.Date, or as a SHORT?
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.9
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>zeroDateTimeBehavior</strong></span>
+                </p>
+
+
+
+                <p>
+                  What should happen when the driver encounters DATETIME
+                  values that are composed entirely of zeros (used by
+                  MySQL to represent invalid dates)? Valid values are
+                  "exception", "round" and "convertToNull".
+                </p>
+
+
+
+                <p>
+                  Default: exception
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.4
+                </p>
+</td></tr>
+</tbody>
+</table></div>
+<p>
+    </p>
+<p><b>High Availability and Clustering. </b>
+      </p>
+<div class="informaltable"><table class="informaltable" summary="This table lists Connector/J High Availability and
+          Clustering connection properties." border="1">
+<colgroup><col class="Properties"></colgroup>
+<thead><tr><th scope="col"><span class="bold"><strong>Properties and Descriptions</strong></span></th></tr></thead>
+<tbody>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>autoReconnect</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver try to re-establish stale and/or
+                  dead connections? If enabled the driver will throw an
+                  exception for a queries issued on a stale or dead
+                  connection, which belong to the current transaction,
+                  but will attempt reconnect before the next query
+                  issued on the connection in a new transaction. The use
+                  of this feature is not recommended, because it has
+                  side effects related to session state and data
+                  consistency when applications don't handle
+                  SQLExceptions properly, and is only designed to be
+                  used when you are unable to configure your application
+                  to handle SQLExceptions resulting from dead and stale
+                  connections properly. Alternatively, as a last option,
+                  investigate setting the MySQL server variable
+                  "wait_timeout" to a high value, rather than the
+                  default of 8 hours.
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 1.1
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>autoReconnectForPools</strong></span>
+                </p>
+
+
+
+                <p>
+                  Use a reconnection strategy appropriate for connection
+                  pools (defaults to 'false')
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.3
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>failOverReadOnly</strong></span>
+                </p>
+
+
+
+                <p>
+                  When failing over in autoReconnect mode, should the
+                  connection be set to 'read-only'?
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.12
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>maxReconnects</strong></span>
+                </p>
+
+
+
+                <p>
+                  Maximum number of reconnects to attempt if
+                  autoReconnect is true, default is '3'.
+                </p>
+
+
+
+                <p>
+                  Default: 3
+                </p>
+
+
+
+                <p>
+                  Since version: 1.1
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>reconnectAtTxEnd</strong></span>
+                </p>
+
+
+
+                <p>
+                  If autoReconnect is set to true, should the driver
+                  attempt reconnections at the end of every transaction?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.10
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>retriesAllDown</strong></span>
+                </p>
+
+
+
+                <p>
+                  When using loadbalancing or failover, the number of
+                  times the driver should cycle through available hosts,
+                  attempting to connect. Between cycles, the driver will
+                  pause for 250ms if no servers are available.
+                </p>
+
+
+
+                <p>
+                  Default: 120
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.6
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>initialTimeout</strong></span>
+                </p>
+
+
+
+                <p>
+                  If autoReconnect is enabled, the initial time to wait
+                  between re-connect attempts (in seconds, defaults to
+                  '2').
+                </p>
+
+
+
+                <p>
+                  Default: 2
+                </p>
+
+
+
+                <p>
+                  Since version: 1.1
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>roundRobinLoadBalance</strong></span>
+                </p>
+
+
+
+                <p>
+                  When autoReconnect is enabled, and failoverReadonly is
+                  false, should we pick hosts to connect to on a
+                  round-robin basis?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.2
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>queriesBeforeRetryMaster</strong></span>
+                </p>
+
+
+
+                <p>
+                  Number of queries to issue before falling back to the
+                  primary host when failed over (when using multi-host
+                  failover). Whichever condition is met first,
+                  'queriesBeforeRetryMaster' or
+                  'secondsBeforeRetryMaster' will cause an attempt to be
+                  made to reconnect to the primary host. Setting both
+                  properties to 0 disables the automatic fall back to
+                  the primary host at transaction boundaries. Defaults
+                  to 50.
+                </p>
+
+
+
+                <p>
+                  Default: 50
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.2
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>secondsBeforeRetryMaster</strong></span>
+                </p>
+
+
+
+                <p>
+                  How long should the driver wait, when failed over,
+                  before attempting to reconnect to the primary host?
+                  Whichever condition is met first,
+                  'queriesBeforeRetryMaster' or
+                  'secondsBeforeRetryMaster' will cause an attempt to be
+                  made to reconnect to the master. Setting both
+                  properties to 0 disables the automatic fall back to
+                  the primary host at transaction boundaries. Time in
+                  seconds, defaults to 30
+                </p>
+
+
+
+                <p>
+                  Default: 30
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.2
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>allowMasterDownConnections</strong></span>
+                </p>
+
+
+
+                <p>
+                  By default, a replication-aware connection will fail
+                  to connect when configured master hosts are all
+                  unavailable at initial connection. Setting this
+                  property to 'true' allows to establish the initial
+                  connection, by failing over to the slave servers, in
+                  read-only state. It won't prevent subsequent failures
+                  when switching back to the master hosts i.e. by
+                  setting the replication connection to read/write
+                  state.
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.27
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>allowSlaveDownConnections</strong></span>
+                </p>
+
+
+
+                <p>
+                  By default, a replication-aware connection will fail
+                  to connect when configured slave hosts are all
+                  unavailable at initial connection. Setting this
+                  property to 'true' allows to establish the initial
+                  connection. It won't prevent failures when switching
+                  to slaves i.e. by setting the replication connection
+                  to read-only state. The property
+                  'readFromMasterWhenNoSlaves' should be used for this
+                  purpose.
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.38
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>ha.enableJMX</strong></span>
+                </p>
+
+
+
+                <p>
+                  Enables JMX-based management of load-balanced
+                  connection groups, including live addition/removal of
+                  hosts from load-balancing pool. Enables JMX-based
+                  management of replication connection groups, including
+                  live slave promotion, addition of new slaves and
+                  removal of master or slave hosts from load-balanced
+                  master and slave connection pools.
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.27
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>loadBalanceHostRemovalGracePeriod</strong></span>
+                </p>
+
+
+
+                <p>
+                  Sets the grace period to wait for a host being removed
+                  from a load-balanced connection, to be released when
+                  it is currently the active host.
+                </p>
+
+
+
+                <p>
+                  Default: 15000
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.39
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>readFromMasterWhenNoSlaves</strong></span>
+                </p>
+
+
+
+                <p>
+                  Replication-aware connections distribute load by using
+                  the master hosts when in read/write state and by using
+                  the slave hosts when in read-only state. If, when
+                  setting the connection to read-only state, none of the
+                  slave hosts are available, an SQLExeception is thrown
+                  back. Setting this property to 'true' allows to fail
+                  over to the master hosts, while setting the connection
+                  state to read-only, when no slave hosts are available
+                  at switch instant.
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.38
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>selfDestructOnPingMaxOperations</strong></span>
+                </p>
+
+
+
+                <p>
+                  =If set to a non-zero value, the driver will report
+                  close the connection and report failure when
+                  Connection.ping() or Connection.isValid(int) is called
+                  if the connection's count of commands sent to the
+                  server exceeds this value.
+                </p>
+
+
+
+                <p>
+                  Default: 0
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.6
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>selfDestructOnPingSecondsLifetime</strong></span>
+                </p>
+
+
+
+                <p>
+                  If set to a non-zero value, the driver will report
+                  close the connection and report failure when
+                  Connection.ping() or Connection.isValid(int) is called
+                  if the connection's lifetime exceeds this value.
+                </p>
+
+
+
+                <p>
+                  Default: 0
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.6
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>ha.loadBalanceStrategy</strong></span>
+                </p>
+
+
+
+                <p>
+                  If using a load-balanced connection to connect to SQL
+                  nodes in a MySQL Cluster/NDB configuration (by using
+                  the URL prefix "jdbc:mysql:loadbalance://"), which
+                  load balancing algorithm should the driver use: (1)
+                  "random" - the driver will pick a random host for each
+                  request. This tends to work better than round-robin,
+                  as the randomness will somewhat account for spreading
+                  loads where requests vary in response time, while
+                  round-robin can sometimes lead to overloaded nodes if
+                  there are variations in response times across the
+                  workload. (2) "bestResponseTime" - the driver will
+                  route the request to the host that had the best
+                  response time for the previous transaction.
+                </p>
+
+
+
+                <p>
+                  Default: random
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.6
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>loadBalanceAutoCommitStatementRegex</strong></span>
+                </p>
+
+
+
+                <p>
+                  When load-balancing is enabled for auto-commit
+                  statements (via
+                  loadBalanceAutoCommitStatementThreshold), the
+                  statement counter will only increment when the SQL
+                  matches the regular expression. By default, every
+                  statement issued matches.
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.15
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>loadBalanceAutoCommitStatementThreshold</strong></span>
+                </p>
+
+
+
+                <p>
+                  When auto-commit is enabled, the number of statements
+                  which should be executed before triggering
+                  load-balancing to rebalance. Default value of 0 causes
+                  load-balanced connections to only rebalance when
+                  exceptions are encountered, or auto-commit is disabled
+                  and transactions are explicitly committed or rolled
+                  back.
+                </p>
+
+
+
+                <p>
+                  Default: 0
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.15
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>loadBalanceBlacklistTimeout</strong></span>
+                </p>
+
+
+
+                <p>
+                  Time in milliseconds between checks of servers which
+                  are unavailable, by controlling how long a server
+                  lives in the global blacklist.
+                </p>
+
+
+
+                <p>
+                  Default: 0
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.0
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>loadBalanceConnectionGroup</strong></span>
+                </p>
+
+
+
+                <p>
+                  Logical group of load-balanced connections within a
+                  classloader, used to manage different groups
+                  independently. If not specified, live management of
+                  load-balanced connections is disabled.
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.13
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>loadBalanceExceptionChecker</strong></span>
+                </p>
+
+
+
+                <p>
+                  Fully-qualified class name of custom exception
+                  checker. The class must implement
+                  com.mysql.cj.api.jdbc.ha.LoadBalanceExceptionChecker
+                  interface, and is used to inspect SQLExceptions and
+                  determine whether they should trigger fail-over to
+                  another host in a load-balanced deployment.
+                </p>
+
+
+
+                <p>
+                  Default:
+                  com.mysql.cj.jdbc.ha.StandardLoadBalanceExceptionChecker
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.13
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>loadBalancePingTimeout</strong></span>
+                </p>
+
+
+
+                <p>
+                  Time in milliseconds to wait for ping response from
+                  each of load-balanced physical connections when using
+                  load-balanced Connection.
+                </p>
+
+
+
+                <p>
+                  Default: 0
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.13
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>loadBalanceSQLExceptionSubclassFailover</strong></span>
+                </p>
+
+
+
+                <p>
+                  Comma-delimited list of classes/interfaces used by
+                  default load-balanced exception checker to determine
+                  whether a given SQLException should trigger failover.
+                  The comparison is done using
+                  Class.isInstance(SQLException) using the thrown
+                  SQLException.
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.13
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>loadBalanceSQLStateFailover</strong></span>
+                </p>
+
+
+
+                <p>
+                  Comma-delimited list of SQLState codes used by default
+                  load-balanced exception checker to determine whether a
+                  given SQLException should trigger failover. The
+                  SQLState of a given SQLException is evaluated to
+                  determine whether it begins with any value in the
+                  comma-delimited list.
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.13
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>loadBalanceValidateConnectionOnSwapServer</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the load-balanced Connection explicitly check
+                  whether the connection is live when swapping to a new
+                  physical connection at commit/rollback?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.13
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>pinGlobalTxToPhysicalConnection</strong></span>
+                </p>
+
+
+
+                <p>
+                  When using XAConnections, should the driver ensure
+                  that operations on a given XID are always routed to
+                  the same physical connection? This allows the
+                  XAConnection to support "XA START ... JOIN" after "XA
+                  END" has been called
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.1
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>resourceId</strong></span>
+                </p>
+
+
+
+                <p>
+                  A globally unique name that identifies the resource
+                  that this datasource or connection is connected to,
+                  used for XAResource.isSameRM() when the driver can't
+                  determine this value based on hostnames used in the
+                  URL
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.1
+                </p>
+</td></tr>
+</tbody>
+</table></div>
+<p>
+    </p>
+<p><b>Performance Extensions. </b>
+      </p>
+<div class="informaltable"><table class="informaltable" summary="This table lists Connector/J Performance Extensions
+          connection properties." border="1">
+<colgroup><col class="Properties"></colgroup>
+<thead><tr><th scope="col"><span class="bold"><strong>Properties and Descriptions</strong></span></th></tr></thead>
+<tbody>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>callableStmtCacheSize</strong></span>
+                </p>
+
+
+
+                <p>
+                  If 'cacheCallableStmts' is enabled, how many callable
+                  statements should be cached?
+                </p>
+
+
+
+                <p>
+                  Default: 100
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.2
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>metadataCacheSize</strong></span>
+                </p>
+
+
+
+                <p>
+                  The number of queries to cache ResultSetMetadata for
+                  if cacheResultSetMetaData is set to 'true' (default
+                  50)
+                </p>
+
+
+
+                <p>
+                  Default: 50
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.1
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>useLocalSessionState</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver refer to the internal values of
+                  autocommit and transaction isolation that are set by
+                  Connection.setAutoCommit() and
+                  Connection.setTransactionIsolation() and transaction
+                  state as maintained by the protocol, rather than
+                  querying the database or blindly sending commands to
+                  the database for commit() or rollback() method calls?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.7
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>useLocalTransactionState</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver use the in-transaction state
+                  provided by the MySQL protocol to determine if a
+                  commit() or rollback() should actually be sent to the
+                  database?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.7
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>prepStmtCacheSize</strong></span>
+                </p>
+
+
+
+                <p>
+                  If prepared statement caching is enabled, how many
+                  prepared statements should be cached?
+                </p>
+
+
+
+                <p>
+                  Default: 25
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.10
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>prepStmtCacheSqlLimit</strong></span>
+                </p>
+
+
+
+                <p>
+                  If prepared statement caching is enabled, what's the
+                  largest SQL the driver will cache the parsing for?
+                </p>
+
+
+
+                <p>
+                  Default: 256
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.10
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>parseInfoCacheFactory</strong></span>
+                </p>
+
+
+
+                <p>
+                  Name of a class implementing
+                  com.mysql.cj.api.CacheAdapterFactory, which will be
+                  used to create caches for the parsed representation of
+                  client-side prepared statements.
+                </p>
+
+
+
+                <p>
+                  Default:
+                  com.mysql.cj.jdbc.util.PerConnectionLRUFactory
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.1
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>serverConfigCacheFactory</strong></span>
+                </p>
+
+
+
+                <p>
+                  Name of a class implementing
+                  com.mysql.cj.api.CacheAdapterFactory&lt;String,
+                  Map&lt;String, String&gt;&gt;, which will be used to
+                  create caches for MySQL server configuration values
+                </p>
+
+
+
+                <p>
+                  Default:
+                  com.mysql.cj.core.util.PerVmServerConfigCacheFactory
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.1
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>alwaysSendSetIsolation</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver always communicate with the database
+                  when Connection.setTransactionIsolation() is called?
+                  If set to false, the driver will only communicate with
+                  the database when the requested transaction isolation
+                  is different than the whichever is newer, the last
+                  value that was set via
+                  Connection.setTransactionIsolation(), or the value
+                  that was read from the server when the connection was
+                  established. Note that useLocalSessionState=true will
+                  force the same behavior as
+                  alwaysSendSetIsolation=false, regardless of how
+                  alwaysSendSetIsolation is set.
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.7
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>maintainTimeStats</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver maintain various internal timers to
+                  enable idle time calculations as well as more verbose
+                  error messages when the connection to the server
+                  fails? Setting this property to false removes at least
+                  two calls to System.getCurrentTimeMillis() per query.
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.9
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>useCursorFetch</strong></span>
+                </p>
+
+
+
+                <p>
+                  If connected to MySQL &gt; 5.0.2, and setFetchSize()
+                  &gt; 0 on a statement, should that statement use
+                  cursor-based fetching to retrieve rows?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.0
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>cacheCallableStmts</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver cache the parsing stage of
+                  CallableStatements
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.2
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>cachePrepStmts</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver cache the parsing stage of
+                  PreparedStatements of client-side prepared statements,
+                  the "check" for suitability of server-side prepared
+                  and server-side prepared statements themselves?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.10
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>cacheResultSetMetadata</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver cache ResultSetMetaData for
+                  Statements and PreparedStatements? (Req. JDK-1.4+,
+                  true/false, default 'false')
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.1
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>cacheServerConfiguration</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver cache the results of 'SHOW
+                  VARIABLES' and 'SHOW COLLATION' on a per-URL basis?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.5
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>defaultFetchSize</strong></span>
+                </p>
+
+
+
+                <p>
+                  The driver will call setFetchSize(n) with this value
+                  on all newly-created Statements
+                </p>
+
+
+
+                <p>
+                  Default: 0
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.9
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>dontCheckOnDuplicateKeyUpdateInSQL</strong></span>
+                </p>
+
+
+
+                <p>
+                  Stops checking if every INSERT statement contains the
+                  "ON DUPLICATE KEY UPDATE" clause. As a side effect,
+                  obtaining the statement's generated keys information
+                  will return a list where normally it wouldn't. Also be
+                  aware that, in this case, the list of generated keys
+                  returned may not be accurate. The effect of this
+                  property is canceled if set simultaneously with
+                  'rewriteBatchedStatements=true'.
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.32
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>elideSetAutoCommits</strong></span>
+                </p>
+
+
+
+                <p>
+                  If using MySQL-4.1 or newer, should the driver only
+                  issue 'set autocommit=n' queries when the server's
+                  state doesn't match the requested state by
+                  Connection.setAutoCommit(boolean)?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.3
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>enableEscapeProcessing</strong></span>
+                </p>
+
+
+
+                <p>
+                  Sets the default escape processing behavior for
+                  Statement objects. The method
+                  Statement.setEscapeProcessing() can be used to specify
+                  the escape processing behavior for an individual
+                  Statement object. Default escape processing behavior
+                  in prepared statements must be defined with the
+                  property 'processEscapeCodesForPrepStmts'.
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.37
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>enableQueryTimeouts</strong></span>
+                </p>
+
+
+
+                <p>
+                  When enabled, query timeouts set via
+                  Statement.setQueryTimeout() use a shared
+                  java.util.Timer instance for scheduling. Even if the
+                  timeout doesn't expire before the query is processed,
+                  there will be memory used by the TimerTask for the
+                  given timeout which won't be reclaimed until the time
+                  the timeout would have expired if it hadn't been
+                  cancelled by the driver. High-load environments might
+                  want to consider disabling this functionality.
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.6
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>largeRowSizeThreshold</strong></span>
+                </p>
+
+
+
+                <p>
+                  What size result set row should the JDBC driver
+                  consider "large", and thus use a more memory-efficient
+                  way of representing the row internally?
+                </p>
+
+
+
+                <p>
+                  Default: 2048
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.1
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>readOnlyPropagatesToServer</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver issue appropriate statements to
+                  implicitly set the transaction access mode on server
+                  side when Connection.setReadOnly() is called? Setting
+                  this property to 'true' enables InnoDB read-only
+                  potential optimizations but also requires an extra
+                  roundtrip to set the right transaction state. Even if
+                  this property is set to 'false', the driver will do
+                  its best effort to prevent the execution of
+                  database-state-changing queries. Requires minimum of
+                  MySQL 5.6.
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.35
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>rewriteBatchedStatements</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver use multiqueries (irregardless of
+                  the setting of "allowMultiQueries") as well as
+                  rewriting of prepared statements for INSERT into
+                  multi-value inserts when executeBatch() is called?
+                  Notice that this has the potential for SQL injection
+                  if using plain java.sql.Statements and your code
+                  doesn't sanitize input correctly. Notice that for
+                  prepared statements, server-side prepared statements
+                  can not currently take advantage of this rewrite
+                  option, and that if you don't specify stream lengths
+                  when using PreparedStatement.set*Stream(), the driver
+                  won't be able to determine the optimum number of
+                  parameters per batch and you might receive an error
+                  from the driver that the resultant packet is too
+                  large. Statement.getGeneratedKeys() for these
+                  rewritten statements only works when the entire batch
+                  includes INSERT statements. Please be aware using
+                  rewriteBatchedStatements=true with INSERT .. ON
+                  DUPLICATE KEY UPDATE that for rewritten statement
+                  server returns only one value as sum of all affected
+                  (or found) rows in batch and it isn't possible to map
+                  it correctly to initial statements; in this case
+                  driver returns 0 as a result of each batch statement
+                  if total count was 0, and the
+                  Statement.SUCCESS_NO_INFO as a result of each batch
+                  statement if total count was &gt; 0.
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.13
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>useDirectRowUnpack</strong></span>
+                </p>
+
+
+
+                <p>
+                  Use newer result set row unpacking code that skips a
+                  copy from network buffers to a MySQL packet instance
+                  and instead reads directly into the result set row
+                  data buffers.
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.1
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>useReadAheadInput</strong></span>
+                </p>
+
+
+
+                <p>
+                  Use newer, optimized non-blocking, buffered input
+                  stream when reading from the server?
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.5
+                </p>
+</td></tr>
+</tbody>
+</table></div>
+<p>
+    </p>
+<p><b>Debugging/Profiling. </b>
+      </p>
+<div class="informaltable"><table class="informaltable" summary="This table lists Connector/J Debugging/Profiling
+          connection properties." border="1">
+<colgroup><col class="Properties"></colgroup>
+<thead><tr><th scope="col"><span class="bold"><strong>Properties and Descriptions</strong></span></th></tr></thead>
+<tbody>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>logger</strong></span>
+                </p>
+
+
+
+                <p>
+                  The name of a class that implements
+                  "com.mysql.cj.api.log.Log" that will be used to log
+                  messages to. (default is
+                  "com.mysql.cj.core.log.StandardLogger", which logs to
+                  STDERR)
+                </p>
+
+
+
+                <p>
+                  Default: com.mysql.cj.core.log.StandardLogger
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.1
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>gatherPerfMetrics</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver gather performance metrics, and
+                  report them via the configured logger every
+                  'reportMetricsIntervalMillis' milliseconds?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.2
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>profileSQL</strong></span>
+                </p>
+
+
+
+                <p>
+                  Trace queries and their execution/fetch times to the
+                  configured logger (true/false) defaults to 'false'
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.0
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>reportMetricsIntervalMillis</strong></span>
+                </p>
+
+
+
+                <p>
+                  If 'gatherPerfMetrics' is enabled, how often should
+                  they be logged (in ms)?
+                </p>
+
+
+
+                <p>
+                  Default: 30000
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.2
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>maxQuerySizeToLog</strong></span>
+                </p>
+
+
+
+                <p>
+                  Controls the maximum length/size of a query that will
+                  get logged when profiling or tracing
+                </p>
+
+
+
+                <p>
+                  Default: 2048
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.3
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>packetDebugBufferSize</strong></span>
+                </p>
+
+
+
+                <p>
+                  The maximum number of packets to retain when
+                  'enablePacketDebug' is true
+                </p>
+
+
+
+                <p>
+                  Default: 20
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.3
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>slowQueryThresholdMillis</strong></span>
+                </p>
+
+
+
+                <p>
+                  If 'logSlowQueries' is enabled, how long should a
+                  query (in ms) before it is logged as 'slow'?
+                </p>
+
+
+
+                <p>
+                  Default: 2000
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.2
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>slowQueryThresholdNanos</strong></span>
+                </p>
+
+
+
+                <p>
+                  If 'useNanosForElapsedTime' is set to true, and this
+                  property is set to a non-zero value, the driver will
+                  use this threshold (in nanosecond units) to determine
+                  if a query was slow.
+                </p>
+
+
+
+                <p>
+                  Default: 0
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.7
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>useUsageAdvisor</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver issue 'usage' warnings advising
+                  proper and efficient usage of JDBC and MySQL
+                  Connector/J to the log (true/false, defaults to
+                  'false')?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.1
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>autoGenerateTestcaseScript</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver dump the SQL it is executing,
+                  including server-side prepared statements to STDERR?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.9
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>autoSlowLog</strong></span>
+                </p>
+
+
+
+                <p>
+                  Instead of using slowQueryThreshold* to determine if a
+                  query is slow enough to be logged, maintain statistics
+                  that allow the driver to determine queries that are
+                  outside the 99th percentile?
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.4
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>clientInfoProvider</strong></span>
+                </p>
+
+
+
+                <p>
+                  The name of a class that implements the
+                  com.mysql.cj.api.jdbc.ClientInfoProvider interface in
+                  order to support JDBC-4.0's
+                  Connection.get/setClientInfo() methods
+                </p>
+
+
+
+                <p>
+                  Default: com.mysql.cj.jdbc.CommentClientInfoProvider
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.0
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>enablePacketDebug</strong></span>
+                </p>
+
+
+
+                <p>
+                  When enabled, a ring-buffer of 'packetDebugBufferSize'
+                  packets will be kept, and dumped when exceptions are
+                  thrown in key areas in the driver's code
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.3
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>explainSlowQueries</strong></span>
+                </p>
+
+
+
+                <p>
+                  If 'logSlowQueries' is enabled, should the driver
+                  automatically issue an 'EXPLAIN' on the server and
+                  send the results to the configured log at a WARN
+                  level?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.2
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>logSlowQueries</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should queries that take longer than
+                  'slowQueryThresholdMillis' be logged?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.2
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>logXaCommands</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver log XA commands sent by
+                  MysqlXaConnection to the server, at the DEBUG level of
+                  logging?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.5
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>profilerEventHandler</strong></span>
+                </p>
+
+
+
+                <p>
+                  Name of a class that implements the interface
+                  com.mysql.cj.api.ProfilerEventHandler that will be
+                  used to handle profiling/tracing events.
+                </p>
+
+
+
+                <p>
+                  Default:
+                  com.mysql.cj.core.profiler.LoggingProfilerEventHandler
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.6
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>resultSetSizeThreshold</strong></span>
+                </p>
+
+
+
+                <p>
+                  If the usage advisor is enabled, how many rows should
+                  a result set contain before the driver warns that it
+                  is suspiciously large?
+                </p>
+
+
+
+                <p>
+                  Default: 100
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.5
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>traceProtocol</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should trace-level network protocol be logged?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.2
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>useNanosForElapsedTime</strong></span>
+                </p>
+
+
+
+                <p>
+                  For profiling/debugging functionality that measures
+                  elapsed time, should the driver try to use nanoseconds
+                  resolution if available (JDK &gt;= 1.5)?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.7
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>useOnlyServerErrorMessages</strong></span>
+                </p>
+
+
+
+                <p>
+                  Don't prepend 'standard' SQLState error messages to
+                  error messages returned by the server.
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.15
+                </p>
+</td></tr>
+</tbody>
+</table></div>
+<p>
+    </p>
+<p><b>Exceptions/Warnings. </b>
+      </p>
+<div class="informaltable"><table class="informaltable" summary="This table lists Connector/J Exceptions/Warnings
+          connection properties." border="1">
+<colgroup><col class="Properties"></colgroup>
+<thead><tr><th scope="col"><span class="bold"><strong>Properties and Descriptions</strong></span></th></tr></thead>
+<tbody>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>dumpQueriesOnException</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver dump the contents of the query sent
+                  to the server in the message for SQLExceptions?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.3
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>exceptionInterceptors</strong></span>
+                </p>
+
+
+
+                <p>
+                  Comma-delimited list of classes that implement
+                  com.mysql.cj.api.exceptions.ExceptionInterceptor.
+                  These classes will be instantiated one per Connection
+                  instance, and all SQLExceptions thrown by the driver
+                  will be allowed to be intercepted by these
+                  interceptors, in a chained fashion, with the first
+                  class listed as the head of the chain.
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.8
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>ignoreNonTxTables</strong></span>
+                </p>
+
+
+
+                <p>
+                  Ignore non-transactional table warning for rollback?
+                  (defaults to 'false').
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.9
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>includeInnodbStatusInDeadlockExceptions</strong></span>
+                </p>
+
+
+
+                <p>
+                  Include the output of "SHOW ENGINE INNODB STATUS" in
+                  exception messages when deadlock exceptions are
+                  detected?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.7
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>includeThreadDumpInDeadlockExceptions</strong></span>
+                </p>
+
+
+
+                <p>
+                  Include a current Java thread dump in exception
+                  messages when deadlock exceptions are detected?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.15
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>includeThreadNamesAsStatementComment</strong></span>
+                </p>
+
+
+
+                <p>
+                  Include the name of the current thread as a comment
+                  visible in "SHOW PROCESSLIST", or in Innodb deadlock
+                  dumps, useful in correlation with
+                  "includeInnodbStatusInDeadlockExceptions=true" and
+                  "includeThreadDumpInDeadlockExceptions=true".
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.15
+                </p>
+</td></tr>
+</tbody>
+</table></div>
+<p>
+    </p>
+<p><b>Tunes for integration with other products. </b>
+      </p>
+<div class="informaltable"><table class="informaltable" summary="This table lists Connector/J Tunes for integration
+          with other products connection properties." border="1">
+<colgroup><col class="Properties"></colgroup>
+<thead><tr><th scope="col"><span class="bold"><strong>Properties and Descriptions</strong></span></th></tr></thead>
+<tbody>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>overrideSupportsIntegrityEnhancementFacility</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver return "true" for
+                  DatabaseMetaData.supportsIntegrityEnhancementFacility()
+                  even if the database doesn't support it to workaround
+                  applications that require this method to return "true"
+                  to signal support of foreign keys, even though the SQL
+                  specification states that this facility contains much
+                  more than just foreign key support (one such
+                  application being OpenOffice)?
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.1.12
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>ultraDevHack</strong></span>
+                </p>
+
+
+
+                <p>
+                  Create PreparedStatements for prepareCall() when
+                  required, because UltraDev is broken and issues a
+                  prepareCall() for _all_ statements? (true/false,
+                  defaults to 'false')
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 2.0.3
+                </p>
+</td></tr>
+</tbody>
+</table></div>
+<p>
+    </p>
+<p><b>JDBC compliance. </b>
+      </p>
+<div class="informaltable"><table class="informaltable" summary="This table lists Connector/J JDBC compliance
+          connection properties." border="1">
+<colgroup><col class="Properties"></colgroup>
+<thead><tr><th scope="col"><span class="bold"><strong>Properties and Descriptions</strong></span></th></tr></thead>
+<tbody>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>useColumnNamesInFindColumn</strong></span>
+                </p>
+
+
+
+                <p>
+                  Prior to JDBC-4.0, the JDBC specification had a bug
+                  related to what could be given as a "column name" to
+                  ResultSet methods like findColumn(), or getters that
+                  took a String property. JDBC-4.0 clarified "column
+                  name" to mean the label, as given in an "AS" clause
+                  and returned by ResultSetMetaData.getColumnLabel(),
+                  and if no AS clause, the column name. Setting this
+                  property to "true" will give behavior that is
+                  congruent to JDBC-3.0 and earlier versions of the JDBC
+                  specification, but which because of the specification
+                  bug could give unexpected results. This property is
+                  preferred over "useOldAliasMetadataBehavior" unless
+                  you need the specific behavior that it provides with
+                  respect to ResultSetMetadata.
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.7
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>pedantic</strong></span>
+                </p>
+
+
+
+                <p>
+                  Follow the JDBC spec to the letter.
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 3.0.0
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>useOldAliasMetadataBehavior</strong></span>
+                </p>
+
+
+
+                <p>
+                  Should the driver use the legacy behavior for "AS"
+                  clauses on columns and tables, and only return aliases
+                  (if any) for ResultSetMetaData.getColumnName() or
+                  ResultSetMetaData.getTableName() rather than the
+                  original column/table name? In 5.0.x, the default
+                  value was true.
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.0.4
+                </p>
+</td></tr>
+</tbody>
+</table></div>
+<p>
+    </p>
+<p><b>Fabric. </b>
+      </p>
+<div class="informaltable"><table class="informaltable" summary="This table lists Connector/J Fabric connection
+          properties." border="1">
+<colgroup><col class="Properties"></colgroup>
+<thead><tr><th scope="col"><span class="bold"><strong>Properties and Descriptions</strong></span></th></tr></thead>
+<tbody>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>fabricPassword</strong></span>
+                </p>
+
+
+
+                <p>
+                  Fabric password
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.30
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>fabricProtocol</strong></span>
+                </p>
+
+
+
+                <p>
+                  Fabric protocol
+                </p>
+
+
+
+                <p>
+                  Default: http
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.30
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>fabricReportErrors</strong></span>
+                </p>
+
+
+
+                <p>
+                  Fabric report errors
+                </p>
+
+
+
+                <p>
+                  Default: false
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.30
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>fabricServerGroup</strong></span>
+                </p>
+
+
+
+                <p>
+                  Fabric server group
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.30
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>fabricShardKey</strong></span>
+                </p>
+
+
+
+                <p>
+                  Fabric shard key
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.30
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>fabricShardTable</strong></span>
+                </p>
+
+
+
+                <p>
+                  Fabric shard table
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.30
+                </p>
+</td></tr>
+<tr><td scope="row">
+<p>
+                  <span class="strong"><strong>fabricUsername</strong></span>
+                </p>
+
+
+
+                <p>
+                  Fabric username
+                </p>
+
+
+
+                <p>
+                  Since version: 5.1.30
+                </p>
+</td></tr>
+</tbody>
+</table></div>
+<p>
+    </p>
+<p><b>X Protocol and X DevAPI. </b>
+      </p>
+<div class="informaltable"><table class="informaltable" summary="This table lists Connector/J X Protocol and X DevAPI
+          connection properties." border="1">
+<colgroup><col class="Properties"></colgroup>
+<thead><tr><th scope="col"><span class="bold"><strong>Properties and Descriptions</strong></span></th></tr></thead>
+<tbody><tr><td scope="row">
+<p>
+                  <span class="strong"><strong>mysqlx.useAsyncProtocol</strong></span>
+                </p>
+
+
+
+                <p>
+                  Use asynchronous variant of X Protocol
+                </p>
+
+
+
+                <p>
+                  Default: true
+                </p>
+
+
+
+                <p>
+                  Since version: 6.0.0
+                </p>
+</td></tr></tbody>
+</table></div>
+<p>
+    </p>
+<p>
+        Connector/J also supports access to MySQL using named pipes on
+        Windows platforms with the
+        <code class="literal">NamedPipeSocketFactory</code> as a plugin-socket
+        factory. If you do not use a <code class="literal">namedPipePath</code>
+        property, the default of <code class="literal">'\\.\pipe\MySQL'</code> is
+        used. If you use the <code class="literal">NamedPipeSocketFactory</code>,
+        the host name and port number values in the JDBC URL are
+        ignored. To enable this feature, set the
+        <code class="literal">socketFactory</code> property:
+
+</p>
+<pre class="programlisting">
+socketFactory=com.mysql.cj.jdbc.NamedPipeSocketFactory
+</pre>
+<p>
+      </p>
+<p>
+        Named pipes only work when connecting to a MySQL server on the
+        same physical machine where the JDBC driver is running. In
+        simple performance tests, named pipe access is between 30%-50%
+        faster than the standard TCP/IP access. However, this varies per
+        system, and named pipes are slower than TCP/IP in many Windows
+        configurations.
+      </p>
+<p>
+        To create your own socket factories, follow the example code in
+        <code class="classname">com.mysql.cj.core.io.NamedPipeSocketFactory</code>,
+        or
+        <code class="classname">com.mysql.cj.core.io.StandardSocketFactory</code>.
+      </p>
+</div><br />
+        </div>
+
+                <div id="docs-in-page-nav-container">
+            <div id="docs-in-page-nav">
+                
+    <a href="connector-j-reference.html"
+        title="Previous: Connector/J (JDBC) Reference"><span
+        class="icon-chevron-left"></span> PREV</a> &nbsp;
+<a href="index.html" title="Start"> HOME</a> &nbsp;
+        <a href="connector-j-reference.html" title="Up: Connector/J (JDBC) Reference"> UP</a> &nbsp;
+    <a href="connector-j-useconfigs.html"
+        title="Next: Properties Files for the useConfigs Option">NEXT <span
+        class="icon-chevron-right"></span></a>
+            </div>
+        </div>
+        
+         <div id="docs-body-extra">
+             
+<a class="docs-sidebar-section" href=""><span class="icon-related"></span>
+    <span class="text">Related Documentation</span></a>
+<div class="docs-sidebar-accordian">
+    <div class="text">
+        <a href="/doc/relnotes/connector-j/6.0/en/">MySQL Connector/J 6.0 Release Notes</a><br />
+        </div>
+</div>
+
+    <a class="docs-sidebar-section" href=""><span class="icon-download-thin"></span>
+        <span class="text">
+            Download
+                            this Manual
+                    </span>
+    </a>
+    <div class="docs-sidebar-accordian">
+        <div class="text">
+                        <a href="http://downloads.mysql.com/docs/connector-j-6.0-en.pdf">PDF (US Ltr)</a>
+            - 428.1Kb<br />
+                        <a href="http://downloads.mysql.com/docs/connector-j-6.0-en.a4.pdf">PDF (A4)</a>
+            - 434.3Kb<br />
+                        <a href="http://downloads.mysql.com/docs/connector-j-6.0-en.epub">EPUB</a>
+            - 131.9Kb<br />
+                        <a href="http://downloads.mysql.com/docs/connector-j-6.0-en.html-chapter.tar.gz">HTML Download (TGZ)</a>
+            - 108.8Kb<br />
+                        <a href="http://downloads.mysql.com/docs/connector-j-6.0-en.html-chapter.zip">HTML Download (Zip)</a>
+            - 135.1Kb<br />
+                    </div>
+    </div>
+
+
+         </div>
+
+                     
+<div id="docs-comments">
+    <div class="docs-comments-header"><span class="icon-bubbles"></span> User Comments</div>
+
+    <div id="comment-listing">
+    
+    </div>
+
+        <div class="docs-comment-disclaimer">
+        <a href="https://dev.mysql.com/auth/register/?dest=http%3A%2F%2Fdev.mysql.com%2Fdoc%2Fconnector-j%2F6.0%2Fen%2Fconnector-j-reference-configuration-properties.html%3Facf%3D1%23add-comment" class="docs-comment-btn right">Sign Up</a>
+        <a href="https://dev.mysql.com/auth/login/?dest=http%3A%2F%2Fdev.mysql.com%2Fdoc%2Fconnector-j%2F6.0%2Fen%2Fconnector-j-reference-configuration-properties.html%3Facf%3D1%23add-comment" class="docs-comment-btn right">Login</a>
+        You must be logged in to post a comment.
+    </div>
+    </div>
+              </div>
+     </div>
+
+</div>
+
+<script>
+$(function() {
+    var doc = new $.doc({ 'mobile': $.browser.mobile, 'docId': 10 });
+});
+</script>
+    
+
+            
+        </div>
+    </div>
+
+    <footer class="collapsed">
+        <div id="footer-links">
+
+            <div id="footer-nav"></div>
+
+            <div id="footer-contact">
+                <p><span class="top">Contact Sales</span></p>
+                <p>USA: <span class="nobr">+1-866-221-0634</span><br />
+Canada: <span class="nobr">+1-866-221-0634</span><br /><br />
+
+Germany: <span class="nobr">+49 89 143 01280</span><br />
+France: <span class="nobr">+33 1 57 60 83 57</span><br />
+Italy: <span class="nobr">+39 02 249 59 120</span><br />
+UK: <span class="nobr">+44 207 553 8447</span><br /><br />
+
+Japan: <span class="nobr">0120-065556</span><br />
+China: <span class="nobr">10800-811-0823</span><br />
+India: <span class="nobr">0008001005870</span><br /><br />
+
+<a href="http://www.mysql.com/about/contact/phone/">More Countries&nbsp;&raquo;</a><br />
+                <strong><a href="http://www.mysql.com/about/contact/">Contact Us Online&nbsp;&raquo;</a></strong>
+                                </p>
+            </div>
+
+            <div class="links">
+                <ul>
+                    <li class="top"><a href="http://www.mysql.com/products/">Products</a></li>
+                    <li><a href="http://www.mysql.com/products/enterprise/">MySQL Enterprise Edition</a></li>
+                    <li><a href="http://www.mysql.com/products/standard/">MySQL Standard Edition</a></li>
+                    <li><a href="http://www.mysql.com/products/classic/">MySQL Classic Edition</a></li>
+                    <li><a href="http://www.mysql.com/products/cluster/">MySQL Cluster CGE</a></li>
+                    <li><a href="http://www.mysql.com/oem/">MySQL Embedded (OEM/ISV)</a></li>
+                </ul>
+                <br />
+                <ul>
+                    <li class="top"><a href="http://www.mysql.com/services/">Services</a></li>
+                    <li><a href="http://www.mysql.com/training/">Training</a></li>
+                    <li><a href="http://www.mysql.com/certification/">Certification</a></li>
+                    <li><a href="http://www.mysql.com/consulting/">Consulting</a></li>
+                    <li><a href="http://www.mysql.com/support/">Support</a></li>
+                </ul>
+            </div>
+
+            <div class="links">
+                <ul>
+                    <li class="top"><a href="http://dev.mysql.com/downloads/">Downloads</a></li>
+                    <li><a href="http://dev.mysql.com/downloads/mysql/">MySQL Community Server</a></li>
+                    <li><a href="http://dev.mysql.com/downloads/cluster/">MySQL Cluster</a></li>
+                    <li><a href="http://dev.mysql.com/downloads/fabric/">MySQL Fabric</a></li>
+                    <li><a href="http://dev.mysql.com/downloads/utilities/">MySQL Utilities</a></li>
+                    <li><a href="http://dev.mysql.com/downloads/workbench/">MySQL Workbench</a></li>
+                </ul>
+                <br />
+                <ul>
+                    <li class="top"><a href="http://www.mysql.com/about/">About MySQL</a></li>
+                    <li><a href="http://www.mysql.com/about/contact/">Contact Us</a></li>
+                                                            <li><a href="http://www.mysql.com/buy-mysql/">How to Buy</a></li>
+                    <li><a href="http://www.mysql.com/partners/">Partners</a></li>
+                    <li><a href="http://www.mysql.com/about/jobs/">Job Opportunities</a></li>
+                    <li><a href="http://www.mysql.com/sitemap.html">Site Map</a></li>
+                </ul>
+            </div>
+
+            <div class="links">
+                <ul>
+                    <li class="top"><a href="http://dev.mysql.com/doc/">Documentation</a></li>
+                    <li><a href="http://dev.mysql.com/doc/">MySQL Reference Manuals</a></li>
+                    <li><a href="http://dev.mysql.com/doc/index-gui.html">MySQL Workbench</a></li>
+                    <li><a href="http://dev.mysql.com/doc/index-expert.html">Expert Guides</a></li>
+                    <li><a href="http://dev.mysql.com/doc/index-topic.html">Topic Guides</a></li>
+                    <li><a href="http://dev.mysql.com/doc/index-cluster.html">MySQL Cluster</a></li>
+                </ul>
+                <br />
+                <ul>
+                    <li class="top"><a href="http://www.mysql.com/about/legal/">Legal</a></li>
+                    <li><a href="http://www.mysql.com/about/legal/">Legal Policies</a></li>
+                    <li><a href="http://www.oracle.com/us/legal/privacy/index.htm">Your Privacy Rights</a></li>
+                    <li><a href="http://www.oracle.com/us/legal/terms/index.html">Terms of Use</a></li>
+                    <li><a href="http://www.oracle.com/us/legal/third-party-trademarks/index.html">Trademark Policy</a></li>
+                    <li><a href="http://www.oracle.com/technetwork/community/oca-486395.html">Contributor Agreement</a></li>
+                    <li><div id="teconsent"><script async="async" type="text/javascript" src="//consent.truste.com/notice?domain=mysql.com&c=teconsent&text=true" crossorigin=""></script></div></li>
+                </ul>
+            </div>
+        </div>
+        <div id="footer-bottom">
+                                    <div id="footer-collapse">
+                <a href="" id="expand-footer"
+                    title="Expand Footer"><span
+                    class="icon-chevron-up"></span></a>
+            </div>
+                        <div id="footer-logo">
+                <a href="http://www.oracle.com/"><span id="oracle-logo"></span></a>
+                &nbsp; &copy; 2016, Oracle Corporation and/or its affiliates
+            </div>
+                        <div class="social-icons">
+                <a title="Join us on Facebook" href="http://www.facebook.com/mysql"><span class="icon-facebook-square"></span></a>
+                <a title="Follow us on Twitter" href="https://twitter.com/#!/mysql"><span class="icon-twitter-square"></span></a>
+                <a title="Join Google+ to follow MySQL" href="https://plus.google.com/+mysql"><span class="icon-google-plus-square"></span></a>
+                <a title="Visit our YouTube channel" href="http://www.youtube.com/mysqlchannel"><span class="icon-youtube-square"></span></a>
+            </div>
+            <br class="clear" />
+        </div>
+    </footer>
+
+        <script src="/common/js/metrics/s_code_remote.js"></script>
+
+        
+</body>
+</html>
