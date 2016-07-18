@@ -30,7 +30,6 @@
   <description>Basic database JPA stuff</description>
   <url>https://github.com/phax/ph-db/ph-db-jpa</url>
   <inceptionYear>2014</inceptionYear>
-  
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -38,12 +37,10 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
   <organization>
     <name>Philip Helger</name>
     <url>http://www.helger.com</url>
   </organization>
-
   <developers>
     <developer>
       <id>philip</id>
@@ -52,7 +49,6 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
-
   <dependencies>
     <dependency>
       <groupId>com.helger</groupId>
@@ -67,7 +63,6 @@
       <artifactId>ph-xml</artifactId>
       <optional>true</optional>
     </dependency>
-
     <dependency>
       <groupId>org.eclipse.persistence</groupId>
       <artifactId>javax.persistence</artifactId>
@@ -88,7 +83,6 @@
       <groupId>org.eclipse.persistence</groupId>
       <artifactId>org.eclipse.persistence.asm</artifactId>
     </dependency>
-
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
@@ -99,14 +93,12 @@
       <artifactId>mysql-connector-java</artifactId>
       <optional>true</optional>
     </dependency>
-    
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <build>
     <plugins>
       <plugin>
@@ -115,12 +107,10 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Export-Package>
-              com.helger.db.jpa.*
-            </Export-Package>
-            <Import-Package>
-              !javax.annotation.*,*
-            </Import-Package>
+            <Export-Package>com.helger.db.jpa.*</Export-Package>
+            <Import-Package>!javax.annotation.*,*</Import-Package>
+            <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"</Require-Capability>
+            <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.db.jpa.config.ThirdPartyModuleProvider_ph_db_jpa</Provide-Capability>
           </instructions>
         </configuration>
       </plugin>
