@@ -4,7 +4,9 @@ Java library with some basic DB API, a special JDBC version and a JPA version ba
 
 ## News and noteworthy
 
-  * 5.0.0
+  * 5.0.1 - 2016-08-21
+    * Updated to ph-commons 8.4.x
+  * 5.0.0 - 2016-06-11
     * Requires at least JDK8
 
 #Maven usage

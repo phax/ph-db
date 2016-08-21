@@ -35,9 +35,6 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.callback.CallbackList;
 import com.helger.commons.callback.IThrowingRunnable;
-import com.helger.commons.callback.adapter.AdapterRunnableToCallable;
-import com.helger.commons.callback.adapter.AdapterRunnableToThrowingRunnable;
-import com.helger.commons.callback.adapter.AdapterThrowingRunnableToCallable;
 import com.helger.commons.callback.exception.IExceptionCallback;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.statistics.IMutableStatisticsHandlerCounter;
@@ -83,9 +80,9 @@ public class JPAEnabledManager
                                                                                                                        "$execError");
 
   protected static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
-  private static final CallbackList <IExceptionCallback <Throwable>> s_aExceptionCallbacks = new CallbackList <> ();
+  private static final CallbackList <IExceptionCallback <Throwable>> s_aExceptionCallbacks = new CallbackList<> ();
   private static final AtomicInteger s_aExecutionWarnTime = new AtomicInteger (DEFAULT_EXECUTION_WARN_TIME_MS);
-  private static final CallbackList <IExecutionTimeExceededCallback> s_aExecutionTimeExceededHandlers = new CallbackList <> ();
+  private static final CallbackList <IExecutionTimeExceededCallback> s_aExecutionTimeExceededHandlers = new CallbackList<> ();
 
   static
   {
@@ -235,7 +232,10 @@ public class JPAEnabledManager
                                                               final boolean bAllowNestedTransactions,
                                                               @Nonnull final Runnable aRunnable)
   {
-    return doInTransaction (aEntityMgr, bAllowNestedTransactions, AdapterRunnableToCallable.createAdapter (aRunnable));
+    return doInTransaction (aEntityMgr, bAllowNestedTransactions, () -> {
+      aRunnable.run ();
+      return null;
+    });
   }
 
   @Nonnull
@@ -243,9 +243,10 @@ public class JPAEnabledManager
                                                               final boolean bAllowNestedTransactions,
                                                               @Nonnull final IThrowingRunnable <Exception> aRunnable)
   {
-    return doInTransaction (aEntityMgr,
-                            bAllowNestedTransactions,
-                            AdapterThrowingRunnableToCallable.createAdapter (aRunnable));
+    return doInTransaction (aEntityMgr, bAllowNestedTransactions, () -> {
+      aRunnable.run ();
+      return null;
+    });
   }
 
   @Nonnull
@@ -265,12 +266,6 @@ public class JPAEnabledManager
     {
       return doInTransaction (aEntityMgr, isAllowNestedTransactions (), aRunnable);
     }
-  }
-
-  @Nonnull
-  public final JPAExecutionResult <?> doInTransaction (@Nonnull final Runnable aRunnable)
-  {
-    return doInTransaction (new AdapterRunnableToThrowingRunnable <Exception> (aRunnable));
   }
 
   @Nonnull

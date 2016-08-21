@@ -166,10 +166,10 @@ public class DBExecutor
                                              @Nonnull final IGeneratedKeysCallback aGeneratedKeysCB) throws SQLException
   {
     final int nCols = aGeneratedKeysRS.getMetaData ().getColumnCount ();
-    final ICommonsList <ICommonsList <Object>> aValues = new CommonsArrayList <> ();
+    final ICommonsList <ICommonsList <Object>> aValues = new CommonsArrayList<> ();
     while (aGeneratedKeysRS.next ())
     {
-      final ICommonsList <Object> aRow = new CommonsArrayList <> (nCols);
+      final ICommonsList <Object> aRow = new CommonsArrayList<> (nCols);
       for (int i = 1; i <= nCols; ++i)
         aRow.add (aGeneratedKeysRS.getObject (i));
       aValues.add (aRow);
@@ -250,7 +250,7 @@ public class DBExecutor
       if (GlobalDebug.isDebugMode ())
         s_aLogger.info ("Executing statement: " + sSQL);
       aStatement.execute (sSQL);
-    } , aGeneratedKeysCB);
+    }, aGeneratedKeysCB);
   }
 
   @Nonnull
@@ -402,7 +402,7 @@ public class DBExecutor
         }
 
         // handle result row
-        aCallback.run (aRow);
+        aCallback.accept (aRow);
       }
     }
     finally
@@ -418,7 +418,7 @@ public class DBExecutor
     return withStatementDo (aStatement -> {
       final ResultSet aResultSet = aStatement.executeQuery (sSQL);
       iterateResultSet (aResultSet, aResultItemCallback);
-    } , (IGeneratedKeysCallback) null);
+    }, (IGeneratedKeysCallback) null);
   }
 
   @Nonnull
@@ -429,13 +429,13 @@ public class DBExecutor
     return withPreparedStatementDo (sSQL, aPSDP, aPreparedStatement -> {
       final ResultSet aResultSet = aPreparedStatement.executeQuery ();
       iterateResultSet (aResultSet, aResultItemCallback);
-    } , (IUpdatedRowCountCallback) null, (IGeneratedKeysCallback) null);
+    }, (IUpdatedRowCountCallback) null, (IGeneratedKeysCallback) null);
   }
 
   @Nullable
   public Optional <ICommonsList <DBResultRow>> queryAll (@Nonnull @Nonempty final String sSQL)
   {
-    final ICommonsList <DBResultRow> aAllResultRows = new CommonsArrayList <> ();
+    final ICommonsList <DBResultRow> aAllResultRows = new CommonsArrayList<> ();
     if (queryAll (sSQL, aCurrentObject -> {
       if (aCurrentObject != null)
       {
@@ -451,7 +451,7 @@ public class DBExecutor
   public Optional <ICommonsList <DBResultRow>> queryAll (@Nonnull @Nonempty final String sSQL,
                                                          @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
-    final ICommonsList <DBResultRow> aAllResultRows = new CommonsArrayList <> ();
+    final ICommonsList <DBResultRow> aAllResultRows = new CommonsArrayList<> ();
     if (queryAll (sSQL, aPSDP, aCurrentObject -> {
       if (aCurrentObject != null)
       {
