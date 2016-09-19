@@ -54,7 +54,7 @@
 
   <properties>
     <!-- 2.6.0 requires a 1.7 runtime -->
-    <eclipselink.version>2.6.3</eclipselink.version>
+    <eclipselink.version>2.6.4</eclipselink.version>
   </properties>
 
   <developers>
