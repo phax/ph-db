@@ -24,6 +24,7 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceException;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.slf4j.Logger;
@@ -105,7 +106,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
                     sUserName +
                     "'");
 
-    final ICommonsMap <String, Object> aFactoryProps = new CommonsHashMap <> ();
+    final ICommonsMap <String, Object> aFactoryProps = new CommonsHashMap<> ();
     aFactoryProps.put (PersistenceUnitProperties.JDBC_DRIVER, sJdbcDriverClass);
     aFactoryProps.put (PersistenceUnitProperties.JDBC_URL, sJdbcURL);
     aFactoryProps.put (PersistenceUnitProperties.JDBC_USER, sUserName);
@@ -219,7 +220,14 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
       if (m_aFactory.isOpen ())
       {
         // Clear cache
-        m_aFactory.getCache ().evictAll ();
+        try
+        {
+          m_aFactory.getCache ().evictAll ();
+        }
+        catch (final PersistenceException ex)
+        {
+          // May happen if now database connection is available
+        }
         // Close
         m_aFactory.close ();
       }
