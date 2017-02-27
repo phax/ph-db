@@ -46,6 +46,6 @@ public class UpdatedRowCountCallback implements IUpdatedRowCountCallback
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("updatedRowCount", m_nUpdatedRowCount).toString ();
+    return new ToStringGenerator (this).append ("updatedRowCount", m_nUpdatedRowCount).getToString ();
   }
 }

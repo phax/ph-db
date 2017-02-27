@@ -77,6 +77,6 @@ public class ConnectionFromDataSourceProvider implements IHasConnection
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("dataSource", m_aDS).toString ();
+    return new ToStringGenerator (this).append ("dataSource", m_aDS).getToString ();
   }
 }

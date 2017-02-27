@@ -19,6 +19,7 @@ package com.helger.db.jdbc.h2;
 import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 import javax.annotation.Nonnull;
@@ -32,7 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.NonBlockingBufferedWriter;
 import com.helger.commons.io.stream.StreamHelper;
@@ -158,7 +158,7 @@ public abstract class AbstractH2Connector extends AbstractConnector
     {
       s_aLogger.info ("Dumping database '" + getDatabaseName () + "' to OutputStream");
       try (final PrintWriter aPrintWriter = new PrintWriter (new NonBlockingBufferedWriter (StreamHelper.createWriter (aOS,
-                                                                                                                       CCharset.CHARSET_UTF_8_OBJ))))
+                                                                                                                       StandardCharsets.UTF_8))))
       {
         final DBExecutor aExecutor = new DBExecutor (this);
         final ESuccess ret = aExecutor.queryAll ("SCRIPT SIMPLE", aCurrentObject -> {

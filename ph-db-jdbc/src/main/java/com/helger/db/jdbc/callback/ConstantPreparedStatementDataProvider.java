@@ -38,17 +38,17 @@ public final class ConstantPreparedStatementDataProvider implements IPreparedSta
 
   public ConstantPreparedStatementDataProvider ()
   {
-    m_aValues = new CommonsArrayList <> ();
+    m_aValues = new CommonsArrayList<> ();
   }
 
   public ConstantPreparedStatementDataProvider (@Nonnull final Iterable <?> aValues)
   {
-    m_aValues = new CommonsArrayList <> (aValues);
+    m_aValues = new CommonsArrayList<> (aValues);
   }
 
   public ConstantPreparedStatementDataProvider (@Nonnull @Nonempty final Object... aValues)
   {
-    m_aValues = new CommonsArrayList <> (aValues);
+    m_aValues = new CommonsArrayList<> (aValues);
   }
 
   @Nonnull
@@ -74,6 +74,6 @@ public final class ConstantPreparedStatementDataProvider implements IPreparedSta
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("values", m_aValues).toString ();
+    return new ToStringGenerator (this).append ("values", m_aValues).getToString ();
   }
 }

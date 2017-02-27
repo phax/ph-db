@@ -84,6 +84,6 @@ public class DBResultField implements IConvertibleDirectTrait
     return new ToStringGenerator (this).append ("columnName", m_sColumnName)
                                        .append ("columnType", m_nColumnType)
                                        .append ("value", m_aValue)
-                                       .toString ();
+                                       .getToString ();
   }
 }

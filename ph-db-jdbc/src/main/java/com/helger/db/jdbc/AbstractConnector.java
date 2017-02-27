@@ -145,6 +145,6 @@ public abstract class AbstractConnector implements IHasDataSource, Closeable
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("dataSource", m_aDataSource).toString ();
+    return new ToStringGenerator (this).append ("dataSource", m_aDataSource).getToString ();
   }
 }

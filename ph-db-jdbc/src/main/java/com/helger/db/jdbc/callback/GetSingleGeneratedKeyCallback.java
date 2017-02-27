@@ -64,6 +64,6 @@ public class GetSingleGeneratedKeyCallback implements IGeneratedKeysCallback
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("generatedKey", m_aGeneratedKey).toString ();
+    return new ToStringGenerator (this).append ("generatedKey", m_aGeneratedKey).getToString ();
   }
 }

@@ -17,13 +17,13 @@
 package com.helger.db.api.supplementary.tools;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 import javax.annotation.Nonnull;
 
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.charset.CCharset;
 import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.hierarchy.visit.DefaultHierarchyVisitorCallback;
 import com.helger.commons.hierarchy.visit.EHierarchyVisitorReturn;
@@ -51,7 +51,7 @@ public final class MainMySQLPropertyExtractor
   public static void main (final String [] args)
   {
     final File aFile = new File ("src/test/resources/mysql/config-properties-6.0.html");
-    String sContent = SimpleFileIO.getFileAsString (aFile, CCharset.CHARSET_UTF_8_OBJ);
+    String sContent = SimpleFileIO.getFileAsString (aFile, StandardCharsets.UTF_8);
     for (final EHTMLEntity e : EHTMLEntity.values ())
       sContent = StringHelper.replaceAll (sContent, e.getEntityReference (), e.getCharString ());
     // Remove all self-closed tags without a trailing "/>"

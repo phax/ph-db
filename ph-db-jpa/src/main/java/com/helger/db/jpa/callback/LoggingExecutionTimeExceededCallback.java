@@ -53,6 +53,6 @@ public class LoggingExecutionTimeExceededCallback implements IExecutionTimeExcee
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("emitStackTraces", m_bEmitStackTrace).toString ();
+    return new ToStringGenerator (this).append ("emitStackTraces", m_bEmitStackTrace).getToString ();
   }
 }

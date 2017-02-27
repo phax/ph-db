@@ -497,6 +497,6 @@ public class DBExecutor
   {
     return new ToStringGenerator (this).append ("connectionProvider", m_aConnectionProvider)
                                        .append ("exceptionHandler", m_aExceptionCallback)
-                                       .toString ();
+                                       .getToString ();
   }
 }
