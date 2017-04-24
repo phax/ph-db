@@ -45,7 +45,7 @@ public final class ThirdPartyModuleProvider_ph_db_jpa implements IThirdPartyModu
   public static final IThirdPartyModule H2 = new ThirdPartyModule ("H2 Database Engine",
                                                                    "Eclipse Foundation",
                                                                    ELicense.EPL10,
-                                                                   new Version (1, 4, 194),
+                                                                   new Version (1, 4, 195),
                                                                    "http://www.h2database.com/",
                                                                    true);
   /** MySQL connector */

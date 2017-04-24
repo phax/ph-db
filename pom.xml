@@ -53,7 +53,6 @@
   </organization>
 
   <properties>
-    <!-- 2.6.0 requires a 1.7 runtime -->
     <eclipselink.version>2.6.4</eclipselink.version>
   </properties>
 
@@ -79,7 +78,7 @@
       <dependency>
         <groupId>com.h2database</groupId>
         <artifactId>h2</artifactId>
-        <version>1.4.194</version>
+        <version>1.4.195</version>
       </dependency>
       <!-- 5.1.39 for MySQL < 5.5 -->
       <dependency>
@@ -87,19 +86,6 @@
         <artifactId>mysql-connector-java</artifactId>
         <version>6.0.6</version>
       </dependency>
-       <!-- commons-dbcp: JDK 1.4/1.5: version 1.3; JDK 6: version 1.4 
-      <dependency>
-        <groupId>commons-pool</groupId>
-        <artifactId>commons-pool</artifactId>
-        <version>1.6</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-dbcp</groupId>
-        <artifactId>commons-dbcp</artifactId>
-        <version>1.4</version>
-      </dependency>
-      -->
-      <!-- For JDK 1.7: -->
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-pool2</artifactId>
