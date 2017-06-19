@@ -78,7 +78,7 @@
       <dependency>
         <groupId>com.h2database</groupId>
         <artifactId>h2</artifactId>
-        <version>1.4.195</version>
+        <version>1.4.196</version>
       </dependency>
       <!-- 5.1.39 for MySQL < 5.5 -->
       <dependency>
