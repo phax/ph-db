@@ -24,8 +24,8 @@ import javax.annotation.Nullable;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
 
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.collection.ext.CommonsEnumMap;
-import com.helger.commons.collection.ext.ICommonsMap;
+import com.helger.commons.collection.impl.CommonsEnumMap;
+import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.db.api.mysql.EMySQLConnectionProperty;
 import com.helger.db.api.mysql.MySQLHelper;
 import com.helger.db.jpa.AbstractGlobalEntityManagerFactory;

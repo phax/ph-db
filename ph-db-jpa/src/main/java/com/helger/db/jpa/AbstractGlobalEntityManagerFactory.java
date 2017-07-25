@@ -34,13 +34,13 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.ext.CommonsHashMap;
-import com.helger.commons.collection.ext.ICommonsMap;
-import com.helger.commons.scope.IScope;
-import com.helger.commons.scope.singleton.AbstractGlobalSingleton;
+import com.helger.commons.collection.impl.CommonsHashMap;
+import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.db.jpa.eclipselink.EclipseLinkLogger;
 import com.helger.db.jpa.eclipselink.EclipseLinkSessionCustomizer;
 import com.helger.db.jpa.utils.PersistenceXmlHelper;
+import com.helger.scope.IScope;
+import com.helger.scope.singleton.AbstractGlobalSingleton;
 
 /**
  * Abstract global singleton to handle a single persistence unit.
@@ -106,7 +106,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
                     sUserName +
                     "'");
 
-    final ICommonsMap <String, Object> aFactoryProps = new CommonsHashMap<> ();
+    final ICommonsMap <String, Object> aFactoryProps = new CommonsHashMap <> ();
     aFactoryProps.put (PersistenceUnitProperties.JDBC_DRIVER, sJdbcDriverClass);
     aFactoryProps.put (PersistenceUnitProperties.JDBC_URL, sJdbcURL);
     aFactoryProps.put (PersistenceUnitProperties.JDBC_USER, sUserName);

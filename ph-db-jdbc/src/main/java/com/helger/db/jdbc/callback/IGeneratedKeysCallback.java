@@ -19,7 +19,7 @@ package com.helger.db.jdbc.callback;
 import javax.annotation.Nonnull;
 
 import com.helger.commons.callback.ICallback;
-import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.impl.ICommonsList;
 
 /**
  * This callback is used to retrieve generated keys upon insertion.

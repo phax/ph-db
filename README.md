@@ -4,7 +4,8 @@ Java library with some basic DB API, a special JDBC version and a JPA version ba
 
 ## News and noteworthy
 
-  * v5.0.2 - work in progress
+  * v6.0.0 - work in progress
+    * Updated to ph-commons 9.0.0
     * Updated to H2 1.4.196
   * v5.0.1 - 2016-08-21
     * Updated to ph-commons 8.4.x

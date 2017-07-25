@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.commons.annotation.ELockType;
 import com.helger.commons.annotation.IsLocked;
-import com.helger.commons.scope.IScope;
-import com.helger.commons.scope.singleton.AbstractRequestSingleton;
+import com.helger.scope.IScope;
+import com.helger.scope.singleton.AbstractRequestSingleton;
 
 /**
  * Abstract request singleton to handle a single {@link EntityManager}.<br>

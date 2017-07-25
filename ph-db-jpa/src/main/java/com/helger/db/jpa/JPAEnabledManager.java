@@ -80,15 +80,15 @@ public class JPAEnabledManager
                                                                                                                        "$execError");
 
   protected static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
-  private static final CallbackList <IExceptionCallback <Throwable>> s_aExceptionCallbacks = new CallbackList<> ();
+  private static final CallbackList <IExceptionCallback <Throwable>> s_aExceptionCallbacks = new CallbackList <> ();
   private static final AtomicInteger s_aExecutionWarnTime = new AtomicInteger (DEFAULT_EXECUTION_WARN_TIME_MS);
-  private static final CallbackList <IExecutionTimeExceededCallback> s_aExecutionTimeExceededHandlers = new CallbackList<> ();
+  private static final CallbackList <IExecutionTimeExceededCallback> s_aExecutionTimeExceededHandlers = new CallbackList <> ();
 
   static
   {
     // Add default handler
-    s_aExceptionCallbacks.addCallback (x -> s_aLogger.error ("Failed to perform something in a JPAEnabledManager!", x));
-    s_aExecutionTimeExceededHandlers.addCallback (new LoggingExecutionTimeExceededCallback (true));
+    s_aExceptionCallbacks.add (x -> s_aLogger.error ("Failed to perform something in a JPAEnabledManager!", x));
+    s_aExecutionTimeExceededHandlers.add (new LoggingExecutionTimeExceededCallback (true));
   }
 
   private final IHasEntityManager m_aEntityManagerProvider;

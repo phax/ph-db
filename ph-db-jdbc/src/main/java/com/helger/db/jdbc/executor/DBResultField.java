@@ -23,7 +23,7 @@ import javax.annotation.concurrent.Immutable;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.string.ToStringGenerator;
-import com.helger.commons.traits.IConvertibleDirectTrait;
+import com.helger.commons.traits.IGetterDirectTrait;
 import com.helger.db.api.jdbc.JDBCHelper;
 
 /**
@@ -32,7 +32,7 @@ import com.helger.db.api.jdbc.JDBCHelper;
  * @author Philip Helger
  */
 @Immutable
-public class DBResultField implements IConvertibleDirectTrait
+public class DBResultField implements IGetterDirectTrait
 {
   private final String m_sColumnName;
   private final int m_nColumnType;

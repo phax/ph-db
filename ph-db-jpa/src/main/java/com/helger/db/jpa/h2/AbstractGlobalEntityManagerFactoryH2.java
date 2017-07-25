@@ -25,8 +25,8 @@ import javax.persistence.EntityManagerFactory;
 import org.eclipse.persistence.platform.database.H2Platform;
 
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.collection.ext.CommonsHashMap;
-import com.helger.commons.collection.ext.ICommonsMap;
+import com.helger.commons.collection.impl.CommonsHashMap;
+import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.db.api.h2.H2Helper;
 import com.helger.db.jpa.AbstractGlobalEntityManagerFactory;
 

@@ -19,7 +19,7 @@ package com.helger.db.jdbc.callback;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
-import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.impl.ICommonsList;
 
 /**
  * Interface for objects that deliver content to pass parameters to a prepared
