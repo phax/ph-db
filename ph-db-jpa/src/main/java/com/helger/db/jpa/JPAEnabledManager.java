@@ -170,8 +170,8 @@ public class JPAEnabledManager
    * @return <code>null</code> if non is set
    */
   @Nonnull
-  @ReturnsMutableObject ("by design")
-  public static final CallbackList <IExceptionCallback <Throwable>> getCustomExceptionCallbacks ()
+  @ReturnsMutableObject
+  public static final CallbackList <IExceptionCallback <Throwable>> exceptionCallbacks ()
   {
     return s_aExceptionCallbacks;
   }

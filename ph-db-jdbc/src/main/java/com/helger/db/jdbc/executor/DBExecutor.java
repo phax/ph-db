@@ -29,7 +29,6 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.WillClose;
-import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.slf4j.Logger;
@@ -39,12 +38,12 @@ import com.helger.commons.CGlobal;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.CodingStyleguideUnaware;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.callback.CallbackList;
 import com.helger.commons.callback.ICallback;
 import com.helger.commons.callback.exception.IExceptionCallback;
 import com.helger.commons.callback.exception.LoggingExceptionCallback;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.ESuccess;
@@ -88,10 +87,8 @@ public class DBExecutor
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (DBExecutor.class);
 
-  private final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
   private final IHasConnection m_aConnectionProvider;
-  @GuardedBy ("m_aRWLock")
-  private IExceptionCallback <? super SQLException> m_aExceptionCallback = new LoggingExceptionCallback ();
+  private final CallbackList <IExceptionCallback <? super SQLException>> m_aExceptionCallbacks = new CallbackList <> ();
 
   public DBExecutor (@Nonnull final IHasDataSource aDataSourceProvider)
   {
@@ -102,19 +99,12 @@ public class DBExecutor
   {
     ValueEnforcer.notNull (aConnectionProvider, "ConnectionProvider");
     m_aConnectionProvider = aConnectionProvider;
+    m_aExceptionCallbacks.add (new LoggingExceptionCallback ());
   }
 
-  public void setSQLExceptionCallback (@Nonnull final IExceptionCallback <? super SQLException> aExceptionCallback)
+  public CallbackList <IExceptionCallback <? super SQLException>> exceptionCallbacks ()
   {
-    ValueEnforcer.notNull (aExceptionCallback, "ExceptionCallback");
-
-    m_aRWLock.writeLocked ( () -> m_aExceptionCallback = aExceptionCallback);
-  }
-
-  @Nonnull
-  public IExceptionCallback <? super SQLException> getSQLExceptionCallback ()
-  {
-    return m_aRWLock.readLocked ( () -> m_aExceptionCallback);
+    return m_aExceptionCallbacks;
   }
 
   @CodingStyleguideUnaware ("Needs to be synchronized!")
@@ -139,14 +129,7 @@ public class DBExecutor
     catch (final SQLException ex)
     {
       // Invoke callback
-      try
-      {
-        getSQLExceptionCallback ().onException (ex);
-      }
-      catch (final Throwable t2)
-      {
-        s_aLogger.error ("Failed to handle exception in custom exception handler", t2);
-      }
+      m_aExceptionCallbacks.forEach (x -> x.onException (ex));
       return ESuccess.FAILURE;
     }
     finally
@@ -166,10 +149,10 @@ public class DBExecutor
                                              @Nonnull final IGeneratedKeysCallback aGeneratedKeysCB) throws SQLException
   {
     final int nCols = aGeneratedKeysRS.getMetaData ().getColumnCount ();
-    final ICommonsList <ICommonsList <Object>> aValues = new CommonsArrayList<> ();
+    final ICommonsList <ICommonsList <Object>> aValues = new CommonsArrayList <> ();
     while (aGeneratedKeysRS.next ())
     {
-      final ICommonsList <Object> aRow = new CommonsArrayList<> (nCols);
+      final ICommonsList <Object> aRow = new CommonsArrayList <> (nCols);
       for (int i = 1; i <= nCols; ++i)
         aRow.add (aGeneratedKeysRS.getObject (i));
       aValues.add (aRow);
@@ -435,7 +418,7 @@ public class DBExecutor
   @Nullable
   public Optional <ICommonsList <DBResultRow>> queryAll (@Nonnull @Nonempty final String sSQL)
   {
-    final ICommonsList <DBResultRow> aAllResultRows = new CommonsArrayList<> ();
+    final ICommonsList <DBResultRow> aAllResultRows = new CommonsArrayList <> ();
     if (queryAll (sSQL, aCurrentObject -> {
       if (aCurrentObject != null)
       {
@@ -451,7 +434,7 @@ public class DBExecutor
   public Optional <ICommonsList <DBResultRow>> queryAll (@Nonnull @Nonempty final String sSQL,
                                                          @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
-    final ICommonsList <DBResultRow> aAllResultRows = new CommonsArrayList<> ();
+    final ICommonsList <DBResultRow> aAllResultRows = new CommonsArrayList <> ();
     if (queryAll (sSQL, aPSDP, aCurrentObject -> {
       if (aCurrentObject != null)
       {
@@ -495,8 +478,8 @@ public class DBExecutor
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("connectionProvider", m_aConnectionProvider)
-                                       .append ("exceptionHandler", m_aExceptionCallback)
+    return new ToStringGenerator (this).append ("ConnectionProvider", m_aConnectionProvider)
+                                       .append ("ExceptionCalbacks", m_aExceptionCallbacks)
                                        .getToString ();
   }
 }
