@@ -44,7 +44,7 @@ public class JPALocalTimeConverter implements Converter
   @Nullable
   public Time convertObjectValueToDataValue (final Object aObjectValue, final Session session)
   {
-    final java.util.Date aDate = TypeConverter.convertIfNecessary (aObjectValue, java.util.Date.class);
+    final java.util.Date aDate = TypeConverter.convert (aObjectValue, java.util.Date.class);
     return aDate == null ? null : new Time (aDate.getTime ());
   }
 
@@ -54,7 +54,7 @@ public class JPALocalTimeConverter implements Converter
     if (aDataValue != null)
       try
       {
-        return TypeConverter.convertIfNecessary (aDataValue, LocalTime.class);
+        return TypeConverter.convert (aDataValue, LocalTime.class);
       }
       catch (final IllegalArgumentException ex)
       {

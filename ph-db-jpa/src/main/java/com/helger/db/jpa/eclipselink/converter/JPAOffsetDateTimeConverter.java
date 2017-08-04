@@ -44,7 +44,7 @@ public class JPAOffsetDateTimeConverter implements Converter
   @Nullable
   public Timestamp convertObjectValueToDataValue (final Object aObjectValue, final Session session)
   {
-    final java.util.Date aDate = TypeConverter.convertIfNecessary (aObjectValue, java.util.Date.class);
+    final java.util.Date aDate = TypeConverter.convert (aObjectValue, java.util.Date.class);
     return aDate == null ? null : new Timestamp (aDate.getTime ());
   }
 
@@ -54,7 +54,7 @@ public class JPAOffsetDateTimeConverter implements Converter
     if (aDataValue != null)
       try
       {
-        return TypeConverter.convertIfNecessary (aDataValue, OffsetDateTime.class);
+        return TypeConverter.convert (aDataValue, OffsetDateTime.class);
       }
       catch (final RuntimeException ex)
       {
