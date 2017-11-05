@@ -38,7 +38,7 @@ public final class ThirdPartyModuleProvider_ph_db_jpa implements IThirdPartyModu
   private static final IThirdPartyModule ECLIPSE_LINK = new ThirdPartyModule ("EclipseLink",
                                                                               "Eclipse Foundation",
                                                                               ELicense.EPL10,
-                                                                              new Version (2, 6, 4),
+                                                                              new Version (2, 7, 0),
                                                                               "http://www.eclipse.org/eclipselink/");
 
   /** H2 database */
@@ -52,7 +52,7 @@ public final class ThirdPartyModuleProvider_ph_db_jpa implements IThirdPartyModu
   public static final IThirdPartyModule MYSQL = new ThirdPartyModule ("MySQL Connector/J",
                                                                       "Oracle",
                                                                       ELicense.GPL20,
-                                                                      new Version (6, 0, 6),
+                                                                      new Version (8, 0, 8),
                                                                       "http://www.mysql.com/",
                                                                       true);
 
