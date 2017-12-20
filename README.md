@@ -4,14 +4,15 @@ Java library with some basic DB API, a special JDBC version and a JPA version ba
 
 ## News and noteworthy
 
-  * v6.0.0 - work in progress
-    * Updated to ph-commons 9.0.0
-    * Updated to H2 1.4.196
-    * Updated to EclipseLink 2.7.0
-  * v5.0.1 - 2016-08-21
-    * Updated to ph-commons 8.4.x
-  * v5.0.0 - 2016-06-11
-    * Requires at least JDK8
+* v6.0.0 - 2017-12-20
+  * Updated to ph-commons 9.0.0
+  * Updated to H2 1.4.196
+  * Updated to EclipseLink 2.7.0
+  * Updated to Apache Commons Pool2 2.5.0
+* v5.0.1 - 2016-08-21
+  * Updated to ph-commons 8.4.x
+* v5.0.0 - 2016-06-11
+  * Requires at least JDK8
 
 # Maven usage
 Add the following to your pom.xml to use this artifact:
@@ -20,7 +21,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-db-api</artifactId>
-  <version>5.0.1</version>
+  <version>6.0.0</version>
 </dependency>
 ```
 
@@ -28,7 +29,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-db-jdbc</artifactId>
-  <version>5.0.1</version>
+  <version>6.0.0</version>
 </dependency>
 ```
 
@@ -36,7 +37,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-db-jpa</artifactId>
-  <version>5.0.1</version>
+  <version>6.0.0</version>
 </dependency>
 ```
 
