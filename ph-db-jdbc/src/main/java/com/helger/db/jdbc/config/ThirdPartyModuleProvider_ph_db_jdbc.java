@@ -38,7 +38,7 @@ public final class ThirdPartyModuleProvider_ph_db_jdbc implements IThirdPartyMod
   public static final IThirdPartyModule COMMONS_POOL = new ThirdPartyModule ("Apache Commons Pool",
                                                                              "Apache",
                                                                              ELicense.APACHE2,
-                                                                             new Version (2, 4, 3),
+                                                                             new Version (2, 5, 0),
                                                                              "http://commons.apache.org/pool/");
   /** Apache commons-dbcp */
   public static final IThirdPartyModule COMMONS_DBCP = new ThirdPartyModule ("Apache Commons DBCP",

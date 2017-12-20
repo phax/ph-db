@@ -16,6 +16,7 @@
  */
 package com.helger.db.jdbc.executor;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Blob;
@@ -46,7 +47,7 @@ import com.helger.commons.string.ToStringGenerator;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class DBResultRow implements ICloneable <DBResultRow>
+public class DBResultRow implements ICloneable <DBResultRow>, Serializable
 {
   private final DBResultField [] m_aCols;
   private int m_nIndex;
@@ -316,7 +317,7 @@ public class DBResultRow implements ICloneable <DBResultRow>
   @ReturnsMutableCopy
   public ICommonsMap <String, Integer> getColumnNameToIndexMap ()
   {
-    final ICommonsMap <String, Integer> ret = new CommonsHashMap<> ();
+    final ICommonsMap <String, Integer> ret = new CommonsHashMap <> ();
     for (int i = 0; i < m_aCols.length; ++i)
       ret.put (m_aCols[i].getColumnName (), Integer.valueOf (i));
     return ret;

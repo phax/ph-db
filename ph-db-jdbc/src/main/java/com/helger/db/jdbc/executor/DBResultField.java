@@ -16,6 +16,8 @@
  */
 package com.helger.db.jdbc.executor;
 
+import java.io.Serializable;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -32,7 +34,7 @@ import com.helger.db.api.jdbc.JDBCHelper;
  * @author Philip Helger
  */
 @Immutable
-public class DBResultField implements IGetterDirectTrait
+public class DBResultField implements IGetterDirectTrait, Serializable
 {
   private final String m_sColumnName;
   private final int m_nColumnType;

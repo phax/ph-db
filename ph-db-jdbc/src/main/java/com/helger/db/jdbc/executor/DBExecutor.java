@@ -16,6 +16,7 @@
  */
 package com.helger.db.jdbc.executor;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -65,7 +66,7 @@ import com.helger.db.jdbc.callback.UpdatedRowCountCallback;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class DBExecutor
+public class DBExecutor implements Serializable
 {
   @FunctionalInterface
   protected interface IWithConnectionCallback extends ICallback

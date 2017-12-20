@@ -16,6 +16,7 @@
  */
 package com.helger.db.jdbc;
 
+import java.io.Serializable;
 import java.sql.Connection;
 
 import javax.annotation.Nullable;
@@ -25,10 +26,14 @@ import javax.annotation.Nullable;
  *
  * @author Philip Helger
  */
-public interface IHasConnection
+@FunctionalInterface
+public interface IHasConnection extends Serializable
 {
   @Nullable
   Connection getConnection ();
 
-  boolean shouldCloseConnection ();
+  default boolean shouldCloseConnection ()
+  {
+    return true;
+  }
 }

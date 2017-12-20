@@ -69,14 +69,9 @@ public class ConnectionFromDataSourceProvider implements IHasConnection
     }
   }
 
-  public boolean shouldCloseConnection ()
-  {
-    return true;
-  }
-
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("dataSource", m_aDS).getToString ();
+    return new ToStringGenerator (this).append ("DataSource", m_aDS).getToString ();
   }
 }

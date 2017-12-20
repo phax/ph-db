@@ -16,6 +16,8 @@
  */
 package com.helger.db.jdbc.callback;
 
+import java.io.Serializable;
+
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
@@ -27,7 +29,7 @@ import com.helger.commons.collection.impl.ICommonsList;
  *
  * @author Philip Helger
  */
-public interface IPreparedStatementDataProvider
+public interface IPreparedStatementDataProvider extends Serializable
 {
   /**
    * @return The number of parameters provided by this instance.

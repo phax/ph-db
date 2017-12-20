@@ -16,6 +16,8 @@
  */
 package com.helger.db.jdbc;
 
+import java.io.Serializable;
+
 import javax.annotation.Nonnull;
 import javax.sql.DataSource;
 
@@ -25,8 +27,9 @@ import javax.sql.DataSource;
  * @author Philip Helger
  */
 @FunctionalInterface
-public interface IHasDataSource
+public interface IHasDataSource extends Serializable
 {
+
   /**
    * Retrieve a data source. It is up to the implementation whether the same
    * data source is returned or whether a new data source object is created all

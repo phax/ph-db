@@ -16,6 +16,8 @@
  */
 package com.helger.db.jpa;
 
+import java.io.Serializable;
+
 import javax.annotation.Nonnull;
 import javax.persistence.EntityManager;
 
@@ -25,7 +27,7 @@ import javax.persistence.EntityManager;
  * @author Philip Helger
  */
 @FunctionalInterface
-public interface IHasEntityManager
+public interface IHasEntityManager extends Serializable
 {
   /**
    * @return The JPA entity manager to use. May not be <code>null</code>.
