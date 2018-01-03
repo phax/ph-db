@@ -4,6 +4,9 @@ Java library with some basic DB API, a special JDBC version and a JPA version ba
 
 ## News and noteworthy
 
+* v6.0.1 - work in progress
+  * Updated to Apache Commons DBCP 2.2.0
+  * Updated to EclipseLink 2.7.1
 * v6.0.0 - 2017-12-20
   * Updated to ph-commons 9.0.0
   * Updated to H2 1.4.196

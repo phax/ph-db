@@ -39,13 +39,13 @@ public final class ThirdPartyModuleProvider_ph_db_jdbc implements IThirdPartyMod
                                                                              "Apache",
                                                                              ELicense.APACHE2,
                                                                              new Version (2, 5, 0),
-                                                                             "http://commons.apache.org/pool/");
+                                                                             "http://commons.apache.org/proper/commons-pool/");
   /** Apache commons-dbcp */
   public static final IThirdPartyModule COMMONS_DBCP = new ThirdPartyModule ("Apache Commons DBCP",
                                                                              "Apache",
                                                                              ELicense.APACHE2,
-                                                                             new Version (2, 1, 1),
-                                                                             "http://commons.apache.org/dbcp/");
+                                                                             new Version (2, 2, 2),
+                                                                             "http://commons.apache.org/proper/commons-dbcp/");
   /** H2 database */
   public static final IThirdPartyModule H2 = new ThirdPartyModule ("H2 Database Engine",
                                                                    "Eclipse Foundation",
