@@ -4,9 +4,10 @@ Java library with some basic DB API, a special JDBC version and a JPA version ba
 
 ## News and noteworthy
 
-* v6.0.1 - work in progress
+* v6.1.0 - 2018-04-23
   * Updated to Apache Commons DBCP 2.2.0
   * Updated to EclipseLink 2.7.1
+  * `JPAEnabledManager` now has the possibility to disable the execution time warning
 * v6.0.0 - 2017-12-20
   * Updated to ph-commons 9.0.0
   * Updated to H2 1.4.196
@@ -24,7 +25,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-db-api</artifactId>
-  <version>6.0.0</version>
+  <version>6.1.0</version>
 </dependency>
 ```
 
@@ -32,7 +33,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-db-jdbc</artifactId>
-  <version>6.0.0</version>
+  <version>6.1.0</version>
 </dependency>
 ```
 
@@ -40,7 +41,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-db-jpa</artifactId>
-  <version>6.0.0</version>
+  <version>6.1.0</version>
 </dependency>
 ```
 
