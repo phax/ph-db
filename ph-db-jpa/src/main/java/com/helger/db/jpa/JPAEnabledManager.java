@@ -62,6 +62,8 @@ public class JPAEnabledManager
   public static final boolean DEFAULT_ALLOW_NESTED_TRANSACTIONS = false;
   /** By default no transaction is used for select statements */
   public static final boolean DEFAULT_USE_TRANSACTIONS_FOR_SELECT = false;
+  /** By default execution time warnings are enabled */
+  public static final boolean DEFAULT_EXECUTION_WARN_ENABLED = true;
   /** The default execution time after which a warning is emitted */
   public static final int DEFAULT_EXECUTION_WARN_TIME_MS = 1000;
 
@@ -81,6 +83,7 @@ public class JPAEnabledManager
 
   protected static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
   private static final CallbackList <IExceptionCallback <Throwable>> s_aExceptionCallbacks = new CallbackList <> ();
+  private static final AtomicBoolean s_aExecutionWarnEnabled = new AtomicBoolean (DEFAULT_EXECUTION_WARN_ENABLED);
   private static final AtomicInteger s_aExecutionWarnTime = new AtomicInteger (DEFAULT_EXECUTION_WARN_TIME_MS);
   private static final CallbackList <IExecutionTimeExceededCallback> s_aExecutionTimeExceededHandlers = new CallbackList <> ();
 
@@ -112,10 +115,13 @@ public class JPAEnabledManager
    *
    * @param bSyncEntityMgr
    *        <code>true</code> to enable sync, <code>false</code> to disable sync
+   * @return this for chaining
    */
-  public final void setSyncEntityMgr (final boolean bSyncEntityMgr)
+  @Nonnull
+  public final JPAEnabledManager setSyncEntityMgr (final boolean bSyncEntityMgr)
   {
     m_aSyncEntityMgr.set (bSyncEntityMgr);
+    return this;
   }
 
   public final boolean isAllowNestedTransactions ()
@@ -128,10 +134,13 @@ public class JPAEnabledManager
    *
    * @param bAllowNestedTransactions
    *        <code>true</code> to enable nested transaction
+   * @return this for chaining
    */
-  public final void setAllowNestedTransactions (final boolean bAllowNestedTransactions)
+  @Nonnull
+  public final JPAEnabledManager setAllowNestedTransactions (final boolean bAllowNestedTransactions)
   {
     m_aAllowNestedTransactions.set (bAllowNestedTransactions);
+    return this;
   }
 
   /**
@@ -149,10 +158,13 @@ public class JPAEnabledManager
    * @param bUseTransactionsForSelect
    *        <code>true</code> to enable the usage of transactions for select
    *        statements.
+   * @return this for chaining
    */
-  public final void setUseTransactionsForSelect (final boolean bUseTransactionsForSelect)
+  @Nonnull
+  public final JPAEnabledManager setUseTransactionsForSelect (final boolean bUseTransactionsForSelect)
   {
     m_aAllowNestedTransactions.set (bUseTransactionsForSelect);
+    return this;
   }
 
   /**
@@ -188,8 +200,37 @@ public class JPAEnabledManager
   }
 
   /**
+   * @return <code>true</code> if long running execution warnings via callback
+   *         are enabled, <code>false</code> if not. Default is
+   *         <code>true</code>.
+   * @see #getDefaultExecutionWarnTime()
+   * @see #executionTimeExceededHandlers()
+   * @since 6.1.0
+   */
+  public static final boolean isDefaultExecutionWarnTimeEnabled ()
+  {
+    return s_aExecutionWarnEnabled.get ();
+  }
+
+  /**
+   * Enable or disable the warning if execution time exceeds a certain limit.
+   * Default is <code>true</code>.
+   *
+   * @param bEnabled
+   *        <code>true</code> to enable it, <code>false</code> to disable it.
+   * @see #setDefaultExecutionWarnTime(int)
+   * @see #executionTimeExceededHandlers()
+   * @since 6.1.0
+   */
+  public static final void setDefaultExecutionWarnTimeEnabled (final boolean bEnabled)
+  {
+    s_aExecutionWarnEnabled.set (bEnabled);
+  }
+
+  /**
    * @return The milliseconds after which a warning is emitted, if an SQL
    *         statement takes longer to execute.
+   * @see #isDefaultExecutionWarnTimeEnabled()
    */
   @Nonnegative
   public static final int getDefaultExecutionWarnTime ()
@@ -198,11 +239,12 @@ public class JPAEnabledManager
   }
 
   /**
-   * Set the milli seconds duration on which a warning should be emitted, if a
+   * Set the milliseconds duration on which a warning should be emitted, if a
    * single SQL execution too at least that long.
    *
    * @param nMillis
-   *        The number of milli seconds. Must be &ge; 0.
+   *        The number of milliseconds. Must be &ge; 0.
+   * @see #setDefaultExecutionWarnTimeEnabled(boolean)
    */
   public static final void setDefaultExecutionWarnTime (final int nMillis)
   {
@@ -216,7 +258,7 @@ public class JPAEnabledManager
    * @return Never <code>null</code>.
    */
   @Nonnull
-  public static final CallbackList <IExecutionTimeExceededCallback> getExecutionTimeExceededHandlers ()
+  public static final CallbackList <IExecutionTimeExceededCallback> executionTimeExceededHandlers ()
   {
     return s_aExecutionTimeExceededHandlers;
   }
@@ -310,14 +352,15 @@ public class JPAEnabledManager
           s_aStatsCounterRollback.increment ();
         }
 
-      if (aSW.getMillis () > getDefaultExecutionWarnTime ())
-        onExecutionTimeExceeded ("Callback: " +
-                                 aSW.getMillis () +
-                                 " ms; transaction: " +
-                                 bTransactionRequired +
-                                 "; Execution of callable in transaction took too long: " +
-                                 aCallable.toString (),
-                                 aSW.getMillis ());
+      if (isDefaultExecutionWarnTimeEnabled ())
+        if (aSW.getMillis () > getDefaultExecutionWarnTime ())
+          onExecutionTimeExceeded ("Callback: " +
+                                   aSW.getMillis () +
+                                   " ms; transaction: " +
+                                   bTransactionRequired +
+                                   "; Execution of callable in transaction took too long: " +
+                                   aCallable.toString (),
+                                   aSW.getMillis ());
     }
   }
 
@@ -372,8 +415,9 @@ public class JPAEnabledManager
     }
     finally
     {
-      if (aSW.getMillis () > getDefaultExecutionWarnTime ())
-        onExecutionTimeExceeded ("Execution of select took too long: " + aCallable.toString (), aSW.getMillis ());
+      if (isDefaultExecutionWarnTimeEnabled ())
+        if (aSW.getMillis () > getDefaultExecutionWarnTime ())
+          onExecutionTimeExceeded ("Execution of select took too long: " + aCallable.toString (), aSW.getMillis ());
     }
   }
 
