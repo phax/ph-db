@@ -39,6 +39,7 @@ import com.helger.commons.CGlobal;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.CodingStyleguideUnaware;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.callback.CallbackList;
 import com.helger.commons.callback.ICallback;
 import com.helger.commons.callback.exception.IExceptionCallback;
@@ -103,6 +104,8 @@ public class DBExecutor implements Serializable
     m_aExceptionCallbacks.add (new LoggingExceptionCallback ());
   }
 
+  @Nonnull
+  @ReturnsMutableObject
   public CallbackList <IExceptionCallback <? super SQLException>> exceptionCallbacks ()
   {
     return m_aExceptionCallbacks;

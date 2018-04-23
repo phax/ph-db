@@ -116,15 +116,29 @@ public class JPAExecutionResult <DATATYPE> extends SuccessWithValue <DATATYPE>
     return ToStringGenerator.getDerived (super.toString ()).append ("throwable", m_aThrowable).getToString ();
   }
 
+  /**
+   * Create a new success object.
+   * 
+   * @param aObj
+   *        The returned value from the DB
+   * @return Never <code>null</code>.
+   */
   @Nonnull
-  public static <T> JPAExecutionResult <T> createSuccess (@Nonnull final T aObj)
+  public static <T> JPAExecutionResult <T> createSuccess (@Nullable final T aObj)
   {
-    return new JPAExecutionResult<> (ESuccess.SUCCESS, aObj, null);
+    return new JPAExecutionResult <> (ESuccess.SUCCESS, aObj, null);
   }
 
+  /**
+   * Create a new failure object.
+   * 
+   * @param t
+   *        The exception that occurred.
+   * @return Never <code>null</code>.
+   */
   @Nonnull
   public static <T> JPAExecutionResult <T> createFailure (@Nullable final Throwable t)
   {
-    return new JPAExecutionResult<> (ESuccess.FAILURE, null, t);
+    return new JPAExecutionResult <> (ESuccess.FAILURE, null, t);
   }
 }

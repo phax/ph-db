@@ -74,7 +74,9 @@ public abstract class AbstractPerRequestEntityManager extends AbstractRequestSin
       return ret;
 
     // No EntityManager present for this request
-    return m_aRWLock.writeLocked ( () -> {
+    m_aRWLock.writeLock ().lock ();
+    try
+    {
       // Try again in write lock
       EntityManager ret2 = m_aEntityManager;
       if (ret2 == null)
@@ -88,14 +90,20 @@ public abstract class AbstractPerRequestEntityManager extends AbstractRequestSin
           s_aLogger.debug ("EntityManager created");
       }
       return ret2;
-    });
+    }
+    finally
+    {
+      m_aRWLock.writeLock ().unlock ();
+    }
   }
 
   @Override
   @OverridingMethodsMustInvokeSuper
   protected void onDestroy (@Nonnull final IScope aScopeInDestruction)
   {
-    m_aRWLock.writeLocked ( () -> {
+    m_aRWLock.writeLock ().lock ();
+    try
+    {
       // Close EntityManager, if present
       final EntityManager aEM = m_aEntityManager;
       if (aEM != null)
@@ -106,7 +114,12 @@ public abstract class AbstractPerRequestEntityManager extends AbstractRequestSin
         if (s_aLogger.isDebugEnabled ())
           s_aLogger.debug ("EntityManager destroyed");
       }
+      // Independent if it was closed or not
       m_bDestroyed = true;
-    });
+    }
+    finally
+    {
+      m_aRWLock.writeLock ().unlock ();
+    }
   }
 }
