@@ -34,30 +34,30 @@ import com.helger.commons.version.Version;
 @IsSPIImplementation
 public final class ThirdPartyModuleProvider_ph_db_jdbc implements IThirdPartyModuleProviderSPI
 {
-  /** Apache commons-pool */
+  /** Apache commons-pool2 */
   public static final IThirdPartyModule COMMONS_POOL = new ThirdPartyModule ("Apache Commons Pool",
                                                                              "Apache",
                                                                              ELicense.APACHE2,
                                                                              new Version (2, 5, 0),
                                                                              "http://commons.apache.org/proper/commons-pool/");
-  /** Apache commons-dbcp */
+  /** Apache commons-dbcp2 */
   public static final IThirdPartyModule COMMONS_DBCP = new ThirdPartyModule ("Apache Commons DBCP",
                                                                              "Apache",
                                                                              ELicense.APACHE2,
-                                                                             new Version (2, 2, 2),
+                                                                             new Version (2, 3, 0),
                                                                              "http://commons.apache.org/proper/commons-dbcp/");
   /** H2 database */
   public static final IThirdPartyModule H2 = new ThirdPartyModule ("H2 Database Engine",
                                                                    "Eclipse Foundation",
                                                                    ELicense.EPL10,
-                                                                   new Version (1, 4, 196),
+                                                                   new Version (1, 4, 197),
                                                                    "http://www.h2database.com/",
                                                                    true);
   /** MySQL connector */
   public static final IThirdPartyModule MYSQL = new ThirdPartyModule ("MySQL Connector/J",
                                                                       "Oracle",
                                                                       ELicense.GPL20,
-                                                                      new Version (8, 0, 8),
+                                                                      new Version (8, 0, 11),
                                                                       "http://www.mysql.com/",
                                                                       true);
 
