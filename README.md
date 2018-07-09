@@ -7,6 +7,8 @@ Java library with some basic DB API, a special JDBC version and a JPA version ba
 * v6.1.1 - work in progress
     * Fixed OSGI ServiceProvider configuration
     * Updated to EclipseLink 2.7.2
+    * Updated to Apache Commons DBCP 2.4.0
+    * Updated to Apache Commons Pool 2.6.0
 * v6.1.0 - 2018-04-23
     * Updated to Apache Commons DBCP 2.2.0
     * Updated to EclipseLink 2.7.1
