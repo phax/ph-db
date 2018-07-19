@@ -67,7 +67,7 @@ public class JPAEnabledManager
   /** The default execution time after which a warning is emitted */
   public static final int DEFAULT_EXECUTION_WARN_TIME_MS = 1000;
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (JPAEnabledManager.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (JPAEnabledManager.class);
   private static final IMutableStatisticsHandlerCounter s_aStatsCounterTransactions = StatisticsManager.getCounterHandler (JPAEnabledManager.class.getName () +
                                                                                                                            "$transactions");
   private static final IMutableStatisticsHandlerCounter s_aStatsCounterRollback = StatisticsManager.getCounterHandler (JPAEnabledManager.class.getName () +
@@ -90,7 +90,7 @@ public class JPAEnabledManager
   static
   {
     // Add default handler
-    s_aExceptionCallbacks.add (x -> s_aLogger.error ("Failed to perform something in a JPAEnabledManager!", x));
+    s_aExceptionCallbacks.add (x -> LOGGER.error ("Failed to perform something in a JPAEnabledManager!", x));
     s_aExecutionTimeExceededHandlers.add (new LoggingExecutionTimeExceededCallback (true));
   }
 
@@ -348,7 +348,7 @@ public class JPAEnabledManager
         {
           // We got an exception -> rollback
           aTransaction.rollback ();
-          s_aLogger.warn ("Rolled back transaction for callable " + aCallable);
+          LOGGER.warn ("Rolled back transaction for callable " + aCallable);
           s_aStatsCounterRollback.increment ();
         }
 

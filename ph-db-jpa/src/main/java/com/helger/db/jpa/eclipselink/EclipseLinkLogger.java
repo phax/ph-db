@@ -37,7 +37,7 @@ import com.helger.commons.system.ENewLineMode;
  */
 public class EclipseLinkLogger extends AbstractSessionLog
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (EclipseLinkLogger.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (EclipseLinkLogger.class);
 
   @Override
   public void log (@Nonnull final SessionLogEntry aSessionLogEntry)
@@ -55,20 +55,20 @@ public class EclipseLinkLogger extends AbstractSessionLog
       final String sMsg = aMsgLines.get (i);
       final Throwable t = i == nMaxIndex - 1 ? aSessionLogEntry.getException () : null;
       if (nLogLevel >= SessionLog.SEVERE)
-        s_aLogger.error (sMsg, t);
+        LOGGER.error (sMsg, t);
       else
         if (nLogLevel >= SessionLog.WARNING)
-          s_aLogger.warn (sMsg, t);
+          LOGGER.warn (sMsg, t);
         else
           if (nLogLevel >= SessionLog.CONFIG || GlobalDebug.isDebugMode ())
           {
-            if (s_aLogger.isInfoEnabled ())
-              s_aLogger.info (sMsg, t);
+            if (LOGGER.isInfoEnabled ())
+              LOGGER.info (sMsg, t);
           }
           else
           {
-            if (s_aLogger.isDebugEnabled ())
-              s_aLogger.debug (sMsg, t);
+            if (LOGGER.isDebugEnabled ())
+              LOGGER.debug (sMsg, t);
           }
     }
   }

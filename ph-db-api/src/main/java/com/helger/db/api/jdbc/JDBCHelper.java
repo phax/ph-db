@@ -40,7 +40,7 @@ import com.helger.commons.state.ESuccess;
 @Immutable
 public final class JDBCHelper
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (JDBCHelper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (JDBCHelper.class);
 
   private JDBCHelper ()
   {}
@@ -61,7 +61,7 @@ public final class JDBCHelper
       }
       catch (final SQLException ex)
       {
-        s_aLogger.warn ("Error committing connection " + aConnection, ex);
+        LOGGER.warn ("Error committing connection " + aConnection, ex);
       }
     }
     return ESuccess.FAILURE;
@@ -79,7 +79,7 @@ public final class JDBCHelper
       }
       catch (final SQLException ex)
       {
-        s_aLogger.warn ("Error rolling back connection " + aConnection, ex);
+        LOGGER.warn ("Error rolling back connection " + aConnection, ex);
       }
     }
   }
@@ -95,7 +95,7 @@ public final class JDBCHelper
       }
       catch (final SQLException ex)
       {
-        s_aLogger.warn ("Error closing connection " + aConnection, ex);
+        LOGGER.warn ("Error closing connection " + aConnection, ex);
       }
     }
   }
@@ -177,7 +177,7 @@ public final class JDBCHelper
         return Types.VARBINARY;
     }
 
-    s_aLogger.warn ("Failed to resolve JDBC type from class " + aClass.getName ());
+    LOGGER.warn ("Failed to resolve JDBC type from class " + aClass.getName ());
     return Types.JAVA_OBJECT;
   }
 
@@ -267,7 +267,7 @@ public final class JDBCHelper
       case Types.TIMESTAMP_WITH_TIMEZONE:
         return "TIMESTAMP_WITH_TIMEZONE";
     }
-    s_aLogger.warn ("Unsupported JDBC type " + nType);
+    LOGGER.warn ("Unsupported JDBC type " + nType);
     return null;
   }
 }

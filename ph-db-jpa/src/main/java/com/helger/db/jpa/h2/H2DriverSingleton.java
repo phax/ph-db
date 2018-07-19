@@ -36,13 +36,13 @@ import com.helger.scope.singleton.AbstractGlobalSingleton;
  */
 public final class H2DriverSingleton extends AbstractGlobalSingleton
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (H2DriverSingleton.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (H2DriverSingleton.class);
 
   @Deprecated
   @UsedViaReflection
   public H2DriverSingleton ()
   {
-    s_aLogger.info ("Loading org.h2.Driver");
+    LOGGER.info ("Loading org.h2.Driver");
     org.h2.Driver.load ();
   }
 
@@ -69,6 +69,6 @@ public final class H2DriverSingleton extends AbstractGlobalSingleton
   protected void onDestroy (@Nonnull final IScope aScopeInDestruction) throws Exception
   {
     org.h2.Driver.unload ();
-    s_aLogger.info ("Unloaded org.h2.Driver");
+    LOGGER.info ("Unloaded org.h2.Driver");
   }
 }

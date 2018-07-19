@@ -31,7 +31,7 @@ import com.helger.commons.string.ToStringGenerator;
  */
 public class LoggingExecutionTimeExceededCallback implements IExecutionTimeExceededCallback
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (LoggingExecutionTimeExceededCallback.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (LoggingExecutionTimeExceededCallback.class);
 
   private final boolean m_bEmitStackTrace;
 
@@ -47,7 +47,7 @@ public class LoggingExecutionTimeExceededCallback implements IExecutionTimeExcee
 
   public void onExecutionTimeExceeded (@Nonnull final String sMsg, @Nonnegative final long nExecutionMillis)
   {
-    s_aLogger.warn (sMsg + " took " + nExecutionMillis + "ms", m_bEmitStackTrace ? new Exception () : null);
+    LOGGER.warn (sMsg + " took " + nExecutionMillis + "ms", m_bEmitStackTrace ? new Exception () : null);
   }
 
   @Override

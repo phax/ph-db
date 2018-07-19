@@ -46,7 +46,7 @@ public final class PersistenceXmlHelper
   public static final String PATH_PERSISTENCE_XML = "META-INF/persistence.xml";
   public static final String PERSISTENCE_NAMESPACE_URI = "http://java.sun.com/xml/ns/persistence";
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (PersistenceXmlHelper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (PersistenceXmlHelper.class);
 
   private PersistenceXmlHelper ()
   {}
@@ -83,7 +83,7 @@ public final class PersistenceXmlHelper
             GenericReflection.getClassFromName (sClass.trim ());
           }
       }
-      s_aLogger.info ("All " + PATH_PERSISTENCE_XML + " files are valid (count=" + nCount + ")");
+      LOGGER.info ("All " + PATH_PERSISTENCE_XML + " files are valid (count=" + nCount + ")");
     }
     catch (final IOException ex)
     {

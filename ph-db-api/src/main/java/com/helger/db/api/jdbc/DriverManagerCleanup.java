@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @Immutable
 public final class DriverManagerCleanup
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (DriverManagerCleanup.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (DriverManagerCleanup.class);
 
   private DriverManagerCleanup ()
   {}
@@ -53,11 +53,11 @@ public final class DriverManagerCleanup
       try
       {
         DriverManager.deregisterDriver (aDriver);
-        s_aLogger.info ("Deregistered JDBC driver " + aDriver);
+        LOGGER.info ("Deregistered JDBC driver " + aDriver);
       }
       catch (final SQLException ex)
       {
-        s_aLogger.error ("Failed to deregister JDBC driver " + aDriver, ex);
+        LOGGER.error ("Failed to deregister JDBC driver " + aDriver, ex);
       }
     }
   }

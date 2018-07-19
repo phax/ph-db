@@ -36,7 +36,7 @@ import com.helger.db.jpa.JPAEnabledManager;
 @ThreadSafe
 public class JPAEnabledManagerH2 extends JPAEnabledManager
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (JPAEnabledManager.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (JPAEnabledManager.class);
 
   public JPAEnabledManagerH2 (@Nonnull final IHasEntityManager aEntityManagerProvider)
   {
@@ -53,7 +53,7 @@ public class JPAEnabledManagerH2 extends JPAEnabledManager
   private void _executeH2Native (@Nonnull @Nonempty final String sNativeSQL)
   {
     doInTransaction ( () -> {
-      s_aLogger.info ("Running H2 native command: " + sNativeSQL);
+      LOGGER.info ("Running H2 native command: " + sNativeSQL);
       getEntityManager ().createNativeQuery (sNativeSQL).executeUpdate ();
     });
   }

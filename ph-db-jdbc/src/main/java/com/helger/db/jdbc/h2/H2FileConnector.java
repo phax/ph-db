@@ -40,7 +40,7 @@ import com.helger.commons.state.ESuccess;
  */
 public class H2FileConnector extends H2MemConnector
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (H2FileConnector.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (H2FileConnector.class);
   private final String m_sDirectory;
 
   public H2FileConnector (@Nonnull @Nonempty final String sDirectory,
@@ -95,7 +95,7 @@ public class H2FileConnector extends H2MemConnector
 
           // And delete temporary file
           if (bDeleteTemporarySQLFile && FileOperations.deleteFile (aScriptFileName).isFailure ())
-            s_aLogger.error ("Failed to delete temporary export file '" + sScriptFileName + "'");
+            LOGGER.error ("Failed to delete temporary export file '" + sScriptFileName + "'");
           return ESuccess.SUCCESS;
         }
       }
@@ -106,7 +106,7 @@ public class H2FileConnector extends H2MemConnector
         String sUniqueFileName = "h2dump-" + Clock.systemUTC ().millis () + ".sql";
         if (FileOperations.renameFile (aScriptFileName, new File (sUniqueFileName)).isFailure ())
           sUniqueFileName = sScriptFileName;
-        s_aLogger.error ("Failed to delete and refill database. Data is contained in file '" +
+        LOGGER.error ("Failed to delete and refill database. Data is contained in file '" +
                          sUniqueFileName +
                          "'!",
                          ex);

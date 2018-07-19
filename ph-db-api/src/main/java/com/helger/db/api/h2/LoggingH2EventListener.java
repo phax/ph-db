@@ -31,26 +31,26 @@ import com.helger.commons.string.ToStringGenerator;
  */
 public class LoggingH2EventListener implements DatabaseEventListener
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (LoggingH2EventListener.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (LoggingH2EventListener.class);
 
   public void init (final String sURL)
   {
-    s_aLogger.info ("init(" + sURL + ")");
+    LOGGER.info ("init(" + sURL + ")");
   }
 
   public void opened ()
   {
-    s_aLogger.info ("opened()");
+    LOGGER.info ("opened()");
   }
 
   public void diskSpaceIsLow ()
   {
-    s_aLogger.info ("diskSpaceIsLow()");
+    LOGGER.info ("diskSpaceIsLow()");
   }
 
   public void exceptionThrown (final SQLException aException, final String sSQLStatement)
   {
-    s_aLogger.error ("exceptionThrown(" + sSQLStatement + ")", aException);
+    LOGGER.error ("exceptionThrown(" + sSQLStatement + ")", aException);
   }
 
   private static String _getStateName (final int nState)
@@ -74,7 +74,7 @@ public class LoggingH2EventListener implements DatabaseEventListener
 
   public void setProgress (final int nState, final String sObjectName, final int nCurrentStep, final int nTotalSteps)
   {
-    s_aLogger.info ("setProgress(" +
+    LOGGER.info ("setProgress(" +
                     _getStateName (nState) +
                     "," +
                     sObjectName +
@@ -87,7 +87,7 @@ public class LoggingH2EventListener implements DatabaseEventListener
 
   public void closingDatabase ()
   {
-    s_aLogger.info ("closingDatabase()");
+    LOGGER.info ("closingDatabase()");
   }
 
   @Override

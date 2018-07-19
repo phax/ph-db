@@ -87,7 +87,7 @@ public class DBExecutor implements Serializable
     void run (@Nonnull PreparedStatement aPreparedStatement) throws SQLException;
   }
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (DBExecutor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (DBExecutor.class);
 
   private final IHasConnection m_aConnectionProvider;
   private final CallbackList <IExceptionCallback <? super SQLException>> m_aExceptionCallbacks = new CallbackList <> ();
@@ -208,7 +208,7 @@ public class DBExecutor implements Serializable
           aPS.setObject (nIndex++, aArg);
 
         if (GlobalDebug.isDebugMode ())
-          s_aLogger.info ("Executing prepared statement: " + sSQL);
+          LOGGER.info ("Executing prepared statement: " + sSQL);
 
         // call callback
         aPSCallback.run (aPS);
@@ -235,7 +235,7 @@ public class DBExecutor implements Serializable
   {
     return withStatementDo (aStatement -> {
       if (GlobalDebug.isDebugMode ())
-        s_aLogger.info ("Executing statement: " + sSQL);
+        LOGGER.info ("Executing statement: " + sSQL);
       aStatement.execute (sSQL);
     }, aGeneratedKeysCB);
   }

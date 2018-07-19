@@ -56,7 +56,7 @@ public abstract class AbstractH2Connector extends AbstractConnector
   public static final int DEFAULT_TRACE_LEVEL_SYSOUT = 0;
   /** Default close on exit: true */
   public static final boolean DEFAULT_CLOSE_ON_EXIT = true;
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractH2Connector.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractH2Connector.class);
 
   private int m_nTraceLevelFile = DEFAULT_TRACE_LEVEL_FILE;
   private int m_nTraceLevelSysOut = DEFAULT_TRACE_LEVEL_SYSOUT;
@@ -156,7 +156,7 @@ public abstract class AbstractH2Connector extends AbstractConnector
     // Save the DB data to an SQL file
     try
     {
-      s_aLogger.info ("Dumping database '" + getDatabaseName () + "' to OutputStream");
+      LOGGER.info ("Dumping database '" + getDatabaseName () + "' to OutputStream");
       try (final PrintWriter aPrintWriter = new PrintWriter (new NonBlockingBufferedWriter (StreamHelper.createWriter (aOS,
                                                                                                                        StandardCharsets.UTF_8))))
       {
@@ -190,7 +190,7 @@ public abstract class AbstractH2Connector extends AbstractConnector
   {
     ValueEnforcer.notNull (fDestFile, "DestFile");
 
-    s_aLogger.info ("Backing up database '" + getDatabaseName () + "' to " + fDestFile);
+    LOGGER.info ("Backing up database '" + getDatabaseName () + "' to " + fDestFile);
     final DBExecutor aExecutor = new DBExecutor (this);
     return aExecutor.executeStatement ("BACKUP TO '" + fDestFile.getAbsolutePath () + "'");
   }

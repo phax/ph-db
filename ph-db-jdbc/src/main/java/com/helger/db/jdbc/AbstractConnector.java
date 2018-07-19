@@ -42,7 +42,7 @@ import com.helger.commons.string.ToStringGenerator;
 @ThreadSafe
 public abstract class AbstractConnector implements IHasDataSource, Closeable
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractConnector.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractConnector.class);
 
   @Nonnull
   private final SimpleLock m_aLock = new SimpleLock ();
@@ -131,8 +131,8 @@ public abstract class AbstractConnector implements IHasDataSource, Closeable
           m_aDataSource.close ();
           m_aDataSource = null;
 
-          if (s_aLogger.isDebugEnabled ())
-            s_aLogger.debug ("Closed database connection to '" + getDatabaseName () + "'");
+          if (LOGGER.isDebugEnabled ())
+            LOGGER.debug ("Closed database connection to '" + getDatabaseName () + "'");
         }
       });
     }

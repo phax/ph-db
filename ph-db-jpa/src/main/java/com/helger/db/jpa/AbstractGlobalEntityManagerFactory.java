@@ -49,7 +49,7 @@ import com.helger.scope.singleton.AbstractGlobalSingleton;
  */
 public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalSingleton
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractGlobalEntityManagerFactory.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractGlobalEntityManagerFactory.class);
 
   static
   {
@@ -98,7 +98,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
     ValueEnforcer.notEmpty (sPlatformClass, "PlatformClass");
     ValueEnforcer.notEmpty (sPersistenceUnitName, "PersistenceUnitName");
 
-    s_aLogger.info ("Using JDBC URL " +
+    LOGGER.info ("Using JDBC URL " +
                     sJdbcURL +
                     " with JDBC driver " +
                     sJdbcDriverClass +
@@ -132,7 +132,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
       final String sDDLGeneration = (String) aFactoryProps.get (PersistenceUnitProperties.DDL_GENERATION);
       if (!PersistenceUnitProperties.NONE.equals (sDDLGeneration))
       {
-        s_aLogger.warn ("DDL generation is set to '" +
+        LOGGER.warn ("DDL generation is set to '" +
                         sDDLGeneration +
                         "' but no DDL generation mode is defined, which defaults to '" +
                         PersistenceUnitProperties.DDL_DATABASE_GENERATION +
@@ -181,7 +181,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
 
     // Customize on demand
     m_aFactory = customizeEntityManagerFactory (aFactory);
-    s_aLogger.info ("Created EntityManagerFactory for persistence unit '" + m_sPersistenceUnitName + "'");
+    LOGGER.info ("Created EntityManagerFactory for persistence unit '" + m_sPersistenceUnitName + "'");
 
     // Consistency check after creation!
     final Map <String, Object> aRealProps = m_aFactory.getProperties ();
@@ -233,7 +233,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
       }
       m_aFactory = null;
     }
-    s_aLogger.info ("Closed EntityManagerFactory for persistence unit '" + m_sPersistenceUnitName + "'");
+    LOGGER.info ("Closed EntityManagerFactory for persistence unit '" + m_sPersistenceUnitName + "'");
   }
 
   /**

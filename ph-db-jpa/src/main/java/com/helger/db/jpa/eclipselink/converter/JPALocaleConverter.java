@@ -35,7 +35,7 @@ import com.helger.commons.locale.LocaleCache;
 @Immutable
 public class JPALocaleConverter implements Converter
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (JPALocaleConverter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (JPALocaleConverter.class);
 
   public JPALocaleConverter ()
   {}
@@ -57,7 +57,7 @@ public class JPALocaleConverter implements Converter
       catch (final Exception ex)
       {
         // failed to convert
-        s_aLogger.warn ("Failed to convert '" +
+        LOGGER.warn ("Failed to convert '" +
                         aDataValue +
                         "' of type " +
                         ClassHelper.getSafeClassName (aDataValue) +

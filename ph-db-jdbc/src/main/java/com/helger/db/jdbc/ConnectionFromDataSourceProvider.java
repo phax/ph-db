@@ -39,7 +39,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class ConnectionFromDataSourceProvider implements IHasConnection
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (ConnectionFromDataSourceProvider.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (ConnectionFromDataSourceProvider.class);
 
   private final DataSource m_aDS;
 
@@ -59,12 +59,12 @@ public class ConnectionFromDataSourceProvider implements IHasConnection
     {
       final Connection ret = m_aDS.getConnection ();
       if (ret == null)
-        s_aLogger.warn ("Failed to get connection from dataSource " + m_aDS + "!");
+        LOGGER.warn ("Failed to get connection from dataSource " + m_aDS + "!");
       return ret;
     }
     catch (final SQLException ex)
     {
-      s_aLogger.error ("No connection retrieved from dataSource " + m_aDS, ex);
+      LOGGER.error ("No connection retrieved from dataSource " + m_aDS, ex);
       return null;
     }
   }

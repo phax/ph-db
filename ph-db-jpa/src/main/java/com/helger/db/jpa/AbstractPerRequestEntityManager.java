@@ -40,7 +40,7 @@ import com.helger.scope.singleton.AbstractRequestSingleton;
 @ThreadSafe
 public abstract class AbstractPerRequestEntityManager extends AbstractRequestSingleton
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractPerRequestEntityManager.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractPerRequestEntityManager.class);
 
   private volatile EntityManager m_aEntityManager;
   private boolean m_bDestroyed = false;
@@ -86,8 +86,8 @@ public abstract class AbstractPerRequestEntityManager extends AbstractRequestSin
           throw new IllegalStateException ("Failed to create EntityManager!");
         m_aEntityManager = ret2;
 
-        if (s_aLogger.isDebugEnabled ())
-          s_aLogger.debug ("EntityManager created");
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("EntityManager created");
       }
       return ret2;
     }
@@ -111,8 +111,8 @@ public abstract class AbstractPerRequestEntityManager extends AbstractRequestSin
         aEM.close ();
         m_aEntityManager = null;
 
-        if (s_aLogger.isDebugEnabled ())
-          s_aLogger.debug ("EntityManager destroyed");
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("EntityManager destroyed");
       }
       // Independent if it was closed or not
       m_bDestroyed = true;

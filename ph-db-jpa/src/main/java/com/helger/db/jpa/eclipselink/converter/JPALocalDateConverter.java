@@ -36,7 +36,7 @@ import com.helger.commons.typeconvert.TypeConverter;
 @Immutable
 public class JPALocalDateConverter implements Converter
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (JPALocalDateConverter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (JPALocalDateConverter.class);
 
   public JPALocalDateConverter ()
   {}
@@ -59,7 +59,7 @@ public class JPALocalDateConverter implements Converter
       catch (final IllegalArgumentException ex)
       {
         // failed to convert
-        s_aLogger.warn ("Failed to convert '" +
+        LOGGER.warn ("Failed to convert '" +
                         aDataValue +
                         "' of type " +
                         ClassHelper.getSafeClassName (aDataValue) +
