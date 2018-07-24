@@ -82,7 +82,7 @@ public class JPAEnabledManager
                                                                                                                        "$execError");
 
   protected static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
-  private static final CallbackList <IExceptionCallback <Throwable>> s_aExceptionCallbacks = new CallbackList <> ();
+  private static final CallbackList <IExceptionCallback <Exception>> s_aExceptionCallbacks = new CallbackList <> ();
   private static final AtomicBoolean s_aExecutionWarnEnabled = new AtomicBoolean (DEFAULT_EXECUTION_WARN_ENABLED);
   private static final AtomicInteger s_aExecutionWarnTime = new AtomicInteger (DEFAULT_EXECUTION_WARN_TIME_MS);
   private static final CallbackList <IExecutionTimeExceededCallback> s_aExecutionTimeExceededHandlers = new CallbackList <> ();
@@ -183,7 +183,7 @@ public class JPAEnabledManager
    */
   @Nonnull
   @ReturnsMutableObject
-  public static final CallbackList <IExceptionCallback <Throwable>> exceptionCallbacks ()
+  public static final CallbackList <IExceptionCallback <Exception>> exceptionCallbacks ()
   {
     return s_aExceptionCallbacks;
   }
@@ -191,12 +191,12 @@ public class JPAEnabledManager
   /**
    * Invoke the custom exception handler (if present)
    *
-   * @param t
+   * @param ex
    *        The exception that occurred.
    */
-  private static void _invokeCustomExceptionCallback (@Nonnull final Throwable t)
+  private static void _invokeCustomExceptionCallback (@Nonnull final Exception ex)
   {
-    s_aExceptionCallbacks.forEach (x -> x.onException (t));
+    s_aExceptionCallbacks.forEach (x -> x.onException (ex));
   }
 
   /**
@@ -334,12 +334,12 @@ public class JPAEnabledManager
       s_aStatsTimerExecutionSuccess.addTime (aSW.stopAndGetMillis ());
       return JPAExecutionResult.createSuccess (ret);
     }
-    catch (final Throwable t)
+    catch (final Exception ex)
     {
       s_aStatsCounterError.increment ();
       s_aStatsTimerExecutionError.addTime (aSW.stopAndGetMillis ());
-      _invokeCustomExceptionCallback (t);
-      return JPAExecutionResult.createFailure (t);
+      _invokeCustomExceptionCallback (ex);
+      return JPAExecutionResult.createFailure (ex);
     }
     finally
     {
@@ -406,12 +406,12 @@ public class JPAEnabledManager
       s_aStatsTimerExecutionSuccess.addTime (aSW.stopAndGetMillis ());
       return JPAExecutionResult.createSuccess (ret);
     }
-    catch (final Throwable t)
+    catch (final Exception ex)
     {
       s_aStatsCounterError.increment ();
       s_aStatsTimerExecutionError.addTime (aSW.stopAndGetMillis ());
-      _invokeCustomExceptionCallback (t);
-      return JPAExecutionResult.<T> createFailure (t);
+      _invokeCustomExceptionCallback (ex);
+      return JPAExecutionResult.<T> createFailure (ex);
     }
     finally
     {

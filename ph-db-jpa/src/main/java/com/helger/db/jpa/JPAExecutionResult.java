@@ -34,7 +34,7 @@ import com.helger.commons.string.ToStringGenerator;
  * <ul>
  * <li>Success/Failure</li>
  * <li>Return object - mostly in case of success</li>
- * <li>Throwable/Exception - mostly in case of error</li>
+ * <li>Exception - mostly in case of error</li>
  * </ul>
  *
  * @author Philip Helger
@@ -44,49 +44,49 @@ import com.helger.commons.string.ToStringGenerator;
 @Immutable
 public class JPAExecutionResult <DATATYPE> extends SuccessWithValue <DATATYPE>
 {
-  private final Throwable m_aThrowable;
+  private final Exception m_aException;
 
   public JPAExecutionResult (@Nonnull final ISuccessIndicator aSuccessIndicator,
                              @Nullable final DATATYPE aObj,
-                             @Nullable final Throwable aThrowable)
+                             @Nullable final Exception aException)
   {
     super (aSuccessIndicator, aObj);
-    m_aThrowable = aThrowable;
+    m_aException = aException;
   }
 
   /**
    * @return The exception passed in the constructor. May be <code>null</code>.
-   * @see #hasThrowable()
+   * @see #hasException()
    */
   @Nullable
-  public Throwable getThrowable ()
+  public Exception getException ()
   {
-    return m_aThrowable;
+    return m_aException;
   }
 
   /**
    * @return <code>true</code> if an exception is present, <code>false</code> if
    *         not.
-   * @see #getThrowable()
+   * @see #getException()
    */
-  public boolean hasThrowable ()
+  public boolean hasException ()
   {
-    return m_aThrowable != null;
+    return m_aException != null;
   }
 
   /**
    * @return The supplied value.
-   * @throws Throwable
-   *         if a Throwable is present
+   * @throws Exception
+   *         if an Exception is present
    * @see #get()
-   * @see #hasThrowable()
-   * @see #getThrowable()
+   * @see #hasException()
+   * @see #getException()
    */
   @Nullable
-  public DATATYPE getOrThrow () throws Throwable
+  public DATATYPE getOrThrow () throws Exception
   {
-    if (hasThrowable ())
-      throw getThrowable ();
+    if (hasException ())
+      throw getException ();
     return get ();
   }
 
@@ -98,27 +98,27 @@ public class JPAExecutionResult <DATATYPE> extends SuccessWithValue <DATATYPE>
     if (!super.equals (o))
       return false;
     final JPAExecutionResult <?> rhs = (JPAExecutionResult <?>) o;
-    return EqualsHelper.equals (ClassHelper.getSafeClassName (m_aThrowable),
-                                ClassHelper.getSafeClassName (rhs.m_aThrowable));
+    return EqualsHelper.equals (ClassHelper.getSafeClassName (m_aException),
+                                ClassHelper.getSafeClassName (rhs.m_aException));
   }
 
   @Override
   public int hashCode ()
   {
     return HashCodeGenerator.getDerived (super.hashCode ())
-                            .append (ClassHelper.getSafeClassName (m_aThrowable))
+                            .append (ClassHelper.getSafeClassName (m_aException))
                             .getHashCode ();
   }
 
   @Override
   public String toString ()
   {
-    return ToStringGenerator.getDerived (super.toString ()).append ("throwable", m_aThrowable).getToString ();
+    return ToStringGenerator.getDerived (super.toString ()).append ("throwable", m_aException).getToString ();
   }
 
   /**
    * Create a new success object.
-   * 
+   *
    * @param aObj
    *        The returned value from the DB
    * @return Never <code>null</code>.
@@ -131,14 +131,14 @@ public class JPAExecutionResult <DATATYPE> extends SuccessWithValue <DATATYPE>
 
   /**
    * Create a new failure object.
-   * 
-   * @param t
+   *
+   * @param ex
    *        The exception that occurred.
    * @return Never <code>null</code>.
    */
   @Nonnull
-  public static <T> JPAExecutionResult <T> createFailure (@Nullable final Throwable t)
+  public static <T> JPAExecutionResult <T> createFailure (@Nullable final Exception ex)
   {
-    return new JPAExecutionResult <> (ESuccess.FAILURE, null, t);
+    return new JPAExecutionResult <> (ESuccess.FAILURE, null, ex);
   }
 }
