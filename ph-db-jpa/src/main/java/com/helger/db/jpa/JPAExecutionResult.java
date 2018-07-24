@@ -122,6 +122,8 @@ public class JPAExecutionResult <DATATYPE> extends SuccessWithValue <DATATYPE>
    * @param aObj
    *        The returned value from the DB
    * @return Never <code>null</code>.
+   * @param <T>
+   *        Data type of provided parameter
    */
   @Nonnull
   public static <T> JPAExecutionResult <T> createSuccess (@Nullable final T aObj)
@@ -135,6 +137,8 @@ public class JPAExecutionResult <DATATYPE> extends SuccessWithValue <DATATYPE>
    * @param ex
    *        The exception that occurred.
    * @return Never <code>null</code>.
+   * @param <T>
+   *        Data type - depends on callers requirements.
    */
   @Nonnull
   public static <T> JPAExecutionResult <T> createFailure (@Nullable final Exception ex)
