@@ -6,6 +6,7 @@ Java library with some basic DB API, a special JDBC version and a JPA version ba
 
 * v6.1.2 - work in progress
     * Updated to EclipseLink 2.7.3
+    * Updated to MySQLConnector/J 8.0.13
 * v6.1.1 - 2018-07-24
     * Fixed OSGI ServiceProvider configuration
     * Updated to EclipseLink 2.7.2
