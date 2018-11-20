@@ -36,7 +36,7 @@ public final class JPAZonedDateTimeConverterTest
   @Test
   public void testAll ()
   {
-    final ZonedDateTime aNow = PDTFactory.getCurrentZonedDateTime ();
+    final ZonedDateTime aNow = PDTFactory.getCurrentZonedDateTime ().withNano (0);
     final JPAZonedDateTimeConverter aConverter = new JPAZonedDateTimeConverter ();
     final Timestamp aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
     assertNotNull (aDataValue);
