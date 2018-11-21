@@ -36,7 +36,7 @@ public final class JPAOffsetDateTimeConverterTest
   @Test
   public void testAll ()
   {
-    final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTime ().withNano (0);
+    final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTimeMillisOnly ();
     final JPAOffsetDateTimeConverter aConverter = new JPAOffsetDateTimeConverter ();
     final Timestamp aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
     assertNotNull (aDataValue);
