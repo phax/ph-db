@@ -4,9 +4,10 @@ Java library with some basic DB API, a special JDBC version and a JPA version ba
 
 # News and noteworthy
 
-* v6.1.2 - work in progress
+* v6.1.2 - 2018-11-22
     * Updated to EclipseLink 2.7.3
     * Updated to MySQLConnector/J 8.0.13
+    * Updated to ph-commons 9.2.0
 * v6.1.1 - 2018-07-24
     * Fixed OSGI ServiceProvider configuration
     * Updated to EclipseLink 2.7.2
@@ -28,13 +29,14 @@ Java library with some basic DB API, a special JDBC version and a JPA version ba
     * Requires at least JDK8
 
 # Maven usage
+
 Add the following to your pom.xml to use this artifact:
 
 ```xml
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-db-api</artifactId>
-  <version>6.1.1</version>
+  <version>6.1.2</version>
 </dependency>
 ```
 
@@ -42,7 +44,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-db-jdbc</artifactId>
-  <version>6.1.1</version>
+  <version>6.1.2</version>
 </dependency>
 ```
 
@@ -50,7 +52,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-db-jpa</artifactId>
-  <version>6.1.1</version>
+  <version>6.1.2</version>
 </dependency>
 ```
 
