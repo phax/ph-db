@@ -53,7 +53,7 @@
   </organization>
 
   <properties>
-    <eclipselink.version>2.7.3</eclipselink.version>
+    <eclipselink.version>2.7.4</eclipselink.version>
   </properties>
 
   <developers>
@@ -70,7 +70,7 @@
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-commons-parent-pom</artifactId>
-        <version>9.2.0</version>
+        <version>9.2.1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -84,7 +84,7 @@
       <dependency>
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
-        <version>8.0.13</version>
+        <version>8.0.14</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
