@@ -6,7 +6,7 @@ Java library with some basic DB API, a special JDBC version and a JPA version ba
 
 * v6.1.3 - work in progress
     * Updated to EclipseLink 2.7.4
-    * Updated to MySQLConnector/J 8.0.14
+    * Updated to MySQLConnector/J 8.0.15
 * v6.1.2 - 2018-11-22
     * Updated to EclipseLink 2.7.3
     * Updated to MySQLConnector/J 8.0.13
