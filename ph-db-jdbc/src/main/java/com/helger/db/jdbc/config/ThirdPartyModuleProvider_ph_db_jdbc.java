@@ -44,13 +44,13 @@ public final class ThirdPartyModuleProvider_ph_db_jdbc implements IThirdPartyMod
   public static final IThirdPartyModule COMMONS_DBCP = new ThirdPartyModule ("Apache Commons DBCP",
                                                                              "Apache",
                                                                              ELicense.APACHE2,
-                                                                             new Version (2, 5),
+                                                                             new Version (2, 6, 0),
                                                                              "http://commons.apache.org/proper/commons-dbcp/");
   /** H2 database */
   public static final IThirdPartyModule H2 = new ThirdPartyModule ("H2 Database Engine",
                                                                    "Eclipse Foundation",
                                                                    ELicense.EPL10,
-                                                                   new Version (1, 4, 197),
+                                                                   new Version (1, 4, 198),
                                                                    "http://www.h2database.com/",
                                                                    true);
   /** MySQL connector */
