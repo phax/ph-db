@@ -4,7 +4,7 @@ Java library with some basic DB API, a special JDBC version and a JPA version ba
 
 # News and noteworthy
 
-* v6.1.3 - 2019-02-25
+* v6.1.3 - 2019-03-12
     * Updated to EclipseLink 2.7.4
     * Updated to MySQLConnector/J 8.0.15
     * Updated to Apache Commons Pool 2.6.1
