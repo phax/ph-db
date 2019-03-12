@@ -82,7 +82,7 @@ public class JPAEnabledManager
                                                                                                                        "$execError");
 
   protected static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
-  private static final CallbackList <IExceptionCallback <Exception>> s_aExceptionCallbacks = new CallbackList <> ();
+  private static final CallbackList <IExceptionCallback <Throwable>> s_aExceptionCallbacks = new CallbackList <> ();
   private static final AtomicBoolean s_aExecutionWarnEnabled = new AtomicBoolean (DEFAULT_EXECUTION_WARN_ENABLED);
   private static final AtomicInteger s_aExecutionWarnTime = new AtomicInteger (DEFAULT_EXECUTION_WARN_TIME_MS);
   private static final CallbackList <IExecutionTimeExceededCallback> s_aExecutionTimeExceededHandlers = new CallbackList <> ();
@@ -183,7 +183,7 @@ public class JPAEnabledManager
    */
   @Nonnull
   @ReturnsMutableObject
-  public static final CallbackList <IExceptionCallback <Exception>> exceptionCallbacks ()
+  public static final CallbackList <IExceptionCallback <Throwable>> exceptionCallbacks ()
   {
     return s_aExceptionCallbacks;
   }
@@ -194,7 +194,7 @@ public class JPAEnabledManager
    * @param ex
    *        The exception that occurred.
    */
-  private static void _invokeCustomExceptionCallback (@Nonnull final Exception ex)
+  private static void _invokeCustomExceptionCallback (@Nonnull final Throwable ex)
   {
     s_aExceptionCallbacks.forEach (x -> x.onException (ex));
   }
