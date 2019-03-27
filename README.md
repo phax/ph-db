@@ -6,6 +6,7 @@ Java library with some basic DB API, a special JDBC version and a JPA version ba
 
 * v6.1.4 - work in progress
     * Updated to H2 1.4.199
+    * Replacing "javax.persistence 2.2.1" with "jakarta.persistence 2.2.2"
 * v6.1.3 - 2019-03-12
     * Updated to EclipseLink 2.7.4
     * Updated to MySQLConnector/J 8.0.15
