@@ -1,10 +1,10 @@
-# ph-db-api
+# ph-db
 
 Java library with some basic DB API, a special JDBC version and a JPA version based on EclipseLink.
 
 # News and noteworthy
 
-* v6.1.4 - work in progress
+* v6.1.4 - 2019-03-27
     * Updated to H2 1.4.199
     * Replacing "javax.persistence 2.2.1" with "jakarta.persistence 2.2.2"
 * v6.1.3 - 2019-03-12
@@ -45,7 +45,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-db-api</artifactId>
-  <version>6.1.3</version>
+  <version>6.1.4</version>
 </dependency>
 ```
 
@@ -53,7 +53,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-db-jdbc</artifactId>
-  <version>6.1.3</version>
+  <version>6.1.4</version>
 </dependency>
 ```
 
@@ -61,7 +61,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-db-jpa</artifactId>
-  <version>6.1.3</version>
+  <version>6.1.4</version>
 </dependency>
 ```
 
