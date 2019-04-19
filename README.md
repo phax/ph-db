@@ -4,6 +4,8 @@ Java library with some basic DB API, a special JDBC version and a JPA version ba
 
 # News and noteworthy
 
+* v6.1.5 - work in progress
+    * Updated to Apache Commons Pool 2.6.2
 * v6.1.4 - 2019-03-27
     * Updated to H2 1.4.199
     * Replacing "javax.persistence 2.2.1" with "jakarta.persistence 2.2.2"
