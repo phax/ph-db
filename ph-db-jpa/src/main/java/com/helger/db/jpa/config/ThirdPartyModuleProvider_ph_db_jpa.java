@@ -52,7 +52,7 @@ public final class ThirdPartyModuleProvider_ph_db_jpa implements IThirdPartyModu
   public static final IThirdPartyModule MYSQL = new ThirdPartyModule ("MySQL Connector/J",
                                                                       "Oracle",
                                                                       ELicense.GPL20,
-                                                                      new Version (8, 0, 15),
+                                                                      new Version (8, 0, 17),
                                                                       "http://www.mysql.com/",
                                                                       true);
 
