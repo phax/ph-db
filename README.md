@@ -6,6 +6,7 @@ Java library with some basic DB API, a special JDBC version and a JPA version ba
 
 * v6.1.5 - work in progress
     * Updated to Apache Commons Pool 2.7.0
+    * Updated to Apache Commons DBCP 2.7.0
     * Updated to MySQLConnector/J 8.0.17
 * v6.1.4 - 2019-03-27
     * Updated to H2 1.4.199
@@ -14,7 +15,7 @@ Java library with some basic DB API, a special JDBC version and a JPA version ba
     * Updated to EclipseLink 2.7.4
     * Updated to MySQLConnector/J 8.0.15
     * Updated to Apache Commons Pool 2.6.1
-    * Updated to Apache Commons DBCP2 2.6.0
+    * Updated to Apache Commons DBCP 2.6.0
     * Updated to H2 1.4.198
 * v6.1.2 - 2018-11-22
     * Updated to EclipseLink 2.7.3
