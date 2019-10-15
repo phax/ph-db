@@ -46,24 +46,10 @@ public final class ThirdPartyModuleProvider_ph_db_jdbc implements IThirdPartyMod
                                                                              ELicense.APACHE2,
                                                                              new Version (2, 7, 0),
                                                                              "http://commons.apache.org/proper/commons-dbcp/");
-  /** H2 database */
-  public static final IThirdPartyModule H2 = new ThirdPartyModule ("H2 Database Engine",
-                                                                   "Eclipse Foundation",
-                                                                   ELicense.EPL10,
-                                                                   new Version (1, 4, 199),
-                                                                   "http://www.h2database.com/",
-                                                                   true);
-  /** MySQL connector */
-  public static final IThirdPartyModule MYSQL = new ThirdPartyModule ("MySQL Connector/J",
-                                                                      "Oracle",
-                                                                      ELicense.GPL20,
-                                                                      new Version (8, 0, 18),
-                                                                      "http://www.mysql.com/",
-                                                                      true);
 
   @Nullable
   public IThirdPartyModule [] getAllThirdPartyModules ()
   {
-    return new IThirdPartyModule [] { COMMONS_POOL, COMMONS_DBCP, H2, MYSQL };
+    return new IThirdPartyModule [] { COMMONS_POOL, COMMONS_DBCP };
   }
 }
