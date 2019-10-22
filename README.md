@@ -9,6 +9,7 @@ Java library with some basic DB API, a special JDBC version and a JPA version ba
     * Updated to Apache Commons DBCP 2.7.0
     * Updated to MySQLConnector/J 8.0.18
     * Updated to H2 1.4.200
+    * Updated to EclipseLink 2.7.5
 * v6.1.4 - 2019-03-27
     * Updated to H2 1.4.199
     * Replacing "javax.persistence 2.2.1" with "jakarta.persistence 2.2.2"
