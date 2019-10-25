@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.ENewLineMode;
 
@@ -60,16 +59,12 @@ public class EclipseLinkLogger extends AbstractSessionLog
         if (nLogLevel >= SessionLog.WARNING)
           LOGGER.warn (sMsg, t);
         else
-          if (nLogLevel >= SessionLog.CONFIG || GlobalDebug.isDebugMode ())
-          {
-            if (LOGGER.isInfoEnabled ())
-              LOGGER.info (sMsg, t);
-          }
-          else
-          {
-            if (LOGGER.isDebugEnabled ())
-              LOGGER.debug (sMsg, t);
-          }
+        {
+          // Ensure all other levels logged as Info to honor e.g. the SQL "FINE"
+          // logging as suggested by the EclipseLink documentation
+          if (LOGGER.isInfoEnabled ())
+            LOGGER.info (sMsg, t);
+        }
     }
   }
 }
