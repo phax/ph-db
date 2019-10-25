@@ -4,12 +4,13 @@ Java library with some basic DB API, a special JDBC version and a JPA version ba
 
 # News and noteworthy
 
-* v6.1.5 - work in progress
+* v6.1.5 - 2019-10-25
     * Updated to Apache Commons Pool 2.7.0
     * Updated to Apache Commons DBCP 2.7.0
     * Updated to MySQLConnector/J 8.0.18
     * Updated to H2 1.4.200
     * Updated to EclipseLink 2.7.5
+    * The `EclipseLinkLogger` logs all error levels below `WARNING` as `Info`
 * v6.1.4 - 2019-03-27
     * Updated to H2 1.4.199
     * Replacing "javax.persistence 2.2.1" with "jakarta.persistence 2.2.2"
@@ -51,7 +52,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-db-api</artifactId>
-  <version>6.1.4</version>
+  <version>6.1.5</version>
 </dependency>
 ```
 
@@ -59,7 +60,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-db-jdbc</artifactId>
-  <version>6.1.4</version>
+  <version>6.1.5</version>
 </dependency>
 ```
 
@@ -67,7 +68,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-db-jpa</artifactId>
-  <version>6.1.4</version>
+  <version>6.1.5</version>
 </dependency>
 ```
 
