@@ -4,6 +4,8 @@ Java library with some basic DB API, a special JDBC version and a JPA version ba
 
 # News and noteworthy
 
+* v6.1.6 - work in progress
+    * Updated to Apache Commons Pool 2.8.0
 * v6.1.5 - 2019-10-25
     * Updated to Apache Commons Pool 2.7.0
     * Updated to Apache Commons DBCP 2.7.0
