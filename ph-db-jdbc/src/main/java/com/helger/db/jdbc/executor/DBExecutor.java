@@ -24,7 +24,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Optional;
-import java.util.function.Function;
 
 import javax.annotation.CheckForSigned;
 import javax.annotation.Nonnegative;
@@ -89,12 +88,20 @@ public class DBExecutor implements Serializable
     void run (@Nonnull PreparedStatement aPreparedStatement) throws SQLException;
   }
 
+  @FunctionalInterface
+  public interface IConnectionExecutor
+  {
+    @Nonnull
+    ESuccess execute (@Nonnull IWithConnectionCallback aCB,
+                      @Nullable IExceptionCallback <? super Exception> aExtraExCB);
+  }
+
   private static final Logger LOGGER = LoggerFactory.getLogger (DBExecutor.class);
   private static final Long MINUS1 = Long.valueOf (CGlobal.ILLEGAL_UINT);
 
   private final IHasConnection m_aConnectionProvider;
-  private final CallbackList <IExceptionCallback <? super SQLException>> m_aExceptionCallbacks = new CallbackList <> ();
-  private Function <IWithConnectionCallback, ESuccess> m_aConnectionExecutor;
+  private final CallbackList <IExceptionCallback <? super Exception>> m_aExceptionCallbacks = new CallbackList <> ();
+  private IConnectionExecutor m_aConnectionExecutor;
 
   public DBExecutor (@Nonnull final IHasDataSource aDataSourceProvider)
   {
@@ -111,14 +118,15 @@ public class DBExecutor implements Serializable
 
   @Nonnull
   @ReturnsMutableObject
-  public CallbackList <IExceptionCallback <? super SQLException>> exceptionCallbacks ()
+  public CallbackList <IExceptionCallback <? super Exception>> exceptionCallbacks ()
   {
     return m_aExceptionCallbacks;
   }
 
   @CodingStyleguideUnaware ("Needs to be synchronized!")
   @Nonnull
-  protected final synchronized ESuccess withNewConnectionDo (@Nonnull final IWithConnectionCallback aCB)
+  protected final synchronized ESuccess withNewConnectionDo (@Nonnull final IWithConnectionCallback aCB,
+                                                             @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     Connection aConnection = null;
     try
@@ -129,13 +137,15 @@ public class DBExecutor implements Serializable
         throw new SQLException ("Failed to get a connection from connection provider");
 
       // Okay, connection was established
-      return withExistingConnectionDo (aConnection, aCB);
+      return withExistingConnectionDo (aConnection, aCB, aExtraExCB);
     }
-    catch (final SQLException ex)
+    catch (final SQLException | RuntimeException ex)
     {
       // Error creating a connection
       // Invoke callback
       m_aExceptionCallbacks.forEach (x -> x.onException (ex));
+      if (aExtraExCB != null)
+        aExtraExCB.onException (ex);
       return ESuccess.FAILURE;
     }
     finally
@@ -148,7 +158,8 @@ public class DBExecutor implements Serializable
 
   @Nonnull
   protected final ESuccess withExistingConnectionDo (@Nonnull final Connection aConnection,
-                                                     @Nonnull final IWithConnectionCallback aCB)
+                                                     @Nonnull final IWithConnectionCallback aCB,
+                                                     @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     // Okay, connection was established
     ESuccess eCommited = ESuccess.FAILURE;
@@ -160,10 +171,12 @@ public class DBExecutor implements Serializable
       // Commit
       eCommited = JDBCHelper.commit (aConnection);
     }
-    catch (final SQLException ex)
+    catch (final SQLException | RuntimeException ex)
     {
       // Invoke callback
       m_aExceptionCallbacks.forEach (x -> x.onException (ex));
+      if (aExtraExCB != null)
+        aExtraExCB.onException (ex);
       return ESuccess.FAILURE;
     }
     finally
@@ -193,6 +206,13 @@ public class DBExecutor implements Serializable
   @Nonnull
   public final ESuccess performInTransaction (@Nonnull final IThrowingRunnable <SQLException> aRunnable)
   {
+    return performInTransaction (aRunnable, null);
+  }
+
+  @Nonnull
+  public final ESuccess performInTransaction (@Nonnull final IThrowingRunnable <SQLException> aRunnable,
+                                              @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
+  {
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
       // Disable auto commit
       final boolean bOldAutoCommit = aConnection.getAutoCommit ();
@@ -201,15 +221,15 @@ public class DBExecutor implements Serializable
       aConnection.setAutoCommit (false);
 
       // Avoid creating a new connection
-      final Function <IWithConnectionCallback, ESuccess> aOldConnectionExecutor = m_aConnectionExecutor;
-      m_aConnectionExecutor = aCB2 -> this.withExistingConnectionDo (aConnection, aCB2);
+      final IConnectionExecutor aOldConnectionExecutor = m_aConnectionExecutor;
+      m_aConnectionExecutor = (aCB2, aExCB2) -> this.withExistingConnectionDo (aConnection, aCB2, aExCB2);
 
       try
       {
         aRunnable.run ();
         aConnection.commit ();
       }
-      catch (final SQLException ex)
+      catch (final SQLException | RuntimeException ex)
       {
         aConnection.rollback ();
         throw ex;
@@ -221,12 +241,13 @@ public class DBExecutor implements Serializable
         aConnection.setAutoCommit (bOldAutoCommit);
       }
     };
-    return m_aConnectionExecutor.apply (aWithConnectionCB);
+    return m_aConnectionExecutor.execute (aWithConnectionCB, aExtraExCB);
   }
 
   @Nonnull
   protected final ESuccess withStatementDo (@Nonnull final IWithStatementCallback aCB,
-                                            @Nullable final IGeneratedKeysCallback aGeneratedKeysCB)
+                                            @Nullable final IGeneratedKeysCallback aGeneratedKeysCB,
+                                            @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
       Statement aStatement = null;
@@ -243,7 +264,7 @@ public class DBExecutor implements Serializable
         StreamHelper.close (aStatement);
       }
     };
-    return m_aConnectionExecutor.apply (aWithConnectionCB);
+    return m_aConnectionExecutor.execute (aWithConnectionCB, aExtraExCB);
   }
 
   @Nonnull
@@ -251,7 +272,8 @@ public class DBExecutor implements Serializable
                                                     @Nonnull final IPreparedStatementDataProvider aPSDP,
                                                     @Nonnull final IWithPreparedStatementCallback aPSCallback,
                                                     @Nullable final IUpdatedRowCountCallback aUpdatedRowCountCB,
-                                                    @Nullable final IGeneratedKeysCallback aGeneratedKeysCB)
+                                                    @Nullable final IGeneratedKeysCallback aGeneratedKeysCB,
+                                                    @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
       try (final PreparedStatement aPS = aConnection.prepareStatement (sSQL, Statement.RETURN_GENERATED_KEYS))
@@ -283,47 +305,51 @@ public class DBExecutor implements Serializable
           handleGeneratedKeys (aPS.getGeneratedKeys (), aGeneratedKeysCB);
       }
     };
-    return m_aConnectionExecutor.apply (aWithConnectionCB);
+    return m_aConnectionExecutor.execute (aWithConnectionCB, aExtraExCB);
   }
 
   @Nonnull
   public ESuccess executeStatement (@Nonnull final String sSQL)
   {
-    return executeStatement (sSQL, null);
+    return executeStatement (sSQL, null, null);
   }
 
   @Nonnull
-  public ESuccess executeStatement (@Nonnull final String sSQL, @Nullable final IGeneratedKeysCallback aGeneratedKeysCB)
+  public ESuccess executeStatement (@Nonnull final String sSQL,
+                                    @Nullable final IGeneratedKeysCallback aGeneratedKeysCB,
+                                    @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     return withStatementDo (aStatement -> {
       if (GlobalDebug.isDebugMode ())
         LOGGER.info ("Executing statement: " + sSQL);
       aStatement.execute (sSQL);
-    }, aGeneratedKeysCB);
+    }, aGeneratedKeysCB, aExtraExCB);
   }
 
   @Nonnull
   public ESuccess executePreparedStatement (@Nonnull final String sSQL,
                                             @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
-    return executePreparedStatement (sSQL, aPSDP, null, null);
+    return executePreparedStatement (sSQL, aPSDP, null, null, null);
   }
 
   @Nonnull
   public ESuccess executePreparedStatement (@Nonnull final String sSQL,
                                             @Nonnull final IPreparedStatementDataProvider aPSDP,
                                             @Nullable final IUpdatedRowCountCallback aURWCC,
-                                            @Nullable final IGeneratedKeysCallback aGeneratedKeysCB)
+                                            @Nullable final IGeneratedKeysCallback aGeneratedKeysCB,
+                                            @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
-    return withPreparedStatementDo (sSQL, aPSDP, aPS -> aPS.execute (), aURWCC, aGeneratedKeysCB);
+    return withPreparedStatementDo (sSQL, aPSDP, aPS -> aPS.execute (), aURWCC, aGeneratedKeysCB, aExtraExCB);
   }
 
   @Nullable
   public Optional <Object> executePreparedStatementAndGetGeneratedKey (@Nonnull final String sSQL,
-                                                                       @Nonnull final IPreparedStatementDataProvider aPSDP)
+                                                                       @Nonnull final IPreparedStatementDataProvider aPSDP,
+                                                                       @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final GetSingleGeneratedKeyCallback aCB = new GetSingleGeneratedKeyCallback ();
-    if (executePreparedStatement (sSQL, aPSDP, null, aCB).isFailure ())
+    if (executePreparedStatement (sSQL, aPSDP, null, aCB, aExtraExCB).isFailure ())
       return Optional.empty ();
     return Optional.of (aCB.getGeneratedKey ());
   }
@@ -339,7 +365,7 @@ public class DBExecutor implements Serializable
    */
   public int insertOrUpdateOrDelete (@Nonnull final String sSQL, @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
-    return insertOrUpdateOrDelete (sSQL, aPSDP, null);
+    return insertOrUpdateOrDelete (sSQL, aPSDP, null, null);
   }
 
   /**
@@ -352,16 +378,19 @@ public class DBExecutor implements Serializable
    * @param aGeneratedKeysCB
    *        An optional callback to retrieve eventually generated values. May be
    *        <code>null</code>.
+   * @param aExtraExCB
+   *        Per-call Exception callback. May be <code>null</code>.
    * @return The number of modified/inserted rows.
    */
   public int insertOrUpdateOrDelete (@Nonnull final String sSQL,
                                      @Nonnull final IPreparedStatementDataProvider aPSDP,
-                                     @Nullable final IGeneratedKeysCallback aGeneratedKeysCB)
+                                     @Nullable final IGeneratedKeysCallback aGeneratedKeysCB,
+                                     @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     // We need this wrapper because the anonymous inner class cannot change
     // variables in outer scope.
     final IUpdatedRowCountCallback aURCCB = new UpdatedRowCountCallback ();
-    withPreparedStatementDo (sSQL, aPSDP, aPS -> aPS.execute (), aURCCB, aGeneratedKeysCB);
+    withPreparedStatementDo (sSQL, aPSDP, aPS -> aPS.execute (), aURCCB, aGeneratedKeysCB, aExtraExCB);
     return aURCCB.getUpdatedRowCount ();
   }
 
@@ -401,10 +430,11 @@ public class DBExecutor implements Serializable
 
   @Nonnull
   public CountAndKey insertOrUpdateAndGetGeneratedKey (@Nonnull final String sSQL,
-                                                       @Nonnull final IPreparedStatementDataProvider aPSDP)
+                                                       @Nonnull final IPreparedStatementDataProvider aPSDP,
+                                                       @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final GetSingleGeneratedKeyCallback aCB = new GetSingleGeneratedKeyCallback ();
-    final int nUpdateCount = insertOrUpdateOrDelete (sSQL, aPSDP, aCB);
+    final int nUpdateCount = insertOrUpdateOrDelete (sSQL, aPSDP, aCB, aExtraExCB);
     return new CountAndKey (nUpdateCount,
                             nUpdateCount != IUpdatedRowCountCallback.NOT_INITIALIZED ? aCB.getGeneratedKey () : null);
   }
@@ -467,7 +497,7 @@ public class DBExecutor implements Serializable
     return withStatementDo (aStatement -> {
       final ResultSet aResultSet = aStatement.executeQuery (sSQL);
       iterateResultSet (aResultSet, aResultItemCallback);
-    }, (IGeneratedKeysCallback) null);
+    }, (IGeneratedKeysCallback) null, null);
   }
 
   @Nonnull
@@ -478,7 +508,7 @@ public class DBExecutor implements Serializable
     return withPreparedStatementDo (sSQL, aPSDP, aPreparedStatement -> {
       final ResultSet aResultSet = aPreparedStatement.executeQuery ();
       iterateResultSet (aResultSet, aResultItemCallback);
-    }, (IUpdatedRowCountCallback) null, (IGeneratedKeysCallback) null);
+    }, (IUpdatedRowCountCallback) null, (IGeneratedKeysCallback) null, null);
   }
 
   @Nullable
