@@ -52,7 +52,12 @@ public final class JDBCHelper
     {
       try
       {
-        if (!aConnection.isClosed ())
+        if (aConnection.isClosed ())
+        {
+          if (LOGGER.isDebugEnabled ())
+            LOGGER.debug ("Cannot commit a closed connection: " + aConnection);
+        }
+        else
         {
           if (!aConnection.getAutoCommit ())
             aConnection.commit ();
@@ -61,43 +66,58 @@ public final class JDBCHelper
       }
       catch (final SQLException ex)
       {
-        LOGGER.warn ("Error committing connection " + aConnection, ex);
+        LOGGER.warn ("Error committing connection: " + aConnection, ex);
       }
     }
     return ESuccess.FAILURE;
   }
 
-  public static void rollback (@Nullable final Connection aConnection)
+  @Nonnull
+  public static ESuccess rollback (@Nullable final Connection aConnection)
   {
     if (aConnection != null)
     {
       try
       {
-        if (!aConnection.isClosed ())
+        if (aConnection.isClosed ())
+        {
+          if (LOGGER.isDebugEnabled ())
+            LOGGER.debug ("Cannot rollback a closed connection: " + aConnection);
+        }
+        else
+        {
           if (!aConnection.getAutoCommit ())
             aConnection.rollback ();
+          return ESuccess.SUCCESS;
+        }
       }
       catch (final SQLException ex)
       {
-        LOGGER.warn ("Error rolling back connection " + aConnection, ex);
+        LOGGER.warn ("Error rolling back connection: " + aConnection, ex);
       }
     }
+    return ESuccess.FAILURE;
   }
 
-  public static void close (@Nullable final Connection aConnection)
+  @Nonnull
+  public static ESuccess close (@Nullable final Connection aConnection)
   {
     if (aConnection != null)
     {
       try
       {
         if (!aConnection.isClosed ())
+        {
           aConnection.close ();
+          return ESuccess.SUCCESS;
+        }
       }
       catch (final SQLException ex)
       {
-        LOGGER.warn ("Error closing connection " + aConnection, ex);
+        LOGGER.warn ("Error closing connection: " + aConnection, ex);
       }
     }
+    return ESuccess.FAILURE;
   }
 
   /**

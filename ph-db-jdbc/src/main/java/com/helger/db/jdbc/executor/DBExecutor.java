@@ -70,19 +70,19 @@ import com.helger.db.jdbc.callback.UpdatedRowCountCallback;
 public class DBExecutor implements Serializable
 {
   @FunctionalInterface
-  protected interface IWithConnectionCallback extends ICallback
+  public interface IWithConnectionCallback extends ICallback
   {
     void run (@Nonnull Connection aConnection) throws SQLException;
   }
 
   @FunctionalInterface
-  protected interface IWithStatementCallback extends ICallback
+  public interface IWithStatementCallback extends ICallback
   {
     void run (@Nonnull Statement aStatement) throws SQLException;
   }
 
   @FunctionalInterface
-  protected interface IWithPreparedStatementCallback extends ICallback
+  public interface IWithPreparedStatementCallback extends ICallback
   {
     void run (@Nonnull PreparedStatement aPreparedStatement) throws SQLException;
   }
@@ -113,35 +113,48 @@ public class DBExecutor implements Serializable
 
   @CodingStyleguideUnaware ("Needs to be synchronized!")
   @Nonnull
-  private synchronized ESuccess _withConnectionDo (@Nonnull final IWithConnectionCallback aCB)
+  protected final synchronized ESuccess withConnectionDo (@Nonnull final IWithConnectionCallback aCB)
   {
     Connection aConnection = null;
-    ESuccess eCommited = ESuccess.FAILURE;
     try
     {
       // Get connection
       aConnection = m_aConnectionProvider.getConnection ();
       if (aConnection == null)
-        throw new IllegalStateException ("Failed to get a connection");
+        throw new SQLException ("Failed to get a connection from connection provider");
 
-      // Perform action
-      aCB.run (aConnection);
+      // Okay, connection was established
+      ESuccess eCommited = ESuccess.FAILURE;
+      try
+      {
+        // Perform action on connection
+        aCB.run (aConnection);
 
-      // Commit
-      eCommited = JDBCHelper.commit (aConnection);
+        // Commit
+        eCommited = JDBCHelper.commit (aConnection);
+      }
+      catch (final SQLException ex)
+      {
+        // Invoke callback
+        m_aExceptionCallbacks.forEach (x -> x.onException (ex));
+        return ESuccess.FAILURE;
+      }
+      finally
+      {
+        // Failure? Roll back!
+        if (eCommited.isFailure ())
+          JDBCHelper.rollback (aConnection);
+      }
     }
     catch (final SQLException ex)
     {
+      // Error creating a connection
       // Invoke callback
       m_aExceptionCallbacks.forEach (x -> x.onException (ex));
       return ESuccess.FAILURE;
     }
     finally
     {
-      // Failure? Roll back!
-      if (eCommited.isFailure ())
-        JDBCHelper.rollback (aConnection);
-
       // Close connection again (if necessary)
       if (m_aConnectionProvider.shouldCloseConnection ())
         JDBCHelper.close (aConnection);
@@ -165,10 +178,36 @@ public class DBExecutor implements Serializable
   }
 
   @Nonnull
+  protected final ESuccess withTransactionDo (@Nonnull final IWithConnectionCallback aCB)
+  {
+    return withConnectionDo (aConnection -> {
+      final boolean bOldAutoCommit = aConnection.getAutoCommit ();
+      if (!bOldAutoCommit)
+        LOGGER.info ("Found a nested transaction");
+      aConnection.setAutoCommit (false);
+
+      try
+      {
+        aCB.run (aConnection);
+        aConnection.commit ();
+      }
+      catch (final SQLException ex)
+      {
+        aConnection.rollback ();
+        throw ex;
+      }
+      finally
+      {
+        aConnection.setAutoCommit (bOldAutoCommit);
+      }
+    });
+  }
+
+  @Nonnull
   protected final ESuccess withStatementDo (@Nonnull final IWithStatementCallback aCB,
                                             @Nullable final IGeneratedKeysCallback aGeneratedKeysCB)
   {
-    return _withConnectionDo (aConnection -> {
+    return withConnectionDo (aConnection -> {
       Statement aStatement = null;
       try
       {
@@ -192,7 +231,7 @@ public class DBExecutor implements Serializable
                                                     @Nullable final IUpdatedRowCountCallback aUpdatedRowCountCB,
                                                     @Nullable final IGeneratedKeysCallback aGeneratedKeysCB)
   {
-    return _withConnectionDo (aConnection -> {
+    return withConnectionDo (aConnection -> {
       try (final PreparedStatement aPS = aConnection.prepareStatement (sSQL, Statement.RETURN_GENERATED_KEYS))
       {
         if (aPS.getParameterMetaData ().getParameterCount () != aPSDP.getValueCount ())

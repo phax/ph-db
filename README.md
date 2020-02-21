@@ -4,10 +4,11 @@ Java library with some basic DB API, a special JDBC version and a JPA version ba
 
 # News and noteworthy
 
-* v6.1.6 - work in progress
+* v6.2.0 - work in progress
     * Updated to Apache Commons Pool 2.8.0
     * Updated to MySQLConnector/J 8.0.19
     * Updated to EclipseLink 2.7.6
+    * Extended JDBCHelper return types
 * v6.1.5 - 2019-10-25
     * Updated to Apache Commons Pool 2.7.0
     * Updated to Apache Commons DBCP 2.7.0

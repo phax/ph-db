@@ -31,6 +31,7 @@ public final class CJDBC_MySQL
   /** Default JDBC URL prefix */
   public static final String CONNECTION_PREFIX = "jdbc:mysql:";
   public static final String DEFAULT_JDBC_DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
+  public static final String DEFAULT_JDBC_DRIVER_CLASS_NAME_V8 = "com.mysql.cj.jdbc.Driver";
 
   @PresentForCodeCoverage
   private static final CJDBC_MySQL s_aInstance = new CJDBC_MySQL ();
