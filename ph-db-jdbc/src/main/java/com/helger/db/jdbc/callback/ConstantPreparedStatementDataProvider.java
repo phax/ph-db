@@ -24,6 +24,7 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.lang.ICloneable;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
@@ -32,23 +33,25 @@ import com.helger.commons.string.ToStringGenerator;
  *
  * @author Philip Helger
  */
-public final class ConstantPreparedStatementDataProvider implements IPreparedStatementDataProvider
+public final class ConstantPreparedStatementDataProvider implements
+                                                         IPreparedStatementDataProvider,
+                                                         ICloneable <ConstantPreparedStatementDataProvider>
 {
   private final ICommonsList <Object> m_aValues;
 
   public ConstantPreparedStatementDataProvider ()
   {
-    m_aValues = new CommonsArrayList<> ();
+    m_aValues = new CommonsArrayList <> ();
   }
 
   public ConstantPreparedStatementDataProvider (@Nonnull final Iterable <?> aValues)
   {
-    m_aValues = new CommonsArrayList<> (aValues);
+    m_aValues = new CommonsArrayList <> (aValues);
   }
 
   public ConstantPreparedStatementDataProvider (@Nonnull @Nonempty final Object... aValues)
   {
-    m_aValues = new CommonsArrayList<> (aValues);
+    m_aValues = new CommonsArrayList <> (aValues);
   }
 
   @Nonnull
@@ -69,6 +72,13 @@ public final class ConstantPreparedStatementDataProvider implements IPreparedSta
   public ICommonsList <Object> getObjectValues ()
   {
     return m_aValues.getClone ();
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public ConstantPreparedStatementDataProvider getClone ()
+  {
+    return new ConstantPreparedStatementDataProvider (m_aValues);
   }
 
   @Override

@@ -237,14 +237,12 @@ public class DBExecutor implements Serializable
         aConnection.rollback ();
         if (aExtraExCB != null)
           aExtraExCB.onException (ex);
-        else
-        {
-          if (ex instanceof RuntimeException)
-            throw (RuntimeException) ex;
-          if (ex instanceof SQLException)
-            throw (SQLException) ex;
-          throw new SQLException ("Caught exception while perfoming something in a transaction", ex);
-        }
+
+        if (ex instanceof RuntimeException)
+          throw (RuntimeException) ex;
+        if (ex instanceof SQLException)
+          throw (SQLException) ex;
+        throw new SQLException ("Caught exception while perfoming something in a transaction", ex);
       }
       finally
       {
