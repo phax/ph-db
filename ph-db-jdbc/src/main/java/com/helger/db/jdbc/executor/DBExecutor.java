@@ -204,16 +204,19 @@ public class DBExecutor implements Serializable
   }
 
   @Nonnull
-  public final ESuccess performInTransaction (@Nonnull final IThrowingRunnable <SQLException> aRunnable)
+  public final ESuccess performInTransaction (@Nonnull final IThrowingRunnable <Exception> aRunnable)
   {
     return performInTransaction (aRunnable, null);
   }
 
   @Nonnull
-  public final ESuccess performInTransaction (@Nonnull final IThrowingRunnable <SQLException> aRunnable,
+  public final ESuccess performInTransaction (@Nonnull final IThrowingRunnable <Exception> aRunnable,
                                               @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Start performing something in a transaction");
+
       // Disable auto commit
       final boolean bOldAutoCommit = aConnection.getAutoCommit ();
       if (!bOldAutoCommit)
@@ -229,16 +232,28 @@ public class DBExecutor implements Serializable
         aRunnable.run ();
         aConnection.commit ();
       }
-      catch (final SQLException | RuntimeException ex)
+      catch (final Exception ex)
       {
         aConnection.rollback ();
-        throw ex;
+        if (aExtraExCB != null)
+          aExtraExCB.onException (ex);
+        else
+        {
+          if (ex instanceof RuntimeException)
+            throw (RuntimeException) ex;
+          if (ex instanceof SQLException)
+            throw (SQLException) ex;
+          throw new SQLException ("Caught exception while perfoming something in a transaction", ex);
+        }
       }
       finally
       {
         // Reset state
         m_aConnectionExecutor = aOldConnectionExecutor;
         aConnection.setAutoCommit (bOldAutoCommit);
+
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("Finished performing something in a transaction");
       }
     };
     return m_aConnectionExecutor.execute (aWithConnectionCB, aExtraExCB);
@@ -276,6 +291,9 @@ public class DBExecutor implements Serializable
                                                     @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Will run PreparedStatement <" + sSQL + ">");
+
       try (final PreparedStatement aPS = aConnection.prepareStatement (sSQL, Statement.RETURN_GENERATED_KEYS))
       {
         if (aPS.getParameterMetaData ().getParameterCount () != aPSDP.getValueCount ())
@@ -320,8 +338,8 @@ public class DBExecutor implements Serializable
                                     @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     return withStatementDo (aStatement -> {
-      if (GlobalDebug.isDebugMode ())
-        LOGGER.info ("Executing statement: " + sSQL);
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Will execute statement <" + sSQL + ">");
       aStatement.execute (sSQL);
     }, aGeneratedKeysCB, aExtraExCB);
   }
