@@ -90,6 +90,7 @@ public class DBExecutor implements Serializable
   }
 
   private static final Logger LOGGER = LoggerFactory.getLogger (DBExecutor.class);
+  private static final Long MINUS1 = Long.valueOf (CGlobal.ILLEGAL_UINT);
 
   private final IHasConnection m_aConnectionProvider;
   private final CallbackList <IExceptionCallback <? super SQLException>> m_aExceptionCallbacks = new CallbackList <> ();
@@ -514,30 +515,26 @@ public class DBExecutor implements Serializable
   @Nullable
   public Optional <DBResultRow> querySingle (@Nonnull @Nonempty final String sSQL)
   {
-    return queryAll (sSQL).map (x -> x.getFirst ());
+    return queryAll (sSQL).map (ICommonsList::getFirst);
   }
 
   @Nullable
   public Optional <DBResultRow> querySingle (@Nonnull @Nonempty final String sSQL,
                                              @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
-    return queryAll (sSQL, aPSDP).map (x -> x.getFirst ());
+    return queryAll (sSQL, aPSDP).map (ICommonsList::getFirst);
   }
 
   @CheckForSigned
-  public int queryCount (@Nonnull final String sSQL)
+  public long queryCount (@Nonnull final String sSQL)
   {
-    return querySingle (sSQL).map (x -> (Number) x.getValue (0))
-                             .orElse (Integer.valueOf (CGlobal.ILLEGAL_UINT))
-                             .intValue ();
+    return querySingle (sSQL).map (x -> (Number) x.getValue (0)).orElse (MINUS1).longValue ();
   }
 
   @CheckForSigned
-  public int queryCount (@Nonnull final String sSQL, @Nonnull final IPreparedStatementDataProvider aPSDP)
+  public long queryCount (@Nonnull final String sSQL, @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
-    return querySingle (sSQL, aPSDP).map (x -> (Number) x.getValue (0))
-                                    .orElse (Integer.valueOf (CGlobal.ILLEGAL_UINT))
-                                    .intValue ();
+    return querySingle (sSQL, aPSDP).map (x -> (Number) x.getValue (0)).orElse (MINUS1).longValue ();
   }
 
   @Override
