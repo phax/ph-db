@@ -96,6 +96,7 @@ public class DBExecutor implements Serializable
   }
 
   public static final boolean DEFAULT_DEBUG_CONNECTIONS = false;
+  public static final boolean DEFAULT_DEBUG_TRANSACTIONS = false;
   public static final boolean DEFAULT_DEBUG_SQL_STATEMENTS = false;
   private static final Logger LOGGER = LoggerFactory.getLogger (DBExecutor.class);
   private static final Long MINUS1 = Long.valueOf (CGlobal.ILLEGAL_UINT);
@@ -104,6 +105,7 @@ public class DBExecutor implements Serializable
   private final CallbackList <IExceptionCallback <? super Exception>> m_aExceptionCallbacks = new CallbackList <> ();
   private IConnectionExecutor m_aConnectionExecutor;
   private boolean m_bDebugConnections = DEFAULT_DEBUG_CONNECTIONS;
+  private boolean m_bDebugTransactions = DEFAULT_DEBUG_TRANSACTIONS;
   private boolean m_bDebugSQLStatements = DEFAULT_DEBUG_SQL_STATEMENTS;
 
   public DBExecutor (@Nonnull final IHasDataSource aDataSourceProvider)
@@ -128,6 +130,18 @@ public class DBExecutor implements Serializable
   public final DBExecutor setDebugConnections (final boolean bDebugConnections)
   {
     m_bDebugConnections = bDebugConnections;
+    return this;
+  }
+
+  public final boolean isDebugTransactions ()
+  {
+    return m_bDebugTransactions;
+  }
+
+  @Nonnull
+  public final DBExecutor setDebugTransactions (final boolean bDebugTransactions)
+  {
+    m_bDebugTransactions = bDebugTransactions;
     return this;
   }
 
@@ -246,13 +260,15 @@ public class DBExecutor implements Serializable
                                               @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Start performing something in a transaction");
-
       // Disable auto commit
       final boolean bOldAutoCommit = aConnection.getAutoCommit ();
-      if (!bOldAutoCommit)
-        LOGGER.info ("Found a nested transaction");
+      if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
+      {
+        if (bOldAutoCommit)
+          LOGGER.info ("Starting a transaction");
+        else
+          LOGGER.info ("Starting a nested transaction");
+      }
       aConnection.setAutoCommit (false);
 
       // Avoid creating a new connection
@@ -262,14 +278,20 @@ public class DBExecutor implements Serializable
       try
       {
         aRunnable.run ();
+
+        // Commit
         aConnection.commit ();
       }
       catch (final Exception ex)
       {
+        // Rollback
         aConnection.rollback ();
+
+        // Exception handler
         if (aExtraExCB != null)
           aExtraExCB.onException (ex);
 
+        // Propagate
         if (ex instanceof RuntimeException)
           throw (RuntimeException) ex;
         if (ex instanceof SQLException)
@@ -282,8 +304,13 @@ public class DBExecutor implements Serializable
         m_aConnectionExecutor = aOldConnectionExecutor;
         aConnection.setAutoCommit (bOldAutoCommit);
 
-        if (LOGGER.isDebugEnabled ())
-          LOGGER.debug ("Finished performing something in a transaction");
+        if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
+        {
+          if (bOldAutoCommit)
+            LOGGER.info ("Finished transaction");
+          else
+            LOGGER.info ("Finished nested transaction");
+        }
       }
     };
     return m_aConnectionExecutor.execute (aWithConnectionCB, aExtraExCB);
