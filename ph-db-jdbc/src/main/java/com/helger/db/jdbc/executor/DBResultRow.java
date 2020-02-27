@@ -26,6 +26,9 @@ import java.sql.NClob;
 import java.sql.RowId;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -286,6 +289,13 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
   }
 
   @Nullable
+  public LocalDate getAsLocalDate (@Nonnegative final int nIndex)
+  {
+    final Date ret = getAsDate (nIndex);
+    return ret == null ? null : ret.toLocalDate ();
+  }
+
+  @Nullable
   public NClob getAsNClob (@Nonnegative final int nIndex)
   {
     return get (nIndex).getAsSqlNClob ();
@@ -304,9 +314,23 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
   }
 
   @Nullable
+  public LocalTime getAsLocalTime (@Nonnegative final int nIndex)
+  {
+    final Time ret = getAsTime (nIndex);
+    return ret == null ? null : ret.toLocalTime ();
+  }
+
+  @Nullable
   public Timestamp getAsTimestamp (@Nonnegative final int nIndex)
   {
     return get (nIndex).getAsSqlTimestamp ();
+  }
+
+  @Nullable
+  public LocalDateTime getAsLocalDateTime (@Nonnegative final int nIndex)
+  {
+    final Timestamp ret = getAsTimestamp (nIndex);
+    return ret == null ? null : ret.toLocalDateTime ();
   }
 
   /**
