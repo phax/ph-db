@@ -28,17 +28,17 @@ import com.helger.commons.string.ToStringGenerator;
 @NotThreadSafe
 public class UpdatedRowCountCallback implements IUpdatedRowCountCallback
 {
-  private int m_nUpdatedRowCount = NOT_INITIALIZED;
+  private long m_nUpdatedRowCount = NOT_INITIALIZED;
 
   public UpdatedRowCountCallback ()
   {}
 
-  public void setUpdatedRowCount (final int nUpdatedRowCount)
+  public void setUpdatedRowCount (final long nUpdatedRowCount)
   {
     m_nUpdatedRowCount = nUpdatedRowCount;
   }
 
-  public int getUpdatedRowCount ()
+  public long getUpdatedRowCount ()
   {
     return m_nUpdatedRowCount;
   }
@@ -46,6 +46,6 @@ public class UpdatedRowCountCallback implements IUpdatedRowCountCallback
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("updatedRowCount", m_nUpdatedRowCount).getToString ();
+    return new ToStringGenerator (this).append ("UpdatedRowCount", m_nUpdatedRowCount).getToString ();
   }
 }

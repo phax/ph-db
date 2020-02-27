@@ -314,7 +314,17 @@ public class DBExecutor implements Serializable
 
         // Updated row count callback present?
         if (aUpdatedRowCountCB != null)
-          aUpdatedRowCountCB.setUpdatedRowCount (aPS.getUpdateCount ());
+        {
+          try
+          {
+            // throws an Exception if not supported
+            aUpdatedRowCountCB.setUpdatedRowCount (aPS.getLargeUpdateCount ());
+          }
+          catch (final Exception ex)
+          {
+            aUpdatedRowCountCB.setUpdatedRowCount (aPS.getUpdateCount ());
+          }
+        }
 
         // retrieve generated keys?
         if (aGeneratedKeysCB != null)
@@ -379,7 +389,7 @@ public class DBExecutor implements Serializable
    *        The prepared statement provider.
    * @return The number of modified/inserted rows.
    */
-  public int insertOrUpdateOrDelete (@Nonnull final String sSQL, @Nonnull final IPreparedStatementDataProvider aPSDP)
+  public long insertOrUpdateOrDelete (@Nonnull final String sSQL, @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
     return insertOrUpdateOrDelete (sSQL, aPSDP, null, null);
   }
@@ -398,10 +408,10 @@ public class DBExecutor implements Serializable
    *        Per-call Exception callback. May be <code>null</code>.
    * @return The number of modified/inserted rows.
    */
-  public int insertOrUpdateOrDelete (@Nonnull final String sSQL,
-                                     @Nonnull final IPreparedStatementDataProvider aPSDP,
-                                     @Nullable final IGeneratedKeysCallback aGeneratedKeysCB,
-                                     @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
+  public long insertOrUpdateOrDelete (@Nonnull final String sSQL,
+                                      @Nonnull final IPreparedStatementDataProvider aPSDP,
+                                      @Nullable final IGeneratedKeysCallback aGeneratedKeysCB,
+                                      @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     // We need this wrapper because the anonymous inner class cannot change
     // variables in outer scope.
@@ -412,17 +422,17 @@ public class DBExecutor implements Serializable
 
   public static final class CountAndKey
   {
-    private final int m_nUpdateCount;
+    private final long m_nUpdateCount;
     private final Object m_aGeneratedKey;
 
-    public CountAndKey (@Nonnegative final int nUpdateCount, @Nullable final Object aGeneratedKey)
+    public CountAndKey (@Nonnegative final long nUpdateCount, @Nullable final Object aGeneratedKey)
     {
       m_nUpdateCount = nUpdateCount;
       m_aGeneratedKey = aGeneratedKey;
     }
 
     @Nonnegative
-    public int getUpdateCount ()
+    public long getUpdateCount ()
     {
       return m_nUpdateCount;
     }
@@ -450,7 +460,7 @@ public class DBExecutor implements Serializable
                                                        @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final GetSingleGeneratedKeyCallback aCB = new GetSingleGeneratedKeyCallback ();
-    final int nUpdateCount = insertOrUpdateOrDelete (sSQL, aPSDP, aCB, aExtraExCB);
+    final long nUpdateCount = insertOrUpdateOrDelete (sSQL, aPSDP, aCB, aExtraExCB);
     return new CountAndKey (nUpdateCount,
                             nUpdateCount != IUpdatedRowCountCallback.NOT_INITIALIZED ? aCB.getGeneratedKey () : null);
   }

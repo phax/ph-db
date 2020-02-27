@@ -29,14 +29,14 @@ import com.helger.commons.callback.ICallback;
 public interface IUpdatedRowCountCallback extends ICallback
 {
   /** Default value for uninitialized row count */
-  int NOT_INITIALIZED = CGlobal.ILLEGAL_UINT;
+  long NOT_INITIALIZED = CGlobal.ILLEGAL_UINT;
 
   /**
    * @return The number of updated rows or {@link #NOT_INITIALIZED} if
-   *         {@link #setUpdatedRowCount(int)} was never called.
+   *         {@link #setUpdatedRowCount(long)} was never called.
    */
   @CheckForSigned
-  int getUpdatedRowCount ();
+  long getUpdatedRowCount ();
 
   /**
    * Notify on the updated row count update.
@@ -44,5 +44,5 @@ public interface IUpdatedRowCountCallback extends ICallback
    * @param nUpdatedRowCount
    *        The number of updated rows (e.g. on update or delete)
    */
-  void setUpdatedRowCount (int nUpdatedRowCount);
+  void setUpdatedRowCount (long nUpdatedRowCount);
 }
