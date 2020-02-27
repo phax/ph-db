@@ -47,7 +47,6 @@ import com.helger.commons.callback.exception.IExceptionCallback;
 import com.helger.commons.callback.exception.LoggingExceptionCallback;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.ToStringGenerator;
@@ -96,12 +95,16 @@ public class DBExecutor implements Serializable
                       @Nullable IExceptionCallback <? super Exception> aExtraExCB);
   }
 
+  public static final boolean DEFAULT_DEBUG_CONNECTIONS = false;
+  public static final boolean DEFAULT_DEBUG_SQL_STATEMENTS = false;
   private static final Logger LOGGER = LoggerFactory.getLogger (DBExecutor.class);
   private static final Long MINUS1 = Long.valueOf (CGlobal.ILLEGAL_UINT);
 
   private final IHasConnection m_aConnectionProvider;
   private final CallbackList <IExceptionCallback <? super Exception>> m_aExceptionCallbacks = new CallbackList <> ();
   private IConnectionExecutor m_aConnectionExecutor;
+  private boolean m_bDebugConnections = DEFAULT_DEBUG_CONNECTIONS;
+  private boolean m_bDebugSQLStatements = DEFAULT_DEBUG_SQL_STATEMENTS;
 
   public DBExecutor (@Nonnull final IHasDataSource aDataSourceProvider)
   {
@@ -116,9 +119,33 @@ public class DBExecutor implements Serializable
     m_aConnectionExecutor = this::withNewConnectionDo;
   }
 
+  public final boolean isDebugConnections ()
+  {
+    return m_bDebugConnections;
+  }
+
+  @Nonnull
+  public final DBExecutor setDebugConnections (final boolean bDebugConnections)
+  {
+    m_bDebugConnections = bDebugConnections;
+    return this;
+  }
+
+  public final boolean isDebugSQLStatements ()
+  {
+    return m_bDebugSQLStatements;
+  }
+
+  @Nonnull
+  public final DBExecutor setDebugSQLStatements (final boolean bDebugSQLStatements)
+  {
+    m_bDebugSQLStatements = bDebugSQLStatements;
+    return this;
+  }
+
   @Nonnull
   @ReturnsMutableObject
-  public CallbackList <IExceptionCallback <? super Exception>> exceptionCallbacks ()
+  public final CallbackList <IExceptionCallback <? super Exception>> exceptionCallbacks ()
   {
     return m_aExceptionCallbacks;
   }
@@ -131,10 +158,11 @@ public class DBExecutor implements Serializable
     Connection aConnection = null;
     try
     {
+      if (m_bDebugConnections && LOGGER.isInfoEnabled ())
+        LOGGER.info ("Opening a new SQL Connection");
+
       // Get connection
       aConnection = m_aConnectionProvider.getConnection ();
-      if (aConnection == null)
-        throw new SQLException ("Failed to get a connection from connection provider");
 
       // Okay, connection was established
       return withExistingConnectionDo (aConnection, aCB, aExtraExCB);
@@ -151,8 +179,12 @@ public class DBExecutor implements Serializable
     finally
     {
       // Close connection again (if necessary)
-      if (m_aConnectionProvider.shouldCloseConnection ())
+      if (aConnection != null && m_aConnectionProvider.shouldCloseConnection ())
+      {
+        if (m_bDebugConnections && LOGGER.isInfoEnabled ())
+          LOGGER.info ("Now closing SQL Connection");
         JDBCHelper.close (aConnection);
+      }
     }
   }
 
@@ -289,8 +321,8 @@ public class DBExecutor implements Serializable
                                                     @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Will run PreparedStatement <" + sSQL + ">");
+      if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
+        LOGGER.info ("Will run PreparedStatement <" + sSQL + "> with " + aPSDP.getValueCount () + " values");
 
       try (final PreparedStatement aPS = aConnection.prepareStatement (sSQL, Statement.RETURN_GENERATED_KEYS))
       {
@@ -305,9 +337,6 @@ public class DBExecutor implements Serializable
         int nIndex = 1;
         for (final Object aArg : aPSDP.getObjectValues ())
           aPS.setObject (nIndex++, aArg);
-
-        if (GlobalDebug.isDebugMode ())
-          LOGGER.info ("Executing prepared statement: " + sSQL);
 
         // call callback
         aPSCallback.run (aPS);
@@ -346,8 +375,9 @@ public class DBExecutor implements Serializable
                                     @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     return withStatementDo (aStatement -> {
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Will execute statement <" + sSQL + ">");
+      if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
+        LOGGER.info ("Will execute statement <" + sSQL + ">");
+
       aStatement.execute (sSQL);
     }, aGeneratedKeysCB, aExtraExCB);
   }
@@ -521,6 +551,9 @@ public class DBExecutor implements Serializable
                             @Nonnull final IResultSetRowCallback aResultItemCallback)
   {
     return withStatementDo (aStatement -> {
+      if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
+        LOGGER.info ("Will execute query <" + sSQL + ">");
+
       final ResultSet aResultSet = aStatement.executeQuery (sSQL);
       iterateResultSet (aResultSet, aResultItemCallback);
     }, (IGeneratedKeysCallback) null, null);
@@ -598,6 +631,9 @@ public class DBExecutor implements Serializable
   {
     return new ToStringGenerator (this).append ("ConnectionProvider", m_aConnectionProvider)
                                        .append ("ExceptionCalbacks", m_aExceptionCallbacks)
+                                       .append ("ConnectionExecutor", m_aConnectionExecutor)
+                                       .append ("DebugConnection", m_bDebugConnections)
+                                       .append ("DebugSQLStatements", m_bDebugSQLStatements)
                                        .getToString ();
   }
 }

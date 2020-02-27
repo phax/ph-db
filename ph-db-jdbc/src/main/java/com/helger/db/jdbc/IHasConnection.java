@@ -19,18 +19,19 @@ package com.helger.db.jdbc;
 import java.io.Serializable;
 import java.sql.Connection;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
+
+import com.helger.db.jdbc.executor.DBNoConnectionException;
 
 /**
  * Simple {@link Connection} provider interface.
  *
  * @author Philip Helger
  */
-@FunctionalInterface
 public interface IHasConnection extends Serializable
 {
-  @Nullable
-  Connection getConnection ();
+  @Nonnull
+  Connection getConnection () throws DBNoConnectionException;
 
   default boolean shouldCloseConnection ()
   {

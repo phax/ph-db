@@ -20,14 +20,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.sql.DataSource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.string.ToStringGenerator;
+import com.helger.db.jdbc.executor.DBNoConnectionException;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -39,9 +36,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class ConnectionFromDataSourceProvider implements IHasConnection
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (ConnectionFromDataSourceProvider.class);
-
   private final DataSource m_aDS;
+  private boolean m_bLogException = false;
 
   @SuppressFBWarnings ("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
   public ConnectionFromDataSourceProvider (@Nonnull final IHasDataSource aDSP)
@@ -52,20 +48,33 @@ public class ConnectionFromDataSourceProvider implements IHasConnection
       throw new IllegalArgumentException ("Failed to create dataSource from " + aDSP);
   }
 
-  @Nullable
-  public Connection getConnection ()
+  public final boolean isLogException ()
+  {
+    return m_bLogException;
+  }
+
+  @Nonnull
+  public final ConnectionFromDataSourceProvider setLogException (final boolean bLogException)
+  {
+    m_bLogException = bLogException;
+    return this;
+  }
+
+  @Nonnull
+  public Connection getConnection () throws DBNoConnectionException
   {
     try
     {
       final Connection ret = m_aDS.getConnection ();
       if (ret == null)
-        LOGGER.warn ("Failed to get connection from dataSource " + m_aDS + "!");
+        throw new DBNoConnectionException ("No connection retrieved from dataSource " + m_aDS);
       return ret;
     }
     catch (final SQLException ex)
     {
-      LOGGER.error ("No connection retrieved from dataSource " + m_aDS, ex);
-      return null;
+      // ex.getCause is e.g. a
+      // com.mysql.cj.jdbc.exceptions.CommunicationsException
+      throw new DBNoConnectionException ("No connection retrieved from dataSource " + m_aDS, ex);
     }
   }
 
