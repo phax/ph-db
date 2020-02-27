@@ -503,10 +503,12 @@ public class DBExecutor implements Serializable
    *        The result set to iterate.
    * @param aCallback
    *        The callback to be invoked for each row.
+   * @return The number of result rows. Always &ge; 0
    * @throws SQLException
    *         on error
    */
-  protected static final void iterateResultSet (@WillClose final ResultSet aRS,
+  @Nonnegative
+  protected static final long iterateResultSet (@WillClose final ResultSet aRS,
                                                 @Nonnull final IResultSetRowCallback aCallback) throws SQLException
   {
     try
@@ -526,8 +528,11 @@ public class DBExecutor implements Serializable
       final DBResultRow aRow = new DBResultRow (nCols);
 
       // for all result set elements
+      long nResultRows = 0;
       while (aRS.next ())
       {
+        nResultRows++;
+
         // fill result row
         aRow.internalClear ();
         for (int i = 1; i <= nCols; ++i)
@@ -539,6 +544,8 @@ public class DBExecutor implements Serializable
         // handle result row
         aCallback.accept (aRow);
       }
+
+      return nResultRows;
     }
     finally
     {
@@ -555,7 +562,9 @@ public class DBExecutor implements Serializable
         LOGGER.info ("Will execute query <" + sSQL + ">");
 
       final ResultSet aResultSet = aStatement.executeQuery (sSQL);
-      iterateResultSet (aResultSet, aResultItemCallback);
+      final long nResultRows = iterateResultSet (aResultSet, aResultItemCallback);
+      if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
+        LOGGER.info ("  Found " + nResultRows + " result rows");
     }, (IGeneratedKeysCallback) null, null);
   }
 
@@ -566,7 +575,9 @@ public class DBExecutor implements Serializable
   {
     return withPreparedStatementDo (sSQL, aPSDP, aPreparedStatement -> {
       final ResultSet aResultSet = aPreparedStatement.executeQuery ();
-      iterateResultSet (aResultSet, aResultItemCallback);
+      final long nResultRows = iterateResultSet (aResultSet, aResultItemCallback);
+      if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
+        LOGGER.info ("  Found " + nResultRows + " result rows");
     }, (IUpdatedRowCountCallback) null, (IGeneratedKeysCallback) null, null);
   }
 
