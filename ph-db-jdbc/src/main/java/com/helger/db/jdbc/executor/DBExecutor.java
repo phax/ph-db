@@ -24,6 +24,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.CheckForSigned;
 import javax.annotation.Nonnegative;
@@ -101,6 +102,9 @@ public class DBExecutor implements Serializable
   private static final Logger LOGGER = LoggerFactory.getLogger (DBExecutor.class);
   private static final Long MINUS1 = Long.valueOf (CGlobal.ILLEGAL_UINT);
 
+  private final AtomicLong m_aConnectionCounter = new AtomicLong (0);
+  private final AtomicLong m_aTransactionCounter = new AtomicLong (0);
+  private final AtomicLong m_aSQLStatementCounter = new AtomicLong (0);
   private final IHasConnection m_aConnectionProvider;
   private final CallbackList <IExceptionCallback <? super Exception>> m_aExceptionCallbacks = new CallbackList <> ();
   private IConnectionExecutor m_aConnectionExecutor;
@@ -169,11 +173,13 @@ public class DBExecutor implements Serializable
   protected final synchronized ESuccess withNewConnectionDo (@Nonnull final IWithConnectionCallback aCB,
                                                              @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
+    final long nConnectionID = m_aConnectionCounter.incrementAndGet ();
+
     Connection aConnection = null;
     try
     {
       if (m_bDebugConnections && LOGGER.isInfoEnabled ())
-        LOGGER.info ("Opening a new SQL Connection");
+        LOGGER.info ("Opening a new SQL Connection [" + nConnectionID + "]");
 
       // Get connection
       aConnection = m_aConnectionProvider.getConnection ();
@@ -196,7 +202,7 @@ public class DBExecutor implements Serializable
       if (aConnection != null && m_aConnectionProvider.shouldCloseConnection ())
       {
         if (m_bDebugConnections && LOGGER.isInfoEnabled ())
-          LOGGER.info ("Now closing SQL Connection");
+          LOGGER.info ("Now closing SQL Connection [" + nConnectionID + "]");
         JDBCHelper.close (aConnection);
       }
     }
@@ -260,14 +266,16 @@ public class DBExecutor implements Serializable
                                               @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
+      final long nTransactionID = m_aTransactionCounter.incrementAndGet ();
+
       // Disable auto commit
       final boolean bOldAutoCommit = aConnection.getAutoCommit ();
       if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
       {
         if (bOldAutoCommit)
-          LOGGER.info ("Starting a transaction");
+          LOGGER.info ("Starting a transaction [" + nTransactionID + "]");
         else
-          LOGGER.info ("Starting a nested transaction");
+          LOGGER.info ("Starting a nested transaction [" + nTransactionID + "]");
       }
       aConnection.setAutoCommit (false);
 
@@ -307,9 +315,9 @@ public class DBExecutor implements Serializable
         if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
         {
           if (bOldAutoCommit)
-            LOGGER.info ("Finished transaction");
+            LOGGER.info ("Finished transaction [" + nTransactionID + "]");
           else
-            LOGGER.info ("Finished nested transaction");
+            LOGGER.info ("Finished nested transaction [" + nTransactionID + "]");
         }
       }
     };
@@ -348,8 +356,16 @@ public class DBExecutor implements Serializable
                                                     @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
+      final long nSQLStatementID = m_aSQLStatementCounter.incrementAndGet ();
+
       if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
-        LOGGER.info ("Will run PreparedStatement <" + sSQL + "> with " + aPSDP.getValueCount () + " values");
+        LOGGER.info ("Will run PreparedStatement [" +
+                     nSQLStatementID +
+                     "] <" +
+                     sSQL +
+                     "> with " +
+                     aPSDP.getValueCount () +
+                     " values");
 
       try (final PreparedStatement aPS = aConnection.prepareStatement (sSQL, Statement.RETURN_GENERATED_KEYS))
       {
@@ -402,8 +418,9 @@ public class DBExecutor implements Serializable
                                     @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     return withStatementDo (aStatement -> {
+      final long nSQLStatementID = m_aSQLStatementCounter.incrementAndGet ();
       if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
-        LOGGER.info ("Will execute statement <" + sSQL + ">");
+        LOGGER.info ("Will execute statement [" + nSQLStatementID + "] <" + sSQL + ">");
 
       aStatement.execute (sSQL);
     }, aGeneratedKeysCB, aExtraExCB);
@@ -585,13 +602,15 @@ public class DBExecutor implements Serializable
                             @Nonnull final IResultSetRowCallback aResultItemCallback)
   {
     return withStatementDo (aStatement -> {
+      final long nSQLStatementID = m_aSQLStatementCounter.incrementAndGet ();
       if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
-        LOGGER.info ("Will execute query <" + sSQL + ">");
+        LOGGER.info ("Will execute SQL query [" + nSQLStatementID + "] <" + sSQL + ">");
 
       final ResultSet aResultSet = aStatement.executeQuery (sSQL);
       final long nResultRows = iterateResultSet (aResultSet, aResultItemCallback);
+
       if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
-        LOGGER.info ("  Found " + nResultRows + " result rows");
+        LOGGER.info ("  Found " + nResultRows + " result rows [" + nSQLStatementID + "]");
     }, (IGeneratedKeysCallback) null, null);
   }
 
@@ -670,7 +689,8 @@ public class DBExecutor implements Serializable
     return new ToStringGenerator (this).append ("ConnectionProvider", m_aConnectionProvider)
                                        .append ("ExceptionCalbacks", m_aExceptionCallbacks)
                                        .append ("ConnectionExecutor", m_aConnectionExecutor)
-                                       .append ("DebugConnection", m_bDebugConnections)
+                                       .append ("DebugConnections", m_bDebugConnections)
+                                       .append ("DebugTransactions", m_bDebugTransactions)
                                        .append ("DebugSQLStatements", m_bDebugSQLStatements)
                                        .getToString ();
   }
