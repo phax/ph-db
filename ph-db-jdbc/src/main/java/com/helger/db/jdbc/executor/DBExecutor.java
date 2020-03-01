@@ -51,6 +51,7 @@ import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.ToStringGenerator;
+import com.helger.commons.timing.StopWatch;
 import com.helger.db.api.jdbc.JDBCHelper;
 import com.helger.db.jdbc.ConnectionFromDataSourceProvider;
 import com.helger.db.jdbc.IHasConnection;
@@ -347,6 +348,23 @@ public class DBExecutor implements Serializable
     return m_aConnectionExecutor.execute (aWithConnectionCB, aExtraExCB);
   }
 
+  protected final void withTimingDo (@Nonnull final IThrowingRunnable <SQLException> r) throws SQLException
+  {
+    final StopWatch aSW = StopWatch.createdStarted ();
+    try
+    {
+      r.run ();
+    }
+    finally
+    {
+      aSW.stop ();
+
+      final long nMillis = aSW.getMillis ();
+      if (nMillis > CGlobal.MILLISECONDS_PER_SECOND)
+        LOGGER.warn ("Execution took " + nMillis + " ms which is too long");
+    }
+  }
+
   @Nonnull
   protected final ESuccess withPreparedStatementDo (@Nonnull final String sSQL,
                                                     @Nonnull final IPreparedStatementDataProvider aPSDP,
@@ -357,7 +375,6 @@ public class DBExecutor implements Serializable
   {
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
       final long nSQLStatementID = m_aSQLStatementCounter.incrementAndGet ();
-
       if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
         LOGGER.info ("Will run PreparedStatement [" +
                      nSQLStatementID +
@@ -367,41 +384,43 @@ public class DBExecutor implements Serializable
                      aPSDP.getValueCount () +
                      " values");
 
-      try (final PreparedStatement aPS = aConnection.prepareStatement (sSQL, Statement.RETURN_GENERATED_KEYS))
-      {
-        if (aPS.getParameterMetaData ().getParameterCount () != aPSDP.getValueCount ())
-          throw new IllegalArgumentException ("parameter count (" +
-                                              aPS.getParameterMetaData ().getParameterCount () +
-                                              ") does not match passed column name count (" +
-                                              aPSDP.getValueCount () +
-                                              ")");
-
-        // assign values
-        int nIndex = 1;
-        for (final Object aArg : aPSDP.getObjectValues ())
-          aPS.setObject (nIndex++, aArg);
-
-        // call callback
-        aPSCallback.run (aPS);
-
-        // Updated row count callback present?
-        if (aUpdatedRowCountCB != null)
+      withTimingDo ( () -> {
+        try (final PreparedStatement aPS = aConnection.prepareStatement (sSQL, Statement.RETURN_GENERATED_KEYS))
         {
-          try
-          {
-            // throws an Exception if not supported
-            aUpdatedRowCountCB.setUpdatedRowCount (aPS.getLargeUpdateCount ());
-          }
-          catch (final Exception ex)
-          {
-            aUpdatedRowCountCB.setUpdatedRowCount (aPS.getUpdateCount ());
-          }
-        }
+          if (aPS.getParameterMetaData ().getParameterCount () != aPSDP.getValueCount ())
+            throw new IllegalArgumentException ("parameter count (" +
+                                                aPS.getParameterMetaData ().getParameterCount () +
+                                                ") does not match passed column name count (" +
+                                                aPSDP.getValueCount () +
+                                                ")");
 
-        // retrieve generated keys?
-        if (aGeneratedKeysCB != null)
-          handleGeneratedKeys (aPS.getGeneratedKeys (), aGeneratedKeysCB);
-      }
+          // assign values
+          int nIndex = 1;
+          for (final Object aArg : aPSDP.getObjectValues ())
+            aPS.setObject (nIndex++, aArg);
+
+          // call callback
+          aPSCallback.run (aPS);
+
+          // Updated row count callback present?
+          if (aUpdatedRowCountCB != null)
+          {
+            try
+            {
+              // throws an Exception if not supported
+              aUpdatedRowCountCB.setUpdatedRowCount (aPS.getLargeUpdateCount ());
+            }
+            catch (final Exception ex)
+            {
+              aUpdatedRowCountCB.setUpdatedRowCount (aPS.getUpdateCount ());
+            }
+          }
+
+          // retrieve generated keys?
+          if (aGeneratedKeysCB != null)
+            handleGeneratedKeys (aPS.getGeneratedKeys (), aGeneratedKeysCB);
+        }
+      });
     };
     return m_aConnectionExecutor.execute (aWithConnectionCB, aExtraExCB);
   }
@@ -422,7 +441,9 @@ public class DBExecutor implements Serializable
       if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
         LOGGER.info ("Will execute statement [" + nSQLStatementID + "] <" + sSQL + ">");
 
-      aStatement.execute (sSQL);
+      withTimingDo ( () -> {
+        aStatement.execute (sSQL);
+      });
     }, aGeneratedKeysCB, aExtraExCB);
   }
 
@@ -606,11 +627,13 @@ public class DBExecutor implements Serializable
       if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
         LOGGER.info ("Will execute SQL query [" + nSQLStatementID + "] <" + sSQL + ">");
 
-      final ResultSet aResultSet = aStatement.executeQuery (sSQL);
-      final long nResultRows = iterateResultSet (aResultSet, aResultItemCallback);
+      withTimingDo ( () -> {
+        final ResultSet aResultSet = aStatement.executeQuery (sSQL);
+        final long nResultRows = iterateResultSet (aResultSet, aResultItemCallback);
 
-      if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
-        LOGGER.info ("  Found " + nResultRows + " result rows [" + nSQLStatementID + "]");
+        if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
+          LOGGER.info ("  Found " + nResultRows + " result rows [" + nSQLStatementID + "]");
+      });
     }, (IGeneratedKeysCallback) null, null);
   }
 
