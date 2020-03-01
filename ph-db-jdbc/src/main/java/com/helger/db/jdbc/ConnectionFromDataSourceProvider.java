@@ -37,7 +37,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public class ConnectionFromDataSourceProvider implements IHasConnection
 {
   private final DataSource m_aDS;
-  private boolean m_bLogException = false;
 
   @SuppressFBWarnings ("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
   public ConnectionFromDataSourceProvider (@Nonnull final IHasDataSource aDSP)
@@ -46,18 +45,6 @@ public class ConnectionFromDataSourceProvider implements IHasConnection
     m_aDS = aDSP.getDataSource ();
     if (m_aDS == null)
       throw new IllegalArgumentException ("Failed to create dataSource from " + aDSP);
-  }
-
-  public final boolean isLogException ()
-  {
-    return m_bLogException;
-  }
-
-  @Nonnull
-  public final ConnectionFromDataSourceProvider setLogException (final boolean bLogException)
-  {
-    m_bLogException = bLogException;
-    return this;
   }
 
   @Nonnull

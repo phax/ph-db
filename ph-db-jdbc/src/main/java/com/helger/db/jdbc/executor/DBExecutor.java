@@ -50,6 +50,7 @@ import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.ESuccess;
+import com.helger.commons.state.ETriState;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.timing.StopWatch;
 import com.helger.db.api.jdbc.JDBCHelper;
@@ -97,18 +98,27 @@ public class DBExecutor implements Serializable
                       @Nullable IExceptionCallback <? super Exception> aExtraExCB);
   }
 
+  @FunctionalInterface
+  public interface IConnectionEstablishedChangeCallback extends ICallback
+  {
+    void onConnectionEstablishedChange (@Nonnull ETriState eOld, @Nonnull ETriState eNew);
+  }
+
   public static final boolean DEFAULT_DEBUG_CONNECTIONS = false;
   public static final boolean DEFAULT_DEBUG_TRANSACTIONS = false;
   public static final boolean DEFAULT_DEBUG_SQL_STATEMENTS = false;
   private static final Logger LOGGER = LoggerFactory.getLogger (DBExecutor.class);
   private static final Long MINUS1 = Long.valueOf (CGlobal.ILLEGAL_UINT);
 
-  private final AtomicLong m_aConnectionCounter = new AtomicLong (0);
-  private final AtomicLong m_aTransactionCounter = new AtomicLong (0);
-  private final AtomicLong m_aSQLStatementCounter = new AtomicLong (0);
   private final IHasConnection m_aConnectionProvider;
+  private ETriState m_eConnectionEstablished = ETriState.UNDEFINED;
+  private IConnectionEstablishedChangeCallback m_aConnectionEstablishedCallback;
   private final CallbackList <IExceptionCallback <? super Exception>> m_aExceptionCallbacks = new CallbackList <> ();
   private IConnectionExecutor m_aConnectionExecutor;
+
+  private final AtomicLong m_aConnectionCounter = new AtomicLong (0);
+  private final AtomicLong m_aSQLStatementCounter = new AtomicLong (0);
+  private final AtomicLong m_aTransactionCounter = new AtomicLong (0);
   private boolean m_bDebugConnections = DEFAULT_DEBUG_CONNECTIONS;
   private boolean m_bDebugTransactions = DEFAULT_DEBUG_TRANSACTIONS;
   private boolean m_bDebugSQLStatements = DEFAULT_DEBUG_SQL_STATEMENTS;
@@ -124,6 +134,55 @@ public class DBExecutor implements Serializable
     m_aConnectionProvider = aConnectionProvider;
     m_aExceptionCallbacks.add (new LoggingExceptionCallback ());
     m_aConnectionExecutor = this::withNewConnectionDo;
+  }
+
+  @Nonnull
+  public final ETriState getConnectionEstablished ()
+  {
+    return m_eConnectionEstablished;
+  }
+
+  @Nonnull
+  public final DBExecutor setConnectionEstablished (@Nonnull final ETriState eNewState)
+  {
+    ValueEnforcer.notNull (eNewState, "NewState");
+    if (eNewState != m_eConnectionEstablished)
+    {
+      final ETriState eOldState = m_eConnectionEstablished;
+      if (m_bDebugConnections && LOGGER.isInfoEnabled ())
+        LOGGER.info ("Setting connection established state from " + eOldState + " to " + eNewState);
+      m_eConnectionEstablished = eNewState;
+
+      if (m_aConnectionEstablishedCallback != null)
+        m_aConnectionEstablishedCallback.onConnectionEstablishedChange (eOldState, eNewState);
+    }
+    return this;
+  }
+
+  @Nonnull
+  public final DBExecutor resetConnectionEstablished ()
+  {
+    return setConnectionEstablished (ETriState.UNDEFINED);
+  }
+
+  @Nonnull
+  public final IConnectionEstablishedChangeCallback getConnectionEstablishedChangeCallback ()
+  {
+    return m_aConnectionEstablishedCallback;
+  }
+
+  @Nonnull
+  public final DBExecutor setConnectionEstablishedChangeCallback (@Nullable final IConnectionEstablishedChangeCallback aCB)
+  {
+    m_aConnectionEstablishedCallback = aCB;
+    return this;
+  }
+
+  @Nonnull
+  @ReturnsMutableObject
+  public final CallbackList <IExceptionCallback <? super Exception>> exceptionCallbacks ()
+  {
+    return m_aExceptionCallbacks;
   }
 
   public final boolean isDebugConnections ()
@@ -162,19 +221,20 @@ public class DBExecutor implements Serializable
     return this;
   }
 
-  @Nonnull
-  @ReturnsMutableObject
-  public final CallbackList <IExceptionCallback <? super Exception>> exceptionCallbacks ()
-  {
-    return m_aExceptionCallbacks;
-  }
-
   @CodingStyleguideUnaware ("Needs to be synchronized!")
   @Nonnull
   protected final synchronized ESuccess withNewConnectionDo (@Nonnull final IWithConnectionCallback aCB,
                                                              @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final long nConnectionID = m_aConnectionCounter.incrementAndGet ();
+
+    if (m_eConnectionEstablished.isFalse ())
+    {
+      // Avoid trying again
+      if (m_bDebugConnections && LOGGER.isInfoEnabled ())
+        LOGGER.info ("Refuse to open SQL Connection [" + nConnectionID + "] because it failed previously");
+      return ESuccess.FAILURE;
+    }
 
     Connection aConnection = null;
     try
@@ -184,13 +244,21 @@ public class DBExecutor implements Serializable
 
       // Get connection
       aConnection = m_aConnectionProvider.getConnection ();
+      if (aConnection == null)
+        return ESuccess.FAILURE;
+
+      setConnectionEstablished (ETriState.TRUE);
 
       // Okay, connection was established
       return withExistingConnectionDo (aConnection, aCB, aExtraExCB);
     }
-    catch (final SQLException | RuntimeException ex)
+    catch (final DBNoConnectionException ex)
     {
       // Error creating a connection
+      setConnectionEstablished (ETriState.FALSE);
+      if (LOGGER.isWarnEnabled ())
+        LOGGER.warn ("Connection could not be established. Remembering this status.");
+
       // Invoke callback
       m_aExceptionCallbacks.forEach (x -> x.onException (ex));
       if (aExtraExCB != null)
@@ -214,7 +282,9 @@ public class DBExecutor implements Serializable
                                                      @Nonnull final IWithConnectionCallback aCB,
                                                      @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
-    // Okay, connection was established
+    ValueEnforcer.notNull (aConnection, "Connection");
+    ValueEnforcer.notNull (aCB, "CB");
+
     ESuccess eCommited = ESuccess.FAILURE;
     try
     {
@@ -238,7 +308,7 @@ public class DBExecutor implements Serializable
       if (eCommited.isFailure ())
         JDBCHelper.rollback (aConnection);
     }
-    return ESuccess.SUCCESS;
+    return eCommited;
   }
 
   protected static void handleGeneratedKeys (@Nonnull final ResultSet aGeneratedKeysRS,
