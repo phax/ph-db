@@ -50,6 +50,7 @@ import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.ESuccess;
+import com.helger.commons.state.ETriState;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.db.api.jdbc.JDBCHelper;
 import com.helger.db.jdbc.ConnectionFromDataSourceProvider;
@@ -102,12 +103,14 @@ public class DBExecutor implements Serializable
   private static final Logger LOGGER = LoggerFactory.getLogger (DBExecutor.class);
   private static final Long MINUS1 = Long.valueOf (CGlobal.ILLEGAL_UINT);
 
-  private final AtomicLong m_aConnectionCounter = new AtomicLong (0);
-  private final AtomicLong m_aTransactionCounter = new AtomicLong (0);
-  private final AtomicLong m_aSQLStatementCounter = new AtomicLong (0);
   private final IHasConnection m_aConnectionProvider;
+  private ETriState m_eConnectionEstablished = ETriState.UNDEFINED;
   private final CallbackList <IExceptionCallback <? super Exception>> m_aExceptionCallbacks = new CallbackList <> ();
   private IConnectionExecutor m_aConnectionExecutor;
+
+  private final AtomicLong m_aConnectionCounter = new AtomicLong (0);
+  private final AtomicLong m_aSQLStatementCounter = new AtomicLong (0);
+  private final AtomicLong m_aTransactionCounter = new AtomicLong (0);
   private boolean m_bDebugConnections = DEFAULT_DEBUG_CONNECTIONS;
   private boolean m_bDebugTransactions = DEFAULT_DEBUG_TRANSACTIONS;
   private boolean m_bDebugSQLStatements = DEFAULT_DEBUG_SQL_STATEMENTS;
@@ -123,6 +126,31 @@ public class DBExecutor implements Serializable
     m_aConnectionProvider = aConnectionProvider;
     m_aExceptionCallbacks.add (new LoggingExceptionCallback ());
     m_aConnectionExecutor = this::withNewConnectionDo;
+  }
+
+  @Nonnull
+  public final ETriState getConnectionEstablished ()
+  {
+    return m_eConnectionEstablished;
+  }
+
+  @Nonnull
+  public final DBExecutor resetConnectionEstablished ()
+  {
+    if (m_eConnectionEstablished.isDefined ())
+    {
+      if (m_bDebugConnections && LOGGER.isInfoEnabled ())
+        LOGGER.info ("Resetting connection established state");
+    }
+    m_eConnectionEstablished = ETriState.UNDEFINED;
+    return this;
+  }
+
+  @Nonnull
+  @ReturnsMutableObject
+  public final CallbackList <IExceptionCallback <? super Exception>> exceptionCallbacks ()
+  {
+    return m_aExceptionCallbacks;
   }
 
   public final boolean isDebugConnections ()
@@ -161,19 +189,20 @@ public class DBExecutor implements Serializable
     return this;
   }
 
-  @Nonnull
-  @ReturnsMutableObject
-  public final CallbackList <IExceptionCallback <? super Exception>> exceptionCallbacks ()
-  {
-    return m_aExceptionCallbacks;
-  }
-
   @CodingStyleguideUnaware ("Needs to be synchronized!")
   @Nonnull
   protected final synchronized ESuccess withNewConnectionDo (@Nonnull final IWithConnectionCallback aCB,
                                                              @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final long nConnectionID = m_aConnectionCounter.incrementAndGet ();
+
+    if (m_eConnectionEstablished.isFalse ())
+    {
+      // Avoid trying again
+      if (m_bDebugConnections && LOGGER.isInfoEnabled ())
+        LOGGER.info ("Refuse to open SQL Connection [" + nConnectionID + "] because it failed previously");
+      return ESuccess.FAILURE;
+    }
 
     Connection aConnection = null;
     try
@@ -183,13 +212,21 @@ public class DBExecutor implements Serializable
 
       // Get connection
       aConnection = m_aConnectionProvider.getConnection ();
+      if (aConnection == null)
+        return ESuccess.FAILURE;
+
+      m_eConnectionEstablished = ETriState.TRUE;
 
       // Okay, connection was established
       return withExistingConnectionDo (aConnection, aCB, aExtraExCB);
     }
-    catch (final SQLException | RuntimeException ex)
+    catch (final DBNoConnectionException ex)
     {
       // Error creating a connection
+      m_eConnectionEstablished = ETriState.FALSE;
+      if (m_bDebugConnections && LOGGER.isWarnEnabled ())
+        LOGGER.warn ("Connection could not be established. Remembering this status.");
+
       // Invoke callback
       m_aExceptionCallbacks.forEach (x -> x.onException (ex));
       if (aExtraExCB != null)
@@ -213,7 +250,9 @@ public class DBExecutor implements Serializable
                                                      @Nonnull final IWithConnectionCallback aCB,
                                                      @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
-    // Okay, connection was established
+    ValueEnforcer.notNull (aConnection, "Connection");
+    ValueEnforcer.notNull (aCB, "CB");
+
     ESuccess eCommited = ESuccess.FAILURE;
     try
     {
@@ -237,7 +276,7 @@ public class DBExecutor implements Serializable
       if (eCommited.isFailure ())
         JDBCHelper.rollback (aConnection);
     }
-    return ESuccess.SUCCESS;
+    return eCommited;
   }
 
   protected static void handleGeneratedKeys (@Nonnull final ResultSet aGeneratedKeysRS,
