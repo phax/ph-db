@@ -97,6 +97,12 @@ public class DBExecutor implements Serializable
                       @Nullable IExceptionCallback <? super Exception> aExtraExCB);
   }
 
+  @FunctionalInterface
+  public interface IConnectionEstablishedChangeCallback extends ICallback
+  {
+    void onConnectionEstablishedChange (@Nonnull ETriState eOld, @Nonnull ETriState eNew);
+  }
+
   public static final boolean DEFAULT_DEBUG_CONNECTIONS = false;
   public static final boolean DEFAULT_DEBUG_TRANSACTIONS = false;
   public static final boolean DEFAULT_DEBUG_SQL_STATEMENTS = false;
@@ -105,6 +111,7 @@ public class DBExecutor implements Serializable
 
   private final IHasConnection m_aConnectionProvider;
   private ETriState m_eConnectionEstablished = ETriState.UNDEFINED;
+  private IConnectionEstablishedChangeCallback m_aConnectionEstablishedCallback;
   private final CallbackList <IExceptionCallback <? super Exception>> m_aExceptionCallbacks = new CallbackList <> ();
   private IConnectionExecutor m_aConnectionExecutor;
 
@@ -135,14 +142,38 @@ public class DBExecutor implements Serializable
   }
 
   @Nonnull
+  public final DBExecutor setConnectionEstablished (@Nonnull final ETriState eNewState)
+  {
+    ValueEnforcer.notNull (eNewState, "NewState");
+    if (eNewState != m_eConnectionEstablished)
+    {
+      final ETriState eOldState = m_eConnectionEstablished;
+      if (m_bDebugConnections && LOGGER.isInfoEnabled ())
+        LOGGER.info ("Setting connection established state from " + eOldState + " to " + eNewState);
+      m_eConnectionEstablished = eNewState;
+
+      if (m_aConnectionEstablishedCallback != null)
+        m_aConnectionEstablishedCallback.onConnectionEstablishedChange (eOldState, eNewState);
+    }
+    return this;
+  }
+
+  @Nonnull
   public final DBExecutor resetConnectionEstablished ()
   {
-    if (m_eConnectionEstablished.isDefined ())
-    {
-      if (m_bDebugConnections && LOGGER.isInfoEnabled ())
-        LOGGER.info ("Resetting connection established state");
-    }
-    m_eConnectionEstablished = ETriState.UNDEFINED;
+    return setConnectionEstablished (ETriState.UNDEFINED);
+  }
+
+  @Nonnull
+  public final IConnectionEstablishedChangeCallback getConnectionEstablishedChangeCallback ()
+  {
+    return m_aConnectionEstablishedCallback;
+  }
+
+  @Nonnull
+  public final DBExecutor setConnectionEstablishedChangeCallback (@Nullable final IConnectionEstablishedChangeCallback aCB)
+  {
+    m_aConnectionEstablishedCallback = aCB;
     return this;
   }
 
@@ -215,7 +246,7 @@ public class DBExecutor implements Serializable
       if (aConnection == null)
         return ESuccess.FAILURE;
 
-      m_eConnectionEstablished = ETriState.TRUE;
+      setConnectionEstablished (ETriState.TRUE);
 
       // Okay, connection was established
       return withExistingConnectionDo (aConnection, aCB, aExtraExCB);
@@ -223,8 +254,8 @@ public class DBExecutor implements Serializable
     catch (final DBNoConnectionException ex)
     {
       // Error creating a connection
-      m_eConnectionEstablished = ETriState.FALSE;
-      if (m_bDebugConnections && LOGGER.isWarnEnabled ())
+      setConnectionEstablished (ETriState.FALSE);
+      if (LOGGER.isWarnEnabled ())
         LOGGER.warn ("Connection could not be established. Remembering this status.");
 
       // Invoke callback
