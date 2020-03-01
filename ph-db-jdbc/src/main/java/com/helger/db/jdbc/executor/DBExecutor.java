@@ -116,6 +116,8 @@ public class DBExecutor implements Serializable
   private final CallbackList <IExceptionCallback <? super Exception>> m_aExceptionCallbacks = new CallbackList <> ();
   private IConnectionExecutor m_aConnectionExecutor;
 
+  private long m_nLongRunningTimeoutMS = CGlobal.MILLISECONDS_PER_SECOND;
+
   private final AtomicLong m_aConnectionCounter = new AtomicLong (0);
   private final AtomicLong m_aSQLStatementCounter = new AtomicLong (0);
   private final AtomicLong m_aTransactionCounter = new AtomicLong (0);
@@ -183,6 +185,18 @@ public class DBExecutor implements Serializable
   public final CallbackList <IExceptionCallback <? super Exception>> exceptionCallbacks ()
   {
     return m_aExceptionCallbacks;
+  }
+
+  public final long getLongRunningTimeoutMS ()
+  {
+    return m_nLongRunningTimeoutMS;
+  }
+
+  @Nonnull
+  public final DBExecutor setLongRunningTimeoutMS (final long nLongRunningTimeoutMS)
+  {
+    m_nLongRunningTimeoutMS = nLongRunningTimeoutMS;
+    return this;
   }
 
   public final boolean isDebugConnections ()
@@ -418,20 +432,24 @@ public class DBExecutor implements Serializable
     return m_aConnectionExecutor.execute (aWithConnectionCB, aExtraExCB);
   }
 
-  protected final void withTimingDo (@Nonnull final IThrowingRunnable <SQLException> r) throws SQLException
+  protected final void withTimingDo (@Nonnull final String sDescription,
+                                     @Nonnull final IThrowingRunnable <SQLException> aRunnable) throws SQLException
   {
     final StopWatch aSW = StopWatch.createdStarted ();
     try
     {
-      r.run ();
+      aRunnable.run ();
     }
     finally
     {
       aSW.stop ();
-
       final long nMillis = aSW.getMillis ();
-      if (nMillis > CGlobal.MILLISECONDS_PER_SECOND)
-        LOGGER.warn ("Execution took " + nMillis + " ms which is too long");
+
+      if (m_nLongRunningTimeoutMS > 0)
+      {
+        if (nMillis > m_nLongRunningTimeoutMS)
+          LOGGER.warn ("DB execution took " + nMillis + " milliseconds which is too long: " + sDescription);
+      }
     }
   }
 
@@ -445,16 +463,17 @@ public class DBExecutor implements Serializable
   {
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
       final long nSQLStatementID = m_aSQLStatementCounter.incrementAndGet ();
+      final String sWhat = "PreparedStatement [" +
+                           nSQLStatementID +
+                           "] <" +
+                           sSQL +
+                           "> with " +
+                           aPSDP.getValueCount () +
+                           " values";
       if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
-        LOGGER.info ("Will run PreparedStatement [" +
-                     nSQLStatementID +
-                     "] <" +
-                     sSQL +
-                     "> with " +
-                     aPSDP.getValueCount () +
-                     " values");
+        LOGGER.info ("Will execute " + sWhat);
 
-      withTimingDo ( () -> {
+      withTimingDo (sWhat, () -> {
         try (final PreparedStatement aPS = aConnection.prepareStatement (sSQL, Statement.RETURN_GENERATED_KEYS))
         {
           if (aPS.getParameterMetaData ().getParameterCount () != aPSDP.getValueCount ())
@@ -508,10 +527,11 @@ public class DBExecutor implements Serializable
   {
     return withStatementDo (aStatement -> {
       final long nSQLStatementID = m_aSQLStatementCounter.incrementAndGet ();
+      final String sWhat = "Statement [" + nSQLStatementID + "] <" + sSQL + ">";
       if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
-        LOGGER.info ("Will execute statement [" + nSQLStatementID + "] <" + sSQL + ">");
+        LOGGER.info ("Will execute " + sWhat);
 
-      withTimingDo ( () -> {
+      withTimingDo (sWhat, () -> {
         aStatement.execute (sSQL);
       });
     }, aGeneratedKeysCB, aExtraExCB);
@@ -694,10 +714,11 @@ public class DBExecutor implements Serializable
   {
     return withStatementDo (aStatement -> {
       final long nSQLStatementID = m_aSQLStatementCounter.incrementAndGet ();
+      final String sWhat = "Query [" + nSQLStatementID + "] <" + sSQL + ">";
       if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
-        LOGGER.info ("Will execute SQL query [" + nSQLStatementID + "] <" + sSQL + ">");
+        LOGGER.info ("Will execute " + sWhat);
 
-      withTimingDo ( () -> {
+      withTimingDo (sWhat, () -> {
         final ResultSet aResultSet = aStatement.executeQuery (sSQL);
         final long nResultRows = iterateResultSet (aResultSet, aResultItemCallback);
 
