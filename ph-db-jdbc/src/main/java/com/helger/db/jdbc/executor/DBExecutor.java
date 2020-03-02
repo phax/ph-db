@@ -101,9 +101,11 @@ public class DBExecutor implements Serializable
                       @Nullable IExceptionCallback <? super Exception> aExtraExCB);
   }
 
+  public static final long DEFAULT_EXECUTION_DURATION_WARN_MS = CGlobal.MILLISECONDS_PER_SECOND;
   public static final boolean DEFAULT_DEBUG_CONNECTIONS = false;
   public static final boolean DEFAULT_DEBUG_TRANSACTIONS = false;
   public static final boolean DEFAULT_DEBUG_SQL_STATEMENTS = false;
+
   private static final Logger LOGGER = LoggerFactory.getLogger (DBExecutor.class);
   private static final Long MINUS1 = Long.valueOf (CGlobal.ILLEGAL_UINT);
 
@@ -113,7 +115,7 @@ public class DBExecutor implements Serializable
   private final CallbackList <IExceptionCallback <? super Exception>> m_aExceptionCallbacks = new CallbackList <> ();
   private IConnectionExecutor m_aConnectionExecutor;
 
-  private long m_nExecutionDurationWarnMS = CGlobal.MILLISECONDS_PER_SECOND;
+  private long m_nExecutionDurationWarnMS = DEFAULT_EXECUTION_DURATION_WARN_MS;
   private static final CallbackList <IExecutionTimeExceededCallback> m_aExecutionTimeExceededHandlers = new CallbackList <> ();
 
   private final AtomicLong m_aConnectionCounter = new AtomicLong (0);
