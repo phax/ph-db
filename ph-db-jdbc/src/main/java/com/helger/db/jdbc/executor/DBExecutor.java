@@ -53,11 +53,14 @@ import com.helger.commons.state.ESuccess;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.timing.StopWatch;
+import com.helger.db.api.callback.IExecutionTimeExceededCallback;
+import com.helger.db.api.callback.LoggingExecutionTimeExceededCallback;
 import com.helger.db.api.jdbc.JDBCHelper;
 import com.helger.db.jdbc.ConnectionFromDataSourceProvider;
 import com.helger.db.jdbc.IHasConnection;
 import com.helger.db.jdbc.IHasDataSource;
 import com.helger.db.jdbc.callback.GetSingleGeneratedKeyCallback;
+import com.helger.db.jdbc.callback.IConnectionStatusChangeCallback;
 import com.helger.db.jdbc.callback.IGeneratedKeysCallback;
 import com.helger.db.jdbc.callback.IPreparedStatementDataProvider;
 import com.helger.db.jdbc.callback.IResultSetRowCallback;
@@ -73,35 +76,29 @@ import com.helger.db.jdbc.callback.UpdatedRowCountCallback;
 public class DBExecutor implements Serializable
 {
   @FunctionalInterface
-  public interface IWithConnectionCallback extends ICallback
+  private interface IWithConnectionCallback extends ICallback
   {
     void run (@Nonnull Connection aConnection) throws SQLException;
   }
 
   @FunctionalInterface
-  public interface IWithStatementCallback extends ICallback
+  private interface IWithStatementCallback extends ICallback
   {
     void run (@Nonnull Statement aStatement) throws SQLException;
   }
 
   @FunctionalInterface
-  public interface IWithPreparedStatementCallback extends ICallback
+  private interface IWithPreparedStatementCallback extends ICallback
   {
     void run (@Nonnull PreparedStatement aPreparedStatement) throws SQLException;
   }
 
   @FunctionalInterface
-  public interface IConnectionExecutor
+  private interface IConnectionExecutor
   {
     @Nonnull
     ESuccess execute (@Nonnull IWithConnectionCallback aCB,
                       @Nullable IExceptionCallback <? super Exception> aExtraExCB);
-  }
-
-  @FunctionalInterface
-  public interface IConnectionEstablishedChangeCallback extends ICallback
-  {
-    void onConnectionEstablishedChange (@Nonnull ETriState eOld, @Nonnull ETriState eNew);
   }
 
   public static final boolean DEFAULT_DEBUG_CONNECTIONS = false;
@@ -112,11 +109,12 @@ public class DBExecutor implements Serializable
 
   private final IHasConnection m_aConnectionProvider;
   private ETriState m_eConnectionEstablished = ETriState.UNDEFINED;
-  private IConnectionEstablishedChangeCallback m_aConnectionEstablishedCallback;
+  private IConnectionStatusChangeCallback m_aConnectionStatusChangeCallback;
   private final CallbackList <IExceptionCallback <? super Exception>> m_aExceptionCallbacks = new CallbackList <> ();
   private IConnectionExecutor m_aConnectionExecutor;
 
-  private long m_nLongRunningTimeoutMS = CGlobal.MILLISECONDS_PER_SECOND;
+  private long m_nExecutionDurationWarnMS = CGlobal.MILLISECONDS_PER_SECOND;
+  private static final CallbackList <IExecutionTimeExceededCallback> m_aExecutionTimeExceededHandlers = new CallbackList <> ();
 
   private final AtomicLong m_aConnectionCounter = new AtomicLong (0);
   private final AtomicLong m_aSQLStatementCounter = new AtomicLong (0);
@@ -136,6 +134,7 @@ public class DBExecutor implements Serializable
     m_aConnectionProvider = aConnectionProvider;
     m_aExceptionCallbacks.add (new LoggingExceptionCallback ());
     m_aConnectionExecutor = this::withNewConnectionDo;
+    m_aExecutionTimeExceededHandlers.add (new LoggingExecutionTimeExceededCallback (true));
   }
 
   @Nonnull
@@ -155,8 +154,8 @@ public class DBExecutor implements Serializable
         LOGGER.info ("Setting connection established state from " + eOldState + " to " + eNewState);
       m_eConnectionEstablished = eNewState;
 
-      if (m_aConnectionEstablishedCallback != null)
-        m_aConnectionEstablishedCallback.onConnectionEstablishedChange (eOldState, eNewState);
+      if (m_aConnectionStatusChangeCallback != null)
+        m_aConnectionStatusChangeCallback.onConnectionStatusChanged (eOldState, eNewState);
     }
     return this;
   }
@@ -168,15 +167,15 @@ public class DBExecutor implements Serializable
   }
 
   @Nonnull
-  public final IConnectionEstablishedChangeCallback getConnectionEstablishedChangeCallback ()
+  public final IConnectionStatusChangeCallback getConnectionStatusChangeCallback ()
   {
-    return m_aConnectionEstablishedCallback;
+    return m_aConnectionStatusChangeCallback;
   }
 
   @Nonnull
-  public final DBExecutor setConnectionEstablishedChangeCallback (@Nullable final IConnectionEstablishedChangeCallback aCB)
+  public final DBExecutor setConnectionStatusChangeCallback (@Nullable final IConnectionStatusChangeCallback aCB)
   {
-    m_aConnectionEstablishedCallback = aCB;
+    m_aConnectionStatusChangeCallback = aCB;
     return this;
   }
 
@@ -187,16 +186,40 @@ public class DBExecutor implements Serializable
     return m_aExceptionCallbacks;
   }
 
-  public final long getLongRunningTimeoutMS ()
+  @CheckForSigned
+  public final long getExecutionDurationWarnMS ()
   {
-    return m_nLongRunningTimeoutMS;
+    return m_nExecutionDurationWarnMS;
+  }
+
+  public final boolean isExecutionDurationWarnEnabled ()
+  {
+    return m_nExecutionDurationWarnMS > 0;
   }
 
   @Nonnull
-  public final DBExecutor setLongRunningTimeoutMS (final long nLongRunningTimeoutMS)
+  public final DBExecutor setExecutionDurationWarnMS (final long nExecutionDurationWarnMS)
   {
-    m_nLongRunningTimeoutMS = nLongRunningTimeoutMS;
+    m_nExecutionDurationWarnMS = nExecutionDurationWarnMS;
     return this;
+  }
+
+  /**
+   * Get the custom exception handler list.
+   *
+   * @return Never <code>null</code>.
+   */
+  @Nonnull
+  public final CallbackList <IExecutionTimeExceededCallback> executionTimeExceededHandlers ()
+  {
+    return m_aExecutionTimeExceededHandlers;
+  }
+
+  public final void onExecutionTimeExceeded (@Nonnull final String sMsg, @Nonnegative final long nExecutionMillis)
+  {
+    m_aExecutionTimeExceededHandlers.forEach (x -> x.onExecutionTimeExceeded (sMsg,
+                                                                              nExecutionMillis,
+                                                                              m_nExecutionDurationWarnMS));
   }
 
   public final boolean isDebugConnections ()
@@ -443,12 +466,12 @@ public class DBExecutor implements Serializable
     finally
     {
       aSW.stop ();
-      final long nMillis = aSW.getMillis ();
+      final long nDurationMillis = aSW.getMillis ();
 
-      if (m_nLongRunningTimeoutMS > 0)
+      if (isExecutionDurationWarnEnabled ())
       {
-        if (nMillis > m_nLongRunningTimeoutMS)
-          LOGGER.warn ("DB execution took " + nMillis + " milliseconds which is too long: " + sDescription);
+        if (nDurationMillis > m_nExecutionDurationWarnMS)
+          onExecutionTimeExceeded ("DB execution " + sDescription, nDurationMillis);
       }
     }
   }

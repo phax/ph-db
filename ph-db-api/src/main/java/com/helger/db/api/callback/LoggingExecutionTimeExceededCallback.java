@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.db.jpa.callback;
+package com.helger.db.api.callback;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -33,26 +33,36 @@ public class LoggingExecutionTimeExceededCallback implements IExecutionTimeExcee
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (LoggingExecutionTimeExceededCallback.class);
 
-  private final boolean m_bEmitStackTrace;
+  private boolean m_bEmitStackTrace;
 
   public LoggingExecutionTimeExceededCallback (final boolean bEmitStackTrace)
   {
-    m_bEmitStackTrace = bEmitStackTrace;
+    setEmitStackTrace (bEmitStackTrace);
   }
 
-  public boolean isEmitStackTrace ()
+  public final boolean isEmitStackTrace ()
   {
     return m_bEmitStackTrace;
   }
 
-  public void onExecutionTimeExceeded (@Nonnull final String sMsg, @Nonnegative final long nExecutionMillis)
+  @Nonnull
+  public final LoggingExecutionTimeExceededCallback setEmitStackTrace (final boolean bEmitStackTrace)
   {
-    LOGGER.warn (sMsg + " took " + nExecutionMillis + "ms", m_bEmitStackTrace ? new Exception () : null);
+    m_bEmitStackTrace = bEmitStackTrace;
+    return this;
+  }
+
+  public void onExecutionTimeExceeded (@Nonnull final String sMsg,
+                                       @Nonnegative final long nExecutionMillis,
+                                       @Nonnegative final long nLimitMillis)
+  {
+    LOGGER.warn (sMsg + " took " + nExecutionMillis + "ms (limit is  " + nLimitMillis + " ms)",
+                 m_bEmitStackTrace ? new Exception () : null);
   }
 
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("emitStackTraces", m_bEmitStackTrace).getToString ();
+    return new ToStringGenerator (this).append ("EmitStackTrace", m_bEmitStackTrace).getToString ();
   }
 }

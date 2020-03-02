@@ -41,8 +41,8 @@ import com.helger.commons.statistics.IMutableStatisticsHandlerCounter;
 import com.helger.commons.statistics.IMutableStatisticsHandlerTimer;
 import com.helger.commons.statistics.StatisticsManager;
 import com.helger.commons.timing.StopWatch;
-import com.helger.db.jpa.callback.IExecutionTimeExceededCallback;
-import com.helger.db.jpa.callback.LoggingExecutionTimeExceededCallback;
+import com.helger.db.api.callback.IExecutionTimeExceededCallback;
+import com.helger.db.api.callback.LoggingExecutionTimeExceededCallback;
 
 /**
  * JPA enabled manager with transaction handling etc. The
@@ -253,7 +253,7 @@ public class JPAEnabledManager
   }
 
   /**
-   * Get the custom exception handler list.
+   * Get the execution time exceeded handler list.
    *
    * @return Never <code>null</code>.
    */
@@ -266,7 +266,8 @@ public class JPAEnabledManager
   public static final void onExecutionTimeExceeded (@Nonnull final String sMsg,
                                                     @Nonnegative final long nExecutionMillis)
   {
-    s_aExecutionTimeExceededHandlers.forEach (x -> x.onExecutionTimeExceeded (sMsg, nExecutionMillis));
+    final long nLimitMS = getDefaultExecutionWarnTime ();
+    s_aExecutionTimeExceededHandlers.forEach (x -> x.onExecutionTimeExceeded (sMsg, nExecutionMillis, nLimitMS));
   }
 
   @Nonnull

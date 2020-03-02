@@ -14,29 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.db.jpa.callback;
+package com.helger.db.jdbc.callback;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
 import com.helger.commons.callback.ICallback;
+import com.helger.commons.state.ETriState;
 
 /**
- * Callback interface to be used to notify interested parties when a statement
- * takes too long. Is used in {@link com.helger.db.jpa.JPAEnabledManager}.
+ * Callback to be invoked if the connection status changes.
  *
  * @author Philip Helger
+ * @since 6.2.0
  */
 @FunctionalInterface
-public interface IExecutionTimeExceededCallback extends ICallback
+public interface IConnectionStatusChangeCallback extends ICallback
 {
-  /**
-   * Called when the execution time was exceeded
-   *
-   * @param sMsg
-   *        The message to locate the source
-   * @param nExecutionMillis
-   *        The milliseconds the execution took
-   */
-  void onExecutionTimeExceeded (@Nonnull String sMsg, @Nonnegative long nExecutionMillis);
+  void onConnectionStatusChanged (@Nonnull ETriState eOld, @Nonnull ETriState eNew);
 }
