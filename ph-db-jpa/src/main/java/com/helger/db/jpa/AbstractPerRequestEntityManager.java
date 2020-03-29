@@ -65,7 +65,7 @@ public abstract class AbstractPerRequestEntityManager extends AbstractRequestSin
   @Nonnull
   public EntityManager getEntityManager ()
   {
-    final EntityManager ret = m_aRWLock.readLocked ( () -> {
+    final EntityManager ret = m_aRWLock.readLockedGet ( () -> {
       if (m_bDestroyed)
         throw new IllegalStateException ("This object was already destroyed and should not be re-used!");
       return m_aEntityManager;
