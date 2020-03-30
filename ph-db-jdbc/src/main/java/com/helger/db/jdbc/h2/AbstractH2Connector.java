@@ -97,12 +97,12 @@ public abstract class AbstractH2Connector extends AbstractConnector
   @Nullable
   public final Class <? extends DatabaseEventListener> getEventListenerClass ()
   {
-    return getLock ().locked ( () -> m_aEventListenerClass);
+    return getLock ().lockedGet ( () -> m_aEventListenerClass);
   }
 
   public final void setEventListenerClass (@Nullable final Class <? extends DatabaseEventListener> aEventListenerClass)
   {
-    getLock ().locked ( () -> m_aEventListenerClass = aEventListenerClass);
+    getLock ().lockedGet ( () -> m_aEventListenerClass = aEventListenerClass);
   }
 
   public final boolean isCloseOnExit ()

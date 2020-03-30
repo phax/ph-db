@@ -76,7 +76,7 @@ public class H2FileConnector extends H2MemConnector
   @Nonnull
   public ESuccess compactDatabase (final boolean bDeleteTemporarySQLFile)
   {
-    return getLock ().locked ( () -> {
+    return getLock ().lockedGet ( () -> {
       // Close DB
       close ();
 
@@ -106,10 +106,7 @@ public class H2FileConnector extends H2MemConnector
         String sUniqueFileName = "h2dump-" + Clock.systemUTC ().millis () + ".sql";
         if (FileOperations.renameFile (aScriptFileName, new File (sUniqueFileName)).isFailure ())
           sUniqueFileName = sScriptFileName;
-        LOGGER.error ("Failed to delete and refill database. Data is contained in file '" +
-                         sUniqueFileName +
-                         "'!",
-                         ex);
+        LOGGER.error ("Failed to delete and refill database. Data is contained in file '" + sUniqueFileName + "'!", ex);
       }
       return ESuccess.FAILURE;
     });

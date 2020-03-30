@@ -101,7 +101,7 @@ public abstract class AbstractConnector implements IHasDataSource, Closeable
   @Nonnull
   public final DataSource getDataSource ()
   {
-    return m_aLock.locked ( () -> {
+    return m_aLock.lockedGet ( () -> {
       if (m_aDataSource == null)
       {
         // build data source
