@@ -1,10 +1,38 @@
 # ph-db
 
-Java library with some basic DB API, a special JDBC version and a JPA version based on EclipseLink.
+Java library with some common DB API, a special JDBC version and a JPA version based on EclipseLink.
+
+# Maven usage
+
+Add the following to your pom.xml to use this artifact, where `x.y.z` is to be repalced with the last released version:
+
+```xml
+<dependency>
+  <groupId>com.helger</groupId>
+  <artifactId>ph-db-api</artifactId>
+  <version>x.y.z</version>
+</dependency>
+```
+
+```xml
+<dependency>
+  <groupId>com.helger</groupId>
+  <artifactId>ph-db-jdbc</artifactId>
+  <version>x.y.z</version>
+</dependency>
+```
+
+```xml
+<dependency>
+  <groupId>com.helger</groupId>
+  <artifactId>ph-db-jpa</artifactId>
+  <version>x.y.z</version>
+</dependency>
+```
 
 # News and noteworthy
 
-* v6.2.0 - work in progress
+* v6.2.0 - 2020-04-23
     * Updated to Apache Commons Pool 2.8.0
     * Updated to MySQLConnector/J 8.0.19
     * Updated to EclipseLink 2.7.6
@@ -50,34 +78,6 @@ Java library with some basic DB API, a special JDBC version and a JPA version ba
     * Updated to ph-commons 8.4.x
 * v5.0.0 - 2016-06-11
     * Requires at least JDK8
-
-# Maven usage
-
-Add the following to your pom.xml to use this artifact:
-
-```xml
-<dependency>
-  <groupId>com.helger</groupId>
-  <artifactId>ph-db-api</artifactId>
-  <version>6.1.5</version>
-</dependency>
-```
-
-```xml
-<dependency>
-  <groupId>com.helger</groupId>
-  <artifactId>ph-db-jdbc</artifactId>
-  <version>6.1.5</version>
-</dependency>
-```
-
-```xml
-<dependency>
-  <groupId>com.helger</groupId>
-  <artifactId>ph-db-jpa</artifactId>
-  <version>6.1.5</version>
-</dependency>
-```
 
 ---
 
