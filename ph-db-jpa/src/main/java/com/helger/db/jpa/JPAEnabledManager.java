@@ -263,8 +263,7 @@ public class JPAEnabledManager
     return s_aExecutionTimeExceededHandlers;
   }
 
-  public static final void onExecutionTimeExceeded (@Nonnull final String sMsg,
-                                                    @Nonnegative final long nExecutionMillis)
+  public static final void onExecutionTimeExceeded (@Nonnull final String sMsg, @Nonnegative final long nExecutionMillis)
   {
     final long nLimitMS = getDefaultExecutionWarnTime ();
     s_aExecutionTimeExceededHandlers.forEach (x -> x.onExecutionTimeExceeded (sMsg, nExecutionMillis, nLimitMS));

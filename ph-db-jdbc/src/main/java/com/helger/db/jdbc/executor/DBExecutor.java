@@ -97,8 +97,7 @@ public class DBExecutor implements Serializable
   private interface IConnectionExecutor
   {
     @Nonnull
-    ESuccess execute (@Nonnull IWithConnectionCallback aCB,
-                      @Nullable IExceptionCallback <? super Exception> aExtraExCB);
+    ESuccess execute (@Nonnull IWithConnectionCallback aCB, @Nullable IExceptionCallback <? super Exception> aExtraExCB);
   }
 
   public static final long DEFAULT_EXECUTION_DURATION_WARN_MS = CGlobal.MILLISECONDS_PER_SECOND;
@@ -219,9 +218,7 @@ public class DBExecutor implements Serializable
 
   public final void onExecutionTimeExceeded (@Nonnull final String sMsg, @Nonnegative final long nExecutionMillis)
   {
-    m_aExecutionTimeExceededHandlers.forEach (x -> x.onExecutionTimeExceeded (sMsg,
-                                                                              nExecutionMillis,
-                                                                              m_nExecutionDurationWarnMS));
+    m_aExecutionTimeExceededHandlers.forEach (x -> x.onExecutionTimeExceeded (sMsg, nExecutionMillis, m_nExecutionDurationWarnMS));
   }
 
   public final boolean isDebugConnections ()
@@ -488,13 +485,7 @@ public class DBExecutor implements Serializable
   {
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
       final long nSQLStatementID = m_aSQLStatementCounter.incrementAndGet ();
-      final String sWhat = "PreparedStatement [" +
-                           nSQLStatementID +
-                           "] <" +
-                           sSQL +
-                           "> with " +
-                           aPSDP.getValueCount () +
-                           " values";
+      final String sWhat = "PreparedStatement [" + nSQLStatementID + "] <" + sSQL + "> with " + aPSDP.getValueCount () + " values";
       if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
         LOGGER.info ("Will execute " + sWhat);
 
@@ -563,8 +554,7 @@ public class DBExecutor implements Serializable
   }
 
   @Nonnull
-  public ESuccess executePreparedStatement (@Nonnull final String sSQL,
-                                            @Nonnull final IPreparedStatementDataProvider aPSDP)
+  public ESuccess executePreparedStatement (@Nonnull final String sSQL, @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
     return executePreparedStatement (sSQL, aPSDP, null, null, null);
   }
@@ -671,8 +661,7 @@ public class DBExecutor implements Serializable
   {
     final GetSingleGeneratedKeyCallback aCB = new GetSingleGeneratedKeyCallback ();
     final long nUpdateCount = insertOrUpdateOrDelete (sSQL, aPSDP, aCB, aExtraExCB);
-    return new CountAndKey (nUpdateCount,
-                            nUpdateCount != IUpdatedRowCountCallback.NOT_INITIALIZED ? aCB.getGeneratedKey () : null);
+    return new CountAndKey (nUpdateCount, nUpdateCount != IUpdatedRowCountCallback.NOT_INITIALIZED ? aCB.getGeneratedKey () : null);
   }
 
   /**
@@ -734,8 +723,7 @@ public class DBExecutor implements Serializable
   }
 
   @Nonnull
-  public ESuccess queryAll (@Nonnull @Nonempty final String sSQL,
-                            @Nonnull final IResultSetRowCallback aResultItemCallback)
+  public ESuccess queryAll (@Nonnull @Nonempty final String sSQL, @Nonnull final IResultSetRowCallback aResultItemCallback)
   {
     return withStatementDo (aStatement -> {
       final long nSQLStatementID = m_aSQLStatementCounter.incrementAndGet ();
@@ -804,8 +792,7 @@ public class DBExecutor implements Serializable
   }
 
   @Nullable
-  public Optional <DBResultRow> querySingle (@Nonnull @Nonempty final String sSQL,
-                                             @Nonnull final IPreparedStatementDataProvider aPSDP)
+  public Optional <DBResultRow> querySingle (@Nonnull @Nonempty final String sSQL, @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
     return queryAll (sSQL, aPSDP).map (ICommonsList::getFirst);
   }

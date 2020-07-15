@@ -59,11 +59,7 @@ public class JPAZonedDateTimeConverter implements Converter
       catch (final RuntimeException ex)
       {
         // failed to convert
-        LOGGER.warn ("Failed to convert '" +
-                        aDataValue +
-                        "' of type " +
-                        ClassHelper.getSafeClassName (aDataValue) +
-                        " to DateTime!");
+        LOGGER.warn ("Failed to convert '" + aDataValue + "' of type " + ClassHelper.getSafeClassName (aDataValue) + " to DateTime!");
       }
     return null;
   }

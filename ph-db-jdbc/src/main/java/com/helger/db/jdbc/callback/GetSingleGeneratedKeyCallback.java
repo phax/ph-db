@@ -42,14 +42,10 @@ public class GetSingleGeneratedKeyCallback implements IGeneratedKeysCallback
     ValueEnforcer.notNull (aGeneratedValues, "GeneratedValues");
 
     if (aGeneratedValues.size () != 1)
-      throw new IllegalArgumentException ("Found not exactly 1 generated value row but " +
-                                          aGeneratedValues.size () +
-                                          " rows!");
+      throw new IllegalArgumentException ("Found not exactly 1 generated value row but " + aGeneratedValues.size () + " rows!");
     final ICommonsList <Object> aRow = aGeneratedValues.getFirst ();
     if (aRow.size () != 1)
-      throw new IllegalArgumentException ("The generated row does not contain exactly 1 item but " +
-                                          aRow.size () +
-                                          " items!");
+      throw new IllegalArgumentException ("The generated row does not contain exactly 1 item but " + aRow.size () + " items!");
     m_aGeneratedKey = aRow.getFirst ();
   }
 

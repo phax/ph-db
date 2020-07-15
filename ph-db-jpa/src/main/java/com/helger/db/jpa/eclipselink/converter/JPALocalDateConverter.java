@@ -59,11 +59,7 @@ public class JPALocalDateConverter implements Converter
       catch (final IllegalArgumentException ex)
       {
         // failed to convert
-        LOGGER.warn ("Failed to convert '" +
-                        aDataValue +
-                        "' of type " +
-                        ClassHelper.getSafeClassName (aDataValue) +
-                        " to LocalDate!");
+        LOGGER.warn ("Failed to convert '" + aDataValue + "' of type " + ClassHelper.getSafeClassName (aDataValue) + " to LocalDate!");
       }
     return null;
   }

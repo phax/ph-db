@@ -33,9 +33,7 @@ public class H2MemConnector extends AbstractH2Connector
     this ("h2memdb", sUser, sPassword);
   }
 
-  public H2MemConnector (@Nonnull @Nonempty final String sDBName,
-                         @Nullable final String sUser,
-                         @Nullable final String sPassword)
+  public H2MemConnector (@Nonnull @Nonempty final String sDBName, @Nullable final String sUser, @Nullable final String sPassword)
   {
     ValueEnforcer.notNull (sDBName, "DBName");
     m_sDBName = sDBName;

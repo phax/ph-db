@@ -57,11 +57,7 @@ public class JPALocaleConverter implements Converter
       catch (final Exception ex)
       {
         // failed to convert
-        LOGGER.warn ("Failed to convert '" +
-                        aDataValue +
-                        "' of type " +
-                        ClassHelper.getSafeClassName (aDataValue) +
-                        "to Locale!");
+        LOGGER.warn ("Failed to convert '" + aDataValue + "' of type " + ClassHelper.getSafeClassName (aDataValue) + "to Locale!");
       }
     return null;
   }

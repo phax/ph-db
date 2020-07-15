@@ -41,7 +41,5 @@ public interface IExecutionTimeExceededCallback extends ICallback
    *        The milliseconds the execution should not exceed. So the maximum
    *        configured execution time. Always &gt; 0.
    */
-  void onExecutionTimeExceeded (@Nonnull String sMsg,
-                                @Nonnegative long nExecutionMillis,
-                                @Nonnegative long nLimitMillis);
+  void onExecutionTimeExceeded (@Nonnull String sMsg, @Nonnegative long nExecutionMillis, @Nonnegative long nLimitMillis);
 }

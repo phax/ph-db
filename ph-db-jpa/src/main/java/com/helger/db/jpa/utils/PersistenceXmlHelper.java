@@ -64,8 +64,7 @@ public final class PersistenceXmlHelper
     try
     {
       int nCount = 0;
-      final Enumeration <URL> aEnum = ClassLoaderHelper.getResources (ClassLoaderHelper.getDefaultClassLoader (),
-                                                                      PATH_PERSISTENCE_XML);
+      final Enumeration <URL> aEnum = ClassLoaderHelper.getResources (ClassLoaderHelper.getDefaultClassLoader (), PATH_PERSISTENCE_XML);
       while (aEnum.hasMoreElements ())
       {
         nCount++;
@@ -73,8 +72,7 @@ public final class PersistenceXmlHelper
         final IMicroDocument aDoc = MicroReader.readMicroXML (new URLResource (aURL));
         if (aDoc == null || aDoc.getDocumentElement () == null)
           throw new IllegalStateException ("No XML file: " + aURL);
-        for (final IMicroElement ePU : aDoc.getDocumentElement ().getAllChildElements (PERSISTENCE_NAMESPACE_URI,
-                                                                                       "persistence-unit"))
+        for (final IMicroElement ePU : aDoc.getDocumentElement ().getAllChildElements (PERSISTENCE_NAMESPACE_URI, "persistence-unit"))
           for (final IMicroElement eClass : ePU.getAllChildElements (PERSISTENCE_NAMESPACE_URI, "class"))
           {
             final String sClass = eClass.getTextContent ();

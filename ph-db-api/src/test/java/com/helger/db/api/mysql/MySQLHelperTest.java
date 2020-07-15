@@ -39,7 +39,6 @@ public final class MySQLHelperTest
     aMap.put (EMySQLConnectionProperty.autoDeserialize, "true");
     assertEquals ("jdbc:mysql:a?autoDeserialize=true", MySQLHelper.buildJDBCString ("jdbc:mysql:a", aMap));
     aMap.put (EMySQLConnectionProperty.autoSlowLog, "true");
-    assertEquals ("jdbc:mysql:a?autoDeserialize=true&autoSlowLog=true",
-                  MySQLHelper.buildJDBCString ("jdbc:mysql:a", aMap));
+    assertEquals ("jdbc:mysql:a?autoDeserialize=true&autoSlowLog=true", MySQLHelper.buildJDBCString ("jdbc:mysql:a", aMap));
   }
 }

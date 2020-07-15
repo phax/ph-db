@@ -59,11 +59,7 @@ public class JPALocalTimeConverter implements Converter
       catch (final IllegalArgumentException ex)
       {
         // failed to convert
-        LOGGER.warn ("Failed to convert '" +
-                        aDataValue +
-                        "' of type " +
-                        ClassHelper.getSafeClassName (aDataValue) +
-                        "to LocalTime!");
+        LOGGER.warn ("Failed to convert '" + aDataValue + "' of type " + ClassHelper.getSafeClassName (aDataValue) + "to LocalTime!");
       }
     return null;
   }

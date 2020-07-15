@@ -40,9 +40,7 @@ public class DBResultField implements IGetterDirectTrait, Serializable
   private final int m_nColumnType;
   private final Object m_aValue;
 
-  public DBResultField (@Nonnull @Nonempty final String sColumnName,
-                        final int nColumnType,
-                        @Nullable final Object aValue)
+  public DBResultField (@Nonnull @Nonempty final String sColumnName, final int nColumnType, @Nullable final Object aValue)
   {
     ValueEnforcer.notEmpty (sColumnName, "ColumnName");
     m_sColumnName = sColumnName;

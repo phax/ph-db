@@ -98,13 +98,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
     ValueEnforcer.notEmpty (sPlatformClass, "PlatformClass");
     ValueEnforcer.notEmpty (sPersistenceUnitName, "PersistenceUnitName");
 
-    LOGGER.info ("Using JDBC URL " +
-                    sJdbcURL +
-                    " with JDBC driver " +
-                    sJdbcDriverClass +
-                    " and user '" +
-                    sUserName +
-                    "'");
+    LOGGER.info ("Using JDBC URL " + sJdbcURL + " with JDBC driver " + sJdbcDriverClass + " and user '" + sUserName + "'");
 
     final ICommonsMap <String, Object> aFactoryProps = new CommonsHashMap <> ();
     aFactoryProps.put (PersistenceUnitProperties.JDBC_DRIVER, sJdbcDriverClass);
@@ -133,14 +127,13 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
       if (!PersistenceUnitProperties.NONE.equals (sDDLGeneration))
       {
         LOGGER.warn ("DDL generation is set to '" +
-                        sDDLGeneration +
-                        "' but no DDL generation mode is defined, which defaults to '" +
-                        PersistenceUnitProperties.DDL_DATABASE_GENERATION +
-                        "' - defaulting to '" +
-                        PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION +
-                        "'!!!");
-        aFactoryProps.put (PersistenceUnitProperties.DDL_GENERATION_MODE,
-                           PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION);
+                     sDDLGeneration +
+                     "' but no DDL generation mode is defined, which defaults to '" +
+                     PersistenceUnitProperties.DDL_DATABASE_GENERATION +
+                     "' - defaulting to '" +
+                     PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION +
+                     "'!!!");
+        aFactoryProps.put (PersistenceUnitProperties.DDL_GENERATION_MODE, PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION);
       }
     }
 
@@ -170,8 +163,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
   protected void onAfterInstantiation (@Nonnull final IScope aScope)
   {
     // Create entity manager factory
-    final EntityManagerFactory aFactory = Persistence.createEntityManagerFactory (m_sPersistenceUnitName,
-                                                                                  m_aFactoryProps);
+    final EntityManagerFactory aFactory = Persistence.createEntityManagerFactory (m_sPersistenceUnitName, m_aFactoryProps);
     if (aFactory == null)
       throw new IllegalStateException ("Failed to create entity manager factory for persistence unit '" +
                                        m_sPersistenceUnitName +
@@ -296,11 +288,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
     // Create entity manager (factory may be null - e.g. after close)
     final EntityManager aEntityManager = getEntityManagerFactory ().createEntityManager (aMap);
     if (aEntityManager == null)
-      throw new IllegalStateException ("Failed to create EntityManager from factory " +
-                                       m_aFactory +
-                                       " with parameters " +
-                                       aMap +
-                                       "!");
+      throw new IllegalStateException ("Failed to create EntityManager from factory " + m_aFactory + " with parameters " + aMap + "!");
     return aEntityManager;
   }
 }

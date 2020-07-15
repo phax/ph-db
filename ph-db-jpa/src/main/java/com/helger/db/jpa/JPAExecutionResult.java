@@ -98,16 +98,13 @@ public class JPAExecutionResult <DATATYPE> extends SuccessWithValue <DATATYPE>
     if (!super.equals (o))
       return false;
     final JPAExecutionResult <?> rhs = (JPAExecutionResult <?>) o;
-    return EqualsHelper.equals (ClassHelper.getSafeClassName (m_aException),
-                                ClassHelper.getSafeClassName (rhs.m_aException));
+    return EqualsHelper.equals (ClassHelper.getSafeClassName (m_aException), ClassHelper.getSafeClassName (rhs.m_aException));
   }
 
   @Override
   public int hashCode ()
   {
-    return HashCodeGenerator.getDerived (super.hashCode ())
-                            .append (ClassHelper.getSafeClassName (m_aException))
-                            .getHashCode ();
+    return HashCodeGenerator.getDerived (super.hashCode ()).append (ClassHelper.getSafeClassName (m_aException)).getHashCode ();
   }
 
   @Override

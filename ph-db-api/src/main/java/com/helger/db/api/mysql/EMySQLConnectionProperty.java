@@ -108,7 +108,9 @@ public enum EMySQLConnectionProperty implements IHasName
    *
    * @since MySQL 5.1.19
    */
-  defaultAuthenticationPlugin ("defaultAuthenticationPlugin", "com.mysql.cj.mysqla.authentication.MysqlNativePasswordPlugin", new Version (5, 1, 19)),
+  defaultAuthenticationPlugin ("defaultAuthenticationPlugin",
+                               "com.mysql.cj.mysqla.authentication.MysqlNativePasswordPlugin",
+                               new Version (5, 1, 19)),
   /**
    * Should the driver detect custom charsets/collations installed on server
    * (true/false, defaults to 'false'). If this option set to 'true' driver gets
@@ -1003,7 +1005,9 @@ public enum EMySQLConnectionProperty implements IHasName
    *
    * @since MySQL 5.1.13
    */
-  loadBalanceExceptionChecker ("loadBalanceExceptionChecker", "com.mysql.cj.jdbc.ha.StandardLoadBalanceExceptionChecker", new Version (5, 1, 13)),
+  loadBalanceExceptionChecker ("loadBalanceExceptionChecker",
+                               "com.mysql.cj.jdbc.ha.StandardLoadBalanceExceptionChecker",
+                               new Version (5, 1, 13)),
   /**
    * Time in milliseconds to wait for ping response from each of load-balanced
    * physical connections when using load-balanced Connection.
