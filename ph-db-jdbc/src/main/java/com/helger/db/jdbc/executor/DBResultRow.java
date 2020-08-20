@@ -146,6 +146,11 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
     return get (nIndex).getAsBoolean ();
   }
 
+  public boolean getAsBoolean (@Nonnegative final int nIndex, final boolean bDefault)
+  {
+    return get (nIndex).getAsBoolean (bDefault);
+  }
+
   public byte getAsByte (@Nonnegative final int nIndex)
   {
     return get (nIndex).getAsByte ();
