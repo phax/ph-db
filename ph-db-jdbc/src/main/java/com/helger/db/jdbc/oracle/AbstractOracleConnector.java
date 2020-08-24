@@ -41,14 +41,4 @@ public abstract class AbstractOracleConnector extends AbstractDBConnector
   {
     return CJDBC_Oracle.DEFAULT_JDBC_DRIVER_CLASS_NAME;
   }
-
-  // getDatabase() may e.g. be @1.2.3.4:666:database
-  @Override
-  @Nonnull
-  public final String getConnectionUrl ()
-  {
-    final StringBuilder ret = new StringBuilder (CJDBC_Oracle.CONNECTION_PREFIX);
-    ret.append (getDatabaseName ());
-    return ret.toString ();
-  }
 }

@@ -62,6 +62,13 @@ public abstract class AbstractDBConnector implements IHasDataSource, Closeable
   protected abstract String getJDBCDriverClassName ();
 
   /**
+   * @return The final connection URL to be used for connecting. May not be
+   *         <code>null</code>.
+   */
+  @Nonnull
+  public abstract String getConnectionUrl ();
+
+  /**
    * @return Connection user name
    */
   @Nullable
@@ -72,19 +79,6 @@ public abstract class AbstractDBConnector implements IHasDataSource, Closeable
    */
   @Nullable
   protected abstract String getPassword ();
-
-  /**
-   * @return Name of the database to connect to
-   */
-  @Nonnull
-  protected abstract String getDatabaseName ();
-
-  /**
-   * @return The final connection URL to be used for connecting. May not be
-   *         <code>null</code>.
-   */
-  @Nonnull
-  public abstract String getConnectionUrl ();
 
   @OverrideOnDemand
   protected boolean isUseDefaultAutoCommit ()
@@ -128,11 +122,14 @@ public abstract class AbstractDBConnector implements IHasDataSource, Closeable
       m_aLock.lockedThrowing ( () -> {
         if (m_aDataSource != null)
         {
+          if (LOGGER.isDebugEnabled ())
+            LOGGER.debug ("Now closing database connection");
+
           m_aDataSource.close ();
           m_aDataSource = null;
 
           if (LOGGER.isDebugEnabled ())
-            LOGGER.debug ("Closed database connection to '" + getDatabaseName () + "'");
+            LOGGER.debug ("Closed database connection");
         }
       });
     }

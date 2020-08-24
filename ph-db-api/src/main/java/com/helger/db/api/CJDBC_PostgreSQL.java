@@ -28,6 +28,7 @@ import com.helger.commons.version.Version;
  * JDBC constants for PostgreSQL
  *
  * @author Philip Helger
+ * @since 6.3.0
  */
 @Immutable
 public final class CJDBC_PostgreSQL

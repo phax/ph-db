@@ -41,13 +41,4 @@ public abstract class AbstractMSSQLConnector extends AbstractDBConnector
   {
     return CJDBC_SQLServer.DEFAULT_JDBC_DRIVER_CLASS_NAME;
   }
-
-  @Override
-  @Nonnull
-  public final String getConnectionUrl ()
-  {
-    final StringBuilder ret = new StringBuilder (CJDBC_SQLServer.CONNECTION_PREFIX);
-    ret.append (getDatabaseName ());
-    return ret.toString ();
-  }
 }

@@ -20,14 +20,11 @@ import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.WillClose;
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.h2.api.DatabaseEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,18 +46,7 @@ import com.helger.db.jdbc.executor.DBExecutor;
 @ThreadSafe
 public abstract class AbstractH2Connector extends AbstractDBConnector
 {
-  /** Default trace level file: 1 */
-  public static final int DEFAULT_TRACE_LEVEL_FILE = 1;
-  /** Default trace level system.out: 0 */
-  public static final int DEFAULT_TRACE_LEVEL_SYSOUT = 0;
-  /** Default close on exit: true */
-  public static final boolean DEFAULT_CLOSE_ON_EXIT = true;
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractH2Connector.class);
-
-  private int m_nTraceLevelFile = DEFAULT_TRACE_LEVEL_FILE;
-  private int m_nTraceLevelSysOut = DEFAULT_TRACE_LEVEL_SYSOUT;
-  private Class <? extends DatabaseEventListener> m_aEventListenerClass = LoggingH2EventListener.class;
-  private boolean m_bCloseOnExit = DEFAULT_CLOSE_ON_EXIT;
 
   public AbstractH2Connector ()
   {}
@@ -71,64 +57,6 @@ public abstract class AbstractH2Connector extends AbstractDBConnector
   protected final String getJDBCDriverClassName ()
   {
     return CJDBC_H2.DEFAULT_JDBC_DRIVER_CLASS_NAME;
-  }
-
-  public final int getTraceLevelFile ()
-  {
-    return getLock ().lockedInt ( () -> m_nTraceLevelFile);
-  }
-
-  public final void setTraceLevelFile (final int nTraceLevelFile)
-  {
-    getLock ().lockedInt ( () -> m_nTraceLevelFile = nTraceLevelFile);
-  }
-
-  public final int getTraceLevelSysOut ()
-  {
-    return getLock ().lockedInt ( () -> m_nTraceLevelSysOut);
-  }
-
-  public final void setTraceLevelSysOut (final int nTraceLevelSysOut)
-  {
-    getLock ().lockedInt ( () -> m_nTraceLevelSysOut = nTraceLevelSysOut);
-  }
-
-  @Nullable
-  public final Class <? extends DatabaseEventListener> getEventListenerClass ()
-  {
-    return getLock ().lockedGet ( () -> m_aEventListenerClass);
-  }
-
-  public final void setEventListenerClass (@Nullable final Class <? extends DatabaseEventListener> aEventListenerClass)
-  {
-    getLock ().lockedGet ( () -> m_aEventListenerClass = aEventListenerClass);
-  }
-
-  public final boolean isCloseOnExit ()
-  {
-    return getLock ().lockedBoolean ( () -> m_bCloseOnExit);
-  }
-
-  public final void setCloseOnExit (final boolean bCloseOnExit)
-  {
-    getLock ().lockedBoolean ( () -> m_bCloseOnExit = bCloseOnExit);
-  }
-
-  @Override
-  @Nonnull
-  public final String getConnectionUrl ()
-  {
-    final StringBuilder ret = new StringBuilder (CJDBC_H2.CONNECTION_PREFIX);
-    ret.append (getDatabaseName ());
-    if (m_nTraceLevelFile != DEFAULT_TRACE_LEVEL_FILE)
-      ret.append (";TRACE_LEVEL_FILE=").append (m_nTraceLevelFile);
-    if (m_nTraceLevelSysOut != DEFAULT_TRACE_LEVEL_SYSOUT)
-      ret.append (";TRACE_LEVEL_SYSTEM_OUT=").append (m_nTraceLevelSysOut);
-    if (m_aEventListenerClass != null)
-      ret.append (";DATABASE_EVENT_LISTENER='").append (m_aEventListenerClass.getName ()).append ("'");
-    if (m_bCloseOnExit != DEFAULT_CLOSE_ON_EXIT)
-      ret.append (";DB_CLOSE_ON_EXIT=").append (Boolean.toString (m_bCloseOnExit).toUpperCase (Locale.US));
-    return ret.toString ();
   }
 
   @Nonnull
@@ -155,7 +83,7 @@ public abstract class AbstractH2Connector extends AbstractDBConnector
     // Save the DB data to an SQL file
     try
     {
-      LOGGER.info ("Dumping database '" + getDatabaseName () + "' to OutputStream");
+      LOGGER.info ("Dumping database to OutputStream");
       try (final PrintWriter aPrintWriter = new PrintWriter (new NonBlockingBufferedWriter (StreamHelper.createWriter (aOS,
                                                                                                                        StandardCharsets.UTF_8))))
       {
@@ -189,7 +117,7 @@ public abstract class AbstractH2Connector extends AbstractDBConnector
   {
     ValueEnforcer.notNull (fDestFile, "DestFile");
 
-    LOGGER.info ("Backing up database '" + getDatabaseName () + "' to " + fDestFile);
+    LOGGER.info ("Backing up database to " + fDestFile);
     final DBExecutor aExecutor = new DBExecutor (this);
     return aExecutor.executeStatement ("BACKUP TO '" + fDestFile.getAbsolutePath () + "'");
   }

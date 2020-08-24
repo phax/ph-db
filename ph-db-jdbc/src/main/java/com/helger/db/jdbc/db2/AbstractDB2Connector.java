@@ -39,13 +39,4 @@ public abstract class AbstractDB2Connector extends AbstractDBConnector
   {
     return CJDBC_DB2.DEFAULT_JDBC_DRIVER_CLASS_NAME;
   }
-
-  @Override
-  @Nonnull
-  public final String getConnectionUrl ()
-  {
-    final StringBuilder ret = new StringBuilder (CJDBC_DB2.CONNECTION_PREFIX);
-    ret.append (getDatabaseName ());
-    return ret.toString ();
-  }
 }
