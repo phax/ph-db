@@ -40,15 +40,15 @@ import com.helger.commons.string.ToStringGenerator;
  * @author Philip Helger
  */
 @ThreadSafe
-public abstract class AbstractConnector implements IHasDataSource, Closeable
+public abstract class AbstractDBConnector implements IHasDataSource, Closeable
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractConnector.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractDBConnector.class);
 
   @Nonnull
   private final SimpleLock m_aLock = new SimpleLock ();
   protected BasicDataSource m_aDataSource;
 
-  public AbstractConnector ()
+  public AbstractDBConnector ()
   {}
 
   @Nonnull

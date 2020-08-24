@@ -19,6 +19,10 @@ package com.helger.db.api;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.commons.annotation.PresentForCodeCoverage;
+import com.helger.commons.thirdparty.ELicense;
+import com.helger.commons.thirdparty.IThirdPartyModule;
+import com.helger.commons.thirdparty.ThirdPartyModule;
+import com.helger.commons.version.Version;
 
 /**
  * JDBC constants for H2
@@ -28,6 +32,13 @@ import com.helger.commons.annotation.PresentForCodeCoverage;
 @Immutable
 public final class CJDBC_H2
 {
+  /** H2 database */
+  public static final IThirdPartyModule H2 = new ThirdPartyModule ("H2 Database Engine",
+                                                                   "Eclipse Foundation",
+                                                                   ELicense.EPL10,
+                                                                   new Version (1, 4, 200),
+                                                                   "http://www.h2database.com/");
+
   /** Default JDBC URL prefix */
   public static final String CONNECTION_PREFIX = "jdbc:h2:";
   public static final String DEFAULT_JDBC_DRIVER_CLASS_NAME = "org.h2.Driver";

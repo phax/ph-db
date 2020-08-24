@@ -20,14 +20,14 @@ import javax.annotation.Nonnull;
 
 import com.helger.commons.annotation.Nonempty;
 import com.helger.db.api.CJDBC_DB2;
-import com.helger.db.jdbc.AbstractConnector;
+import com.helger.db.jdbc.AbstractDBConnector;
 
 /**
  * Abstract DB connector for DB2
  *
  * @author Philip Helger
  */
-public abstract class AbstractDB2Connector extends AbstractConnector
+public abstract class AbstractDB2Connector extends AbstractDBConnector
 {
   public AbstractDB2Connector ()
   {}

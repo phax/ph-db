@@ -38,8 +38,7 @@ import com.helger.commons.io.stream.NonBlockingBufferedWriter;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.ESuccess;
 import com.helger.db.api.CJDBC_H2;
-import com.helger.db.api.h2.LoggingH2EventListener;
-import com.helger.db.jdbc.AbstractConnector;
+import com.helger.db.jdbc.AbstractDBConnector;
 import com.helger.db.jdbc.executor.DBExecutor;
 
 /**
@@ -48,7 +47,7 @@ import com.helger.db.jdbc.executor.DBExecutor;
  * @author Philip Helger
  */
 @ThreadSafe
-public abstract class AbstractH2Connector extends AbstractConnector
+public abstract class AbstractH2Connector extends AbstractDBConnector
 {
   /** Default trace level file: 1 */
   public static final int DEFAULT_TRACE_LEVEL_FILE = 1;

@@ -25,28 +25,27 @@ import com.helger.commons.thirdparty.ThirdPartyModule;
 import com.helger.commons.version.Version;
 
 /**
- * JDBC constants for MySQL
+ * JDBC constants for PostgreSQL
  *
  * @author Philip Helger
  */
 @Immutable
-public final class CJDBC_MySQL
+public final class CJDBC_PostgreSQL
 {
   /** MySQL connector */
-  public static final IThirdPartyModule MYSQL = new ThirdPartyModule ("MySQL Connector/J",
-                                                                      "Oracle",
-                                                                      ELicense.GPL20,
-                                                                      new Version (8, 0, 21),
-                                                                      "http://www.mysql.com/");
+  public static final IThirdPartyModule POSTGRESQL = new ThirdPartyModule ("PostgreSQL JDBC Driver",
+                                                                           "PostgreSQL Global Development Group",
+                                                                           ELicense.BSD,
+                                                                           new Version (42, 2, 15),
+                                                                           "https://jdbc.postgresql.org");
 
-  /** Default JDBC URL prefix */
-  public static final String CONNECTION_PREFIX = "jdbc:mysql:";
-  public static final String DEFAULT_JDBC_DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
-  public static final String DEFAULT_JDBC_DRIVER_CLASS_NAME_V8 = "com.mysql.cj.jdbc.Driver";
+  public static final String CONNECTION_PREFIX = "jjdbc:postgresql:";
+
+  public static final String DEFAULT_JDBC_DRIVER_CLASS_NAME = "org.postgresql.Driver";
 
   @PresentForCodeCoverage
-  private static final CJDBC_MySQL s_aInstance = new CJDBC_MySQL ();
+  private static final CJDBC_PostgreSQL s_aInstance = new CJDBC_PostgreSQL ();
 
-  private CJDBC_MySQL ()
+  private CJDBC_PostgreSQL ()
   {}
 }

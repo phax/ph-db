@@ -21,7 +21,7 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import com.helger.commons.annotation.Nonempty;
 import com.helger.db.api.CJDBC_Oracle;
-import com.helger.db.jdbc.AbstractConnector;
+import com.helger.db.jdbc.AbstractDBConnector;
 
 /**
  * Abstract DB connector for Oracle
@@ -29,7 +29,7 @@ import com.helger.db.jdbc.AbstractConnector;
  * @author Philip Helger
  */
 @ThreadSafe
-public abstract class AbstractOracleOCIConnector extends AbstractConnector
+public abstract class AbstractOracleOCIConnector extends AbstractDBConnector
 {
   public AbstractOracleOCIConnector ()
   {}

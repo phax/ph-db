@@ -21,7 +21,7 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import com.helger.commons.annotation.Nonempty;
 import com.helger.db.api.CJDBC_SQLServer;
-import com.helger.db.jdbc.AbstractConnector;
+import com.helger.db.jdbc.AbstractDBConnector;
 
 /**
  * Abstract DB connector for Microsoft SQL Server
@@ -29,7 +29,7 @@ import com.helger.db.jdbc.AbstractConnector;
  * @author Philip Helger
  */
 @ThreadSafe
-public abstract class AbstractMSSQLConnector extends AbstractConnector
+public abstract class AbstractMSSQLConnector extends AbstractDBConnector
 {
   public AbstractMSSQLConnector ()
   {}
