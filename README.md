@@ -32,6 +32,9 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 
 # News and noteworthy
 
+* v6.3.1 - 2020-09-30
+    * Updated to Apache Commons Pool 2.9.0
+    * Updated to Apache Commons DBCP 2.8.0
 * v6.3.0 - 2020-08-24
     * Renamed `AbsractConnector` to `AbstractDBConnector`
     * Removed `AbstractDBConnector.getDatabaseName`
