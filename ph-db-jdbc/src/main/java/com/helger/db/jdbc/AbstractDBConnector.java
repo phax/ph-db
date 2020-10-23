@@ -96,22 +96,35 @@ public abstract class AbstractDBConnector implements IHasDataSource, Closeable
   public final DataSource getDataSource ()
   {
     return m_aLock.lockedGet ( () -> {
-      if (m_aDataSource == null)
+      BasicDataSource ret = m_aDataSource;
+      if (ret != null && ret.isClosed ())
+        ret = null;
+      if (ret == null)
       {
         // build data source
-        m_aDataSource = new BasicDataSource ();
-        m_aDataSource.setDriverClassName (getJDBCDriverClassName ());
-        if (getUserName () != null)
-          m_aDataSource.setUsername (getUserName ());
-        if (getPassword () != null)
-          m_aDataSource.setPassword (getPassword ());
-        m_aDataSource.setUrl (getConnectionUrl ());
+        // This is usually only called once on startup and than the same
+        // DataSource is reused during the entire lifetime
+        ret = new BasicDataSource ();
+        ret.setDriverClassName (getJDBCDriverClassName ());
+        final String sUserName = getUserName ();
+        if (sUserName != null)
+          ret.setUsername (sUserName);
+        final String sPassword = getPassword ();
+        if (sPassword != null)
+          ret.setPassword (sPassword);
+        ret.setUrl (getConnectionUrl ());
 
         // settings
-        m_aDataSource.setDefaultAutoCommit (Boolean.valueOf (isUseDefaultAutoCommit ()));
-        m_aDataSource.setPoolPreparedStatements (isPoolPreparedStatements ());
+        ret.setDefaultAutoCommit (Boolean.valueOf (isUseDefaultAutoCommit ()));
+        ret.setPoolPreparedStatements (isPoolPreparedStatements ());
+
+        // Remember when ready
+        m_aDataSource = ret;
+
+        if (LOGGER.isInfoEnabled ())
+          LOGGER.info ("Created new DataSource " + ret);
       }
-      return m_aDataSource;
+      return ret;
     });
   }
 
@@ -123,13 +136,13 @@ public abstract class AbstractDBConnector implements IHasDataSource, Closeable
         if (m_aDataSource != null)
         {
           if (LOGGER.isDebugEnabled ())
-            LOGGER.debug ("Now closing database connection");
+            LOGGER.debug ("Now closing DataSource");
 
           m_aDataSource.close ();
           m_aDataSource = null;
 
-          if (LOGGER.isDebugEnabled ())
-            LOGGER.debug ("Closed database connection");
+          if (LOGGER.isInfoEnabled ())
+            LOGGER.info ("Closed DataSource");
         }
       });
     }

@@ -44,7 +44,7 @@ public class ConnectionFromDataSourceProvider implements IHasConnection
     ValueEnforcer.notNull (aDSP, "DataSourceProvider");
     m_aDS = aDSP.getDataSource ();
     if (m_aDS == null)
-      throw new IllegalArgumentException ("Failed to create dataSource from " + aDSP);
+      throw new IllegalArgumentException ("Failed to create DataSource from " + aDSP);
   }
 
   @Nonnull
@@ -54,14 +54,14 @@ public class ConnectionFromDataSourceProvider implements IHasConnection
     {
       final Connection ret = m_aDS.getConnection ();
       if (ret == null)
-        throw new DBNoConnectionException ("No connection retrieved from dataSource " + m_aDS);
+        throw new DBNoConnectionException ("No connection retrieved from DataSource " + m_aDS);
       return ret;
     }
     catch (final SQLException ex)
     {
       // ex.getCause is e.g. a
       // com.mysql.cj.jdbc.exceptions.CommunicationsException
-      throw new DBNoConnectionException ("No connection retrieved from dataSource " + m_aDS, ex);
+      throw new DBNoConnectionException ("No connection retrieved from DataSource " + m_aDS, ex);
     }
   }
 

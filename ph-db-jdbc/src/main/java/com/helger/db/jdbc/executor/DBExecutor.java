@@ -282,6 +282,15 @@ public class DBExecutor implements Serializable
       aConnection = m_aConnectionProvider.getConnection ();
       if (aConnection == null)
         return ESuccess.FAILURE;
+      try
+      {
+        if (aConnection.isClosed ())
+          LOGGER.error ("Received a closed connection from provider " + m_aConnectionProvider);
+      }
+      catch (final SQLException ex)
+      {
+        // Ignore
+      }
 
       setConnectionEstablished (ETriState.TRUE);
 
