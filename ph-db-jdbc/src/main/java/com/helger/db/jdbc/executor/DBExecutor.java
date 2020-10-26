@@ -24,6 +24,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.CheckForSigned;
@@ -120,6 +121,7 @@ public class DBExecutor implements Serializable
   private final AtomicLong m_aConnectionCounter = new AtomicLong (0);
   private final AtomicLong m_aSQLStatementCounter = new AtomicLong (0);
   private final AtomicLong m_aTransactionCounter = new AtomicLong (0);
+  private final AtomicInteger m_aTransactionLevel = new AtomicInteger (0);
   private boolean m_bDebugConnections = DEFAULT_DEBUG_CONNECTIONS;
   private boolean m_bDebugTransactions = DEFAULT_DEBUG_TRANSACTIONS;
   private boolean m_bDebugSQLStatements = DEFAULT_DEBUG_SQL_STATEMENTS;
@@ -382,59 +384,82 @@ public class DBExecutor implements Serializable
                                               @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
-      final long nTransactionID = m_aTransactionCounter.incrementAndGet ();
-
-      // Disable auto commit
-      final boolean bOldAutoCommit = aConnection.getAutoCommit ();
-      if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
-      {
-        if (bOldAutoCommit)
-          LOGGER.info ("Starting a transaction [" + nTransactionID + "]");
-        else
-          LOGGER.info ("Starting a nested transaction [" + nTransactionID + "]");
-      }
-      aConnection.setAutoCommit (false);
-
-      // Avoid creating a new connection
-      final IConnectionExecutor aOldConnectionExecutor = m_aConnectionExecutor;
-      m_aConnectionExecutor = (aCB2, aExCB2) -> this.withExistingConnectionDo (aConnection, aCB2, aExCB2);
-
+      final int nTransactionLevel = m_aTransactionLevel.incrementAndGet ();
       try
       {
-        aRunnable.run ();
+        final long nTransactionID = m_aTransactionCounter.incrementAndGet ();
+        if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
+          LOGGER.info ("Starting a level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
 
-        // Commit
-        aConnection.commit ();
-      }
-      catch (final Exception ex)
-      {
-        // Rollback
-        aConnection.rollback ();
+        // Disable auto commit
+        final boolean bOldAutoCommit = aConnection.getAutoCommit ();
+        aConnection.setAutoCommit (false);
 
-        // Exception handler
-        if (aExtraExCB != null)
-          aExtraExCB.onException (ex);
+        // Avoid creating a new connection
+        final IConnectionExecutor aOldConnectionExecutor = m_aConnectionExecutor;
+        m_aConnectionExecutor = (aCB2, aExCB2) -> this.withExistingConnectionDo (aConnection, aCB2, aExCB2);
 
-        // Propagate
-        if (ex instanceof RuntimeException)
-          throw (RuntimeException) ex;
-        if (ex instanceof SQLException)
-          throw (SQLException) ex;
-        throw new SQLException ("Caught exception while perfoming something in a transaction", ex);
+        try
+        {
+          aRunnable.run ();
+
+          if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
+            LOGGER.info ("Now commiting level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
+
+          // Commit
+          aConnection.commit ();
+        }
+        catch (final Exception ex)
+        {
+          if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
+            LOGGER.info ("Now rolling back level " +
+                         nTransactionLevel +
+                         " transaction [" +
+                         nTransactionID +
+                         "]: " +
+                         ex.getClass ().getName () +
+                         " - " +
+                         ex.getMessage ());
+
+          // Rollback
+          aConnection.rollback ();
+
+          // Exception handler
+          if (aExtraExCB != null)
+            aExtraExCB.onException (ex);
+
+          // Propagate
+          if (ex instanceof RuntimeException)
+            throw (RuntimeException) ex;
+          if (ex instanceof SQLException)
+            throw (SQLException) ex;
+          throw new SQLException ("Caught exception while perfoming something in a level " +
+                                  nTransactionLevel +
+                                  " transaction [" +
+                                  nTransactionID +
+                                  "]",
+                                  ex);
+        }
+        finally
+        {
+          // Reset state
+          m_aConnectionExecutor = aOldConnectionExecutor;
+          try
+          {
+            aConnection.setAutoCommit (bOldAutoCommit);
+          }
+          catch (final SQLException ex)
+          {
+            LOGGER.info ("Error in resetting AutoCommit for transaction [" + nTransactionID + "] to " + bOldAutoCommit, ex);
+          }
+
+          if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
+            LOGGER.info ("Finished level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
+        }
       }
       finally
       {
-        // Reset state
-        m_aConnectionExecutor = aOldConnectionExecutor;
-        aConnection.setAutoCommit (bOldAutoCommit);
-
-        if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
-        {
-          if (bOldAutoCommit)
-            LOGGER.info ("Finished transaction [" + nTransactionID + "]");
-          else
-            LOGGER.info ("Finished nested transaction [" + nTransactionID + "]");
-        }
+        m_aTransactionLevel.decrementAndGet ();
       }
     };
     return m_aConnectionExecutor.execute (aWithConnectionCB, aExtraExCB);
@@ -480,6 +505,11 @@ public class DBExecutor implements Serializable
       {
         if (nDurationMillis > m_nExecutionDurationWarnMS)
           onExecutionTimeExceeded ("DB execution " + sDescription, nDurationMillis);
+      }
+      else
+      {
+        if (LOGGER.isTraceEnabled ())
+          LOGGER.trace ("DB execution " + sDescription + " took " + nDurationMillis + " ms");
       }
     }
   }

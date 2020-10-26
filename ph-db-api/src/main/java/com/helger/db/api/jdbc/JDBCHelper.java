@@ -60,13 +60,17 @@ public final class JDBCHelper
         else
         {
           if (!aConnection.getAutoCommit ())
+          {
+            if (LOGGER.isDebugEnabled ())
+              LOGGER.debug ("Now manually committing connection: " + aConnection);
             aConnection.commit ();
+          }
           return ESuccess.SUCCESS;
         }
       }
       catch (final SQLException ex)
       {
-        LOGGER.warn ("Error committing connection: " + aConnection, ex);
+        LOGGER.error ("Error committing connection: " + aConnection, ex);
       }
     }
     return ESuccess.FAILURE;
@@ -87,13 +91,17 @@ public final class JDBCHelper
         else
         {
           if (!aConnection.getAutoCommit ())
+          {
+            if (LOGGER.isDebugEnabled ())
+              LOGGER.debug ("Now manually rolling back connection: " + aConnection);
             aConnection.rollback ();
+          }
           return ESuccess.SUCCESS;
         }
       }
       catch (final SQLException ex)
       {
-        LOGGER.warn ("Error rolling back connection: " + aConnection, ex);
+        LOGGER.error ("Error rolling back connection: " + aConnection, ex);
       }
     }
     return ESuccess.FAILURE;
