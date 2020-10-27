@@ -118,9 +118,10 @@ public class DBExecutor implements Serializable
   private long m_nExecutionDurationWarnMS = DEFAULT_EXECUTION_DURATION_WARN_MS;
   private static final CallbackList <IExecutionTimeExceededCallback> m_aExecutionTimeExceededHandlers = new CallbackList <> ();
 
-  private final AtomicLong m_aConnectionCounter = new AtomicLong (0);
-  private final AtomicLong m_aSQLStatementCounter = new AtomicLong (0);
-  private final AtomicLong m_aTransactionCounter = new AtomicLong (0);
+  private static final AtomicLong s_aConnectionCounter = new AtomicLong (0);
+  private static final AtomicLong s_aSQLStatementCounter = new AtomicLong (0);
+  private static final AtomicLong s_aTransactionCounter = new AtomicLong (0);
+
   private final AtomicInteger m_aTransactionLevel = new AtomicInteger (0);
   private boolean m_bDebugConnections = DEFAULT_DEBUG_CONNECTIONS;
   private boolean m_bDebugTransactions = DEFAULT_DEBUG_TRANSACTIONS;
@@ -264,7 +265,7 @@ public class DBExecutor implements Serializable
   protected final synchronized ESuccess withNewConnectionDo (@Nonnull final IWithConnectionCallback aCB,
                                                              @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
-    final long nConnectionID = m_aConnectionCounter.incrementAndGet ();
+    final long nConnectionID = s_aConnectionCounter.incrementAndGet ();
 
     if (m_eConnectionEstablished.isFalse ())
     {
@@ -388,7 +389,7 @@ public class DBExecutor implements Serializable
       final int nTransactionLevel = m_aTransactionLevel.incrementAndGet ();
       try
       {
-        final long nTransactionID = m_aTransactionCounter.incrementAndGet ();
+        final long nTransactionID = s_aTransactionCounter.incrementAndGet ();
         if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
           LOGGER.info ("Starting a level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
 
@@ -540,7 +541,7 @@ public class DBExecutor implements Serializable
                                                     @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
-      final long nSQLStatementID = m_aSQLStatementCounter.incrementAndGet ();
+      final long nSQLStatementID = s_aSQLStatementCounter.incrementAndGet ();
       final String sWhat = "PreparedStatement [" + nSQLStatementID + "] <" + sSQL + "> with " + aPSDP.getValueCount () + " values";
       if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
         LOGGER.info ("Will execute " + sWhat);
@@ -598,7 +599,7 @@ public class DBExecutor implements Serializable
                                     @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     return withStatementDo (aStatement -> {
-      final long nSQLStatementID = m_aSQLStatementCounter.incrementAndGet ();
+      final long nSQLStatementID = s_aSQLStatementCounter.incrementAndGet ();
       final String sWhat = "Statement [" + nSQLStatementID + "] <" + sSQL + ">";
       if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
         LOGGER.info ("Will execute " + sWhat);
@@ -782,7 +783,7 @@ public class DBExecutor implements Serializable
   public ESuccess queryAll (@Nonnull @Nonempty final String sSQL, @Nonnull final IResultSetRowCallback aResultItemCallback)
   {
     return withStatementDo (aStatement -> {
-      final long nSQLStatementID = m_aSQLStatementCounter.incrementAndGet ();
+      final long nSQLStatementID = s_aSQLStatementCounter.incrementAndGet ();
       final String sWhat = "Query [" + nSQLStatementID + "] <" + sSQL + ">";
       if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
         LOGGER.info ("Will execute " + sWhat);
