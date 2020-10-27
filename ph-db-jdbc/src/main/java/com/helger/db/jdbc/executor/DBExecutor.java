@@ -384,6 +384,7 @@ public class DBExecutor implements Serializable
                                               @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
+      // First level has 1
       final int nTransactionLevel = m_aTransactionLevel.incrementAndGet ();
       try
       {
@@ -403,26 +404,42 @@ public class DBExecutor implements Serializable
         {
           aRunnable.run ();
 
-          if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
-            LOGGER.info ("Now commiting level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
+          if (nTransactionLevel == 1)
+          {
+            if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
+              LOGGER.info ("Now commiting level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
 
-          // Commit
-          aConnection.commit ();
+            // Commit
+            aConnection.commit ();
+          }
+          else
+          {
+            if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
+              LOGGER.info ("Not commiting level " + nTransactionLevel + " transaction [" + nTransactionID + "] because it is nested");
+          }
         }
         catch (final Exception ex)
         {
-          if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
-            LOGGER.info ("Now rolling back level " +
-                         nTransactionLevel +
-                         " transaction [" +
-                         nTransactionID +
-                         "]: " +
-                         ex.getClass ().getName () +
-                         " - " +
-                         ex.getMessage ());
+          if (nTransactionLevel == 1)
+          {
+            if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
+              LOGGER.info ("Now rolling back level " +
+                           nTransactionLevel +
+                           " transaction [" +
+                           nTransactionID +
+                           "]: " +
+                           ex.getClass ().getName () +
+                           " - " +
+                           ex.getMessage ());
 
-          // Rollback
-          aConnection.rollback ();
+            // Rollback
+            aConnection.rollback ();
+          }
+          else
+          {
+            if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
+              LOGGER.info ("Not rolling back level " + nTransactionLevel + " transaction [" + nTransactionID + "] because it is nested");
+          }
 
           // Exception handler
           if (aExtraExCB != null)
