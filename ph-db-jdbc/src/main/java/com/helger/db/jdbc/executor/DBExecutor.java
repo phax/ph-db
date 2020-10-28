@@ -141,6 +141,12 @@ public class DBExecutor implements Serializable
     m_aExecutionTimeExceededHandlers.add (new LoggingExecutionTimeExceededCallback (true));
   }
 
+  protected final void debugLog (@Nonnull final String sMessage)
+  {
+    if (LOGGER.isInfoEnabled ())
+      LOGGER.info ("[" + Thread.currentThread ().getName () + "] " + sMessage);
+  }
+
   @Nonnull
   public final ETriState getConnectionEstablished ()
   {
@@ -154,8 +160,8 @@ public class DBExecutor implements Serializable
     if (eNewState != m_eConnectionEstablished)
     {
       final ETriState eOldState = m_eConnectionEstablished;
-      if (m_bDebugConnections && LOGGER.isInfoEnabled ())
-        LOGGER.info ("Setting connection established state from " + eOldState + " to " + eNewState);
+      if (m_bDebugConnections)
+        debugLog ("Setting connection established state from " + eOldState + " to " + eNewState);
       m_eConnectionEstablished = eNewState;
 
       if (m_aConnectionStatusChangeCallback != null)
@@ -270,16 +276,16 @@ public class DBExecutor implements Serializable
     if (m_eConnectionEstablished.isFalse ())
     {
       // Avoid trying again
-      if (m_bDebugConnections && LOGGER.isInfoEnabled ())
-        LOGGER.info ("Refuse to open SQL Connection [" + nConnectionID + "] because it failed previously");
+      if (m_bDebugConnections)
+        debugLog ("Refuse to open SQL Connection [" + nConnectionID + "] because it failed previously");
       return ESuccess.FAILURE;
     }
 
     Connection aConnection = null;
     try
     {
-      if (m_bDebugConnections && LOGGER.isInfoEnabled ())
-        LOGGER.info ("Opening a new SQL Connection [" + nConnectionID + "]");
+      if (m_bDebugConnections)
+        debugLog ("Opening a new SQL Connection [" + nConnectionID + "]");
 
       // Get connection
       aConnection = m_aConnectionProvider.getConnection ();
@@ -318,8 +324,8 @@ public class DBExecutor implements Serializable
       // Close connection again (if necessary)
       if (aConnection != null && m_aConnectionProvider.shouldCloseConnection ())
       {
-        if (m_bDebugConnections && LOGGER.isInfoEnabled ())
-          LOGGER.info ("Now closing SQL Connection [" + nConnectionID + "]");
+        if (m_bDebugConnections)
+          debugLog ("Now closing SQL Connection [" + nConnectionID + "]");
         JDBCHelper.close (aConnection);
       }
     }
@@ -390,12 +396,12 @@ public class DBExecutor implements Serializable
       try
       {
         final long nTransactionID = s_aTransactionCounter.incrementAndGet ();
-        if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
-          LOGGER.info ("Starting a level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
+        if (m_bDebugTransactions)
+          debugLog ("Starting a level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
 
         // Disable auto commit
-        final boolean bOldAutoCommit = aConnection.getAutoCommit ();
-        aConnection.setAutoCommit (false);
+        // final boolean bOldAutoCommit = aConnection.getAutoCommit ();
+        // aConnection.setAutoCommit (false);
 
         // Avoid creating a new connection
         final IConnectionExecutor aOldConnectionExecutor = m_aConnectionExecutor;
@@ -407,39 +413,39 @@ public class DBExecutor implements Serializable
 
           if (nTransactionLevel == 1)
           {
-            if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
-              LOGGER.info ("Now commiting level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
+            if (m_bDebugTransactions)
+              debugLog ("Now commiting level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
 
             // Commit
             aConnection.commit ();
           }
           else
           {
-            if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
-              LOGGER.info ("Not commiting level " + nTransactionLevel + " transaction [" + nTransactionID + "] because it is nested");
+            if (m_bDebugTransactions)
+              debugLog ("Not commiting level " + nTransactionLevel + " transaction [" + nTransactionID + "] because it is nested");
           }
         }
         catch (final Exception ex)
         {
           if (nTransactionLevel == 1)
           {
-            if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
-              LOGGER.info ("Now rolling back level " +
-                           nTransactionLevel +
-                           " transaction [" +
-                           nTransactionID +
-                           "]: " +
-                           ex.getClass ().getName () +
-                           " - " +
-                           ex.getMessage ());
+            if (m_bDebugTransactions)
+              debugLog ("Now rolling back level " +
+                        nTransactionLevel +
+                        " transaction [" +
+                        nTransactionID +
+                        "]: " +
+                        ex.getClass ().getName () +
+                        " - " +
+                        ex.getMessage ());
 
             // Rollback
             aConnection.rollback ();
           }
           else
           {
-            if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
-              LOGGER.info ("Not rolling back level " + nTransactionLevel + " transaction [" + nTransactionID + "] because it is nested");
+            if (m_bDebugTransactions)
+              debugLog ("Not rolling back level " + nTransactionLevel + " transaction [" + nTransactionID + "] because it is nested");
           }
 
           // Exception handler
@@ -462,17 +468,19 @@ public class DBExecutor implements Serializable
         {
           // Reset state
           m_aConnectionExecutor = aOldConnectionExecutor;
-          try
-          {
-            aConnection.setAutoCommit (bOldAutoCommit);
-          }
-          catch (final SQLException ex)
-          {
-            LOGGER.info ("Error in resetting AutoCommit for transaction [" + nTransactionID + "] to " + bOldAutoCommit, ex);
-          }
 
-          if (m_bDebugTransactions && LOGGER.isInfoEnabled ())
-            LOGGER.info ("Finished level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
+          // try
+          // {
+          // aConnection.setAutoCommit (bOldAutoCommit);
+          // }
+          // catch (final SQLException ex)
+          // {
+          // LOGGER.warn ("Error in resetting AutoCommit for transaction [" +
+          // nTransactionID + "] to " + bOldAutoCommit, ex);
+          // }
+
+          if (m_bDebugTransactions)
+            debugLog ("Finished level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
         }
       }
       finally
@@ -543,8 +551,8 @@ public class DBExecutor implements Serializable
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
       final long nSQLStatementID = s_aSQLStatementCounter.incrementAndGet ();
       final String sWhat = "PreparedStatement [" + nSQLStatementID + "] <" + sSQL + "> with " + aPSDP.getValueCount () + " values";
-      if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
-        LOGGER.info ("Will execute " + sWhat);
+      if (m_bDebugSQLStatements)
+        debugLog ("Will execute " + sWhat);
 
       withTimingDo (sWhat, () -> {
         try (final PreparedStatement aPS = aConnection.prepareStatement (sSQL, Statement.RETURN_GENERATED_KEYS))
@@ -601,8 +609,8 @@ public class DBExecutor implements Serializable
     return withStatementDo (aStatement -> {
       final long nSQLStatementID = s_aSQLStatementCounter.incrementAndGet ();
       final String sWhat = "Statement [" + nSQLStatementID + "] <" + sSQL + ">";
-      if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
-        LOGGER.info ("Will execute " + sWhat);
+      if (m_bDebugSQLStatements)
+        debugLog ("Will execute " + sWhat);
 
       withTimingDo (sWhat, () -> {
         aStatement.execute (sSQL);
@@ -623,7 +631,7 @@ public class DBExecutor implements Serializable
                                             @Nullable final IGeneratedKeysCallback aGeneratedKeysCB,
                                             @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
-    return withPreparedStatementDo (sSQL, aPSDP, aPS -> aPS.execute (), aURWCC, aGeneratedKeysCB, aExtraExCB);
+    return withPreparedStatementDo (sSQL, aPSDP, PreparedStatement::execute, aURWCC, aGeneratedKeysCB, aExtraExCB);
   }
 
   @Nullable
@@ -673,7 +681,7 @@ public class DBExecutor implements Serializable
     // We need this wrapper because the anonymous inner class cannot change
     // variables in outer scope.
     final IUpdatedRowCountCallback aURCCB = new UpdatedRowCountCallback ();
-    withPreparedStatementDo (sSQL, aPSDP, aPS -> aPS.execute (), aURCCB, aGeneratedKeysCB, aExtraExCB);
+    withPreparedStatementDo (sSQL, aPSDP, PreparedStatement::execute, aURCCB, aGeneratedKeysCB, aExtraExCB);
     return aURCCB.getUpdatedRowCount ();
   }
 
@@ -785,15 +793,15 @@ public class DBExecutor implements Serializable
     return withStatementDo (aStatement -> {
       final long nSQLStatementID = s_aSQLStatementCounter.incrementAndGet ();
       final String sWhat = "Query [" + nSQLStatementID + "] <" + sSQL + ">";
-      if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
-        LOGGER.info ("Will execute " + sWhat);
+      if (m_bDebugSQLStatements)
+        debugLog ("Will execute " + sWhat);
 
       withTimingDo (sWhat, () -> {
         final ResultSet aResultSet = aStatement.executeQuery (sSQL);
         final long nResultRows = iterateResultSet (aResultSet, aResultItemCallback);
 
-        if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
-          LOGGER.info ("  Found " + nResultRows + " result rows [" + nSQLStatementID + "]");
+        if (m_bDebugSQLStatements)
+          debugLog ("  Found " + nResultRows + " result rows [" + nSQLStatementID + "]");
       });
     }, (IGeneratedKeysCallback) null, null);
   }
@@ -806,8 +814,8 @@ public class DBExecutor implements Serializable
     return withPreparedStatementDo (sSQL, aPSDP, aPreparedStatement -> {
       final ResultSet aResultSet = aPreparedStatement.executeQuery ();
       final long nResultRows = iterateResultSet (aResultSet, aResultItemCallback);
-      if (m_bDebugSQLStatements && LOGGER.isInfoEnabled ())
-        LOGGER.info ("  Found " + nResultRows + " result rows");
+      if (m_bDebugSQLStatements)
+        debugLog ("  Found " + nResultRows + " result rows");
     }, (IUpdatedRowCountCallback) null, (IGeneratedKeysCallback) null, null);
   }
 
