@@ -141,18 +141,36 @@ public class DBExecutor implements Serializable
     m_aExecutionTimeExceededHandlers.add (new LoggingExecutionTimeExceededCallback (true));
   }
 
+  /**
+   * Debug logging method. Only invoked if the respective "debug log" member is
+   * set to true
+   *
+   * @param sMessage
+   *        The message to log. May not be <code>null</code>.
+   */
   protected final void debugLog (@Nonnull final String sMessage)
   {
     if (LOGGER.isInfoEnabled ())
       LOGGER.info ("[" + Thread.currentThread ().getName () + "] " + sMessage);
   }
 
+  /**
+   * @return The current "connection established" state. Never
+   *         <code>null</code>.
+   */
   @Nonnull
   public final ETriState getConnectionEstablished ()
   {
     return m_eConnectionEstablished;
   }
 
+  /**
+   * Set the "Connection established" state.
+   *
+   * @param eNewState
+   *        The new state. May not be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public final DBExecutor setConnectionEstablished (@Nonnull final ETriState eNewState)
   {
@@ -170,18 +188,36 @@ public class DBExecutor implements Serializable
     return this;
   }
 
+  /**
+   * Reset the "Connection established" flag. This is a shortcut for
+   * <code>setConnectionEstablished (ETriState.UNDEFINED)</code>.
+   *
+   * @return this for chaining.
+   */
   @Nonnull
   public final DBExecutor resetConnectionEstablished ()
   {
     return setConnectionEstablished (ETriState.UNDEFINED);
   }
 
-  @Nonnull
+  /**
+   * @return The callback to be invoked, if the connection status changes. May
+   *         be <code>null</code>.
+   */
+  @Nullable
   public final IConnectionStatusChangeCallback getConnectionStatusChangeCallback ()
   {
     return m_aConnectionStatusChangeCallback;
   }
 
+  /**
+   * Set the callback to be invoked, if the connection status changes. Only one
+   * callback can be invoked.
+   *
+   * @param aCB
+   *        The callback to be invoked. May be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public final DBExecutor setConnectionStatusChangeCallback (@Nullable final IConnectionStatusChangeCallback aCB)
   {
@@ -189,6 +225,10 @@ public class DBExecutor implements Serializable
     return this;
   }
 
+  /**
+   * @return The mutable list of exception callbacks to be invoked in case of an
+   *         Exception.
+   */
   @Nonnull
   @ReturnsMutableObject
   public final CallbackList <IExceptionCallback <? super Exception>> exceptionCallbacks ()
