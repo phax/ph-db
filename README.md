@@ -32,6 +32,10 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 
 # News and noteworthy
 
+* v6.4.0 - work in progress
+    * Improved debug logging in `DBExecutor`
+    * Made `DBExecutor` consistently not thread-safe
+    * Made some `DBExectur` methods static
 * v6.3.1 - 2020-09-30
     * Updated to Apache Commons Pool 2.9.0
     * Updated to Apache Commons DBCP 2.8.0
