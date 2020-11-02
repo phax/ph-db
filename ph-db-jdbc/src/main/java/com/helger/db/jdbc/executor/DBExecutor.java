@@ -32,6 +32,7 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.WillClose;
+import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.slf4j.Logger;
@@ -49,11 +50,14 @@ import com.helger.commons.callback.exception.IExceptionCallback;
 import com.helger.commons.callback.exception.LoggingExceptionCallback;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.io.stream.StreamHelper;
+import com.helger.commons.state.EChange;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.timing.StopWatch;
+import com.helger.commons.wrapper.Wrapper;
 import com.helger.db.api.callback.IExecutionTimeExceededCallback;
 import com.helger.db.api.callback.LoggingExecutionTimeExceededCallback;
 import com.helger.db.api.jdbc.JDBCHelper;
@@ -110,10 +114,15 @@ public class DBExecutor implements Serializable
   private static final Long MINUS1 = Long.valueOf (CGlobal.ILLEGAL_UINT);
 
   private static final AtomicLong COUNTER_CONNECTION = new AtomicLong (0);
+  private static final AtomicLong COUNTER_CONNECTION_OPEN = new AtomicLong (0);
+  private static final AtomicLong COUNTER_CONNECTION_CLOSE = new AtomicLong (0);
   private static final AtomicLong COUNTER_SQL_STATEMENT = new AtomicLong (0);
   private static final AtomicLong COUNTER_TRANSACTION = new AtomicLong (0);
 
+  private static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
+  @GuardedBy ("s_aRWLock")
   private static ETriState s_eConnectionEstablished = ETriState.UNDEFINED;
+  @GuardedBy ("s_aRWLock")
   private static IConnectionStatusChangeCallback s_aConnectionStatusChangeCallback;
 
   private final IHasConnection m_aConnectionProvider;
@@ -121,7 +130,12 @@ public class DBExecutor implements Serializable
   private IConnectionExecutor m_aConnectionExecutor;
 
   private long m_nExecutionDurationWarnMS = DEFAULT_EXECUTION_DURATION_WARN_MS;
-  private static final CallbackList <IExecutionTimeExceededCallback> m_aExecutionTimeExceededHandlers = new CallbackList <> ();
+  private static final CallbackList <IExecutionTimeExceededCallback> s_aExecutionTimeExceededHandlers = new CallbackList <> ();
+
+  static
+  {
+    s_aExecutionTimeExceededHandlers.add (new LoggingExecutionTimeExceededCallback (true));
+  }
 
   private final AtomicInteger m_aTransactionLevel = new AtomicInteger (0);
   private boolean m_bDebugConnections = DEFAULT_DEBUG_CONNECTIONS;
@@ -139,7 +153,6 @@ public class DBExecutor implements Serializable
     m_aConnectionProvider = aConnectionProvider;
     m_aExceptionCallbacks.add (new LoggingExceptionCallback ());
     m_aConnectionExecutor = this::withNewConnectionDo;
-    m_aExecutionTimeExceededHandlers.add (new LoggingExecutionTimeExceededCallback (true));
   }
 
   /**
@@ -152,7 +165,7 @@ public class DBExecutor implements Serializable
   protected final void debugLog (@Nonnull final String sMessage)
   {
     if (LOGGER.isInfoEnabled ())
-      LOGGER.info ("[" + Thread.currentThread ().getName () + "] " + sMessage);
+      LOGGER.info (sMessage);
   }
 
   /**
@@ -162,7 +175,7 @@ public class DBExecutor implements Serializable
   @Nonnull
   public static final ETriState getConnectionEstablished ()
   {
-    return s_eConnectionEstablished;
+    return s_aRWLock.readLockedGet ( () -> s_eConnectionEstablished);
   }
 
   /**
@@ -174,15 +187,31 @@ public class DBExecutor implements Serializable
   public static final void setConnectionEstablished (@Nonnull final ETriState eNewState)
   {
     ValueEnforcer.notNull (eNewState, "NewState");
-    if (eNewState != s_eConnectionEstablished)
+    if (eNewState != getConnectionEstablished ())
     {
-      final ETriState eOldState = s_eConnectionEstablished;
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Setting connection established state from " + eOldState + " to " + eNewState);
-      s_eConnectionEstablished = eNewState;
+      final Wrapper <ETriState> aOldState = new Wrapper <> ();
 
-      if (s_aConnectionStatusChangeCallback != null)
-        s_aConnectionStatusChangeCallback.onConnectionStatusChanged (eOldState, eNewState);
+      // Change value
+      final EChange eChange = s_aRWLock.writeLockedGet ( () -> {
+        aOldState.set (s_eConnectionEstablished);
+        // Check again in write lock
+        if (eNewState == aOldState.get ())
+          return EChange.UNCHANGED;
+
+        if (LOGGER.isInfoEnabled ())
+          LOGGER.info ("Setting connection established state from " + aOldState.get () + " to " + eNewState);
+        s_eConnectionEstablished = eNewState;
+        return EChange.CHANGED;
+      });
+
+      if (eChange.isChanged ())
+      {
+        // Callback only if something changed
+        s_aRWLock.readLocked ( () -> {
+          if (s_aConnectionStatusChangeCallback != null)
+            s_aConnectionStatusChangeCallback.onConnectionStatusChanged (aOldState.get (), eNewState);
+        });
+      }
     }
   }
 
@@ -202,7 +231,7 @@ public class DBExecutor implements Serializable
   @Nullable
   public static final IConnectionStatusChangeCallback getConnectionStatusChangeCallback ()
   {
-    return s_aConnectionStatusChangeCallback;
+    return s_aRWLock.readLockedGet ( () -> s_aConnectionStatusChangeCallback);
   }
 
   /**
@@ -214,7 +243,7 @@ public class DBExecutor implements Serializable
    */
   public static final void setConnectionStatusChangeCallback (@Nullable final IConnectionStatusChangeCallback aCB)
   {
-    s_aConnectionStatusChangeCallback = aCB;
+    s_aRWLock.writeLockedGet ( () -> s_aConnectionStatusChangeCallback = aCB);
   }
 
   /**
@@ -252,14 +281,15 @@ public class DBExecutor implements Serializable
    * @return Never <code>null</code>.
    */
   @Nonnull
-  public final CallbackList <IExecutionTimeExceededCallback> executionTimeExceededHandlers ()
+  @ReturnsMutableObject
+  public static final CallbackList <IExecutionTimeExceededCallback> executionTimeExceededHandlers ()
   {
-    return m_aExecutionTimeExceededHandlers;
+    return s_aExecutionTimeExceededHandlers;
   }
 
   public final void onExecutionTimeExceeded (@Nonnull final String sMsg, @Nonnegative final long nExecutionMillis)
   {
-    m_aExecutionTimeExceededHandlers.forEach (x -> x.onExecutionTimeExceeded (sMsg, nExecutionMillis, m_nExecutionDurationWarnMS));
+    s_aExecutionTimeExceededHandlers.forEach (x -> x.onExecutionTimeExceeded (sMsg, nExecutionMillis, m_nExecutionDurationWarnMS));
   }
 
   public final boolean isDebugConnections ()
@@ -300,8 +330,8 @@ public class DBExecutor implements Serializable
 
   @CodingStyleguideUnaware ("Needs to be synchronized!")
   @Nonnull
-  protected final synchronized ESuccess withNewConnectionDo (@Nonnull final IWithConnectionCallback aCB,
-                                                             @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
+  protected final ESuccess withNewConnectionDo (@Nonnull final IWithConnectionCallback aCB,
+                                                @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final long nConnectionID = COUNTER_CONNECTION.incrementAndGet ();
 
@@ -320,12 +350,17 @@ public class DBExecutor implements Serializable
         debugLog ("Opening a new SQL Connection [" + nConnectionID + "]");
 
       // Get connection
+      COUNTER_CONNECTION_OPEN.incrementAndGet ();
       aConnection = m_aConnectionProvider.getConnection ();
       if (aConnection == null)
+      {
+        if (LOGGER.isWarnEnabled ())
+          LOGGER.warn ("  Failed to open SQL Connection [" + nConnectionID + "]");
         return ESuccess.FAILURE;
+      }
 
       if (m_bDebugConnections)
-        debugLog ("Opened SQL Connection [" + nConnectionID + "] is " + aConnection);
+        debugLog ("  Opened SQL Connection [" + nConnectionID + "] is " + aConnection);
 
       try
       {
@@ -340,6 +375,8 @@ public class DBExecutor implements Serializable
       setConnectionEstablished (ETriState.TRUE);
 
       // Okay, connection was established
+
+      // Now do the main work
       return withExistingConnectionDo (aConnection, aCB, aExtraExCB);
     }
     catch (final DBNoConnectionException ex)
@@ -362,8 +399,21 @@ public class DBExecutor implements Serializable
       {
         if (m_bDebugConnections)
           debugLog ("Now closing SQL Connection [" + nConnectionID + "] " + aConnection);
-        JDBCHelper.close (aConnection);
+        if (JDBCHelper.close (aConnection).isSuccess ())
+        {
+          if (m_bDebugConnections)
+            debugLog ("  Closed SQL Connection [" + nConnectionID + "] " + aConnection);
+        }
+        else
+        {
+          if (m_bDebugConnections)
+            debugLog ("  Failed to close SQL Connection [" + nConnectionID + "] " + aConnection);
+        }
+        COUNTER_CONNECTION_CLOSE.incrementAndGet ();
       }
+
+      if (m_bDebugConnections)
+        debugLog ("Opened " + COUNTER_CONNECTION_OPEN.intValue () + " and closed " + COUNTER_CONNECTION_CLOSE.intValue () + " connections");
     }
   }
 
@@ -441,6 +491,7 @@ public class DBExecutor implements Serializable
 
         try
         {
+          // Run the callback
           aRunnable.run ();
 
           if (nTransactionLevel == 1)
@@ -656,7 +707,7 @@ public class DBExecutor implements Serializable
     return withPreparedStatementDo (sSQL, aPSDP, PreparedStatement::execute, aURWCC, aGeneratedKeysCB, aExtraExCB);
   }
 
-  @Nullable
+  @Nonnull
   public Optional <Object> executePreparedStatementAndGetGeneratedKey (@Nonnull final String sSQL,
                                                                        @Nonnull final IPreparedStatementDataProvider aPSDP,
                                                                        @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
@@ -841,7 +892,7 @@ public class DBExecutor implements Serializable
     }, (IUpdatedRowCountCallback) null, (IGeneratedKeysCallback) null, null);
   }
 
-  @Nullable
+  @Nonnull
   public Optional <ICommonsList <DBResultRow>> queryAll (@Nonnull @Nonempty final String sSQL)
   {
     final ICommonsList <DBResultRow> aAllResultRows = new CommonsArrayList <> ();
@@ -856,7 +907,7 @@ public class DBExecutor implements Serializable
     return Optional.of (aAllResultRows);
   }
 
-  @Nullable
+  @Nonnull
   public Optional <ICommonsList <DBResultRow>> queryAll (@Nonnull @Nonempty final String sSQL,
                                                          @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
@@ -872,13 +923,13 @@ public class DBExecutor implements Serializable
     return Optional.of (aAllResultRows);
   }
 
-  @Nullable
+  @Nonnull
   public Optional <DBResultRow> querySingle (@Nonnull @Nonempty final String sSQL)
   {
     return queryAll (sSQL).map (ICommonsList::getFirst);
   }
 
-  @Nullable
+  @Nonnull
   public Optional <DBResultRow> querySingle (@Nonnull @Nonempty final String sSQL, @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
     return queryAll (sSQL, aPSDP).map (ICommonsList::getFirst);
@@ -903,7 +954,6 @@ public class DBExecutor implements Serializable
                                        .append ("ExceptionCalbacks", m_aExceptionCallbacks)
                                        .append ("ConnectionExecutor", m_aConnectionExecutor)
                                        .append ("ExecutionDurationWarnMS", m_nExecutionDurationWarnMS)
-                                       .append ("ExecutionTimeExceededHandlers", m_aExecutionTimeExceededHandlers)
                                        .append ("TransactionLevel", m_aTransactionLevel)
                                        .append ("DebugConnections", m_bDebugConnections)
                                        .append ("DebugTransactions", m_bDebugTransactions)

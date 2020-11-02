@@ -18,6 +18,7 @@ package com.helger.db.jpa;
 
 import javax.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
+import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.persistence.EntityManager;
 
@@ -42,7 +43,8 @@ public abstract class AbstractPerRequestEntityManager extends AbstractRequestSin
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractPerRequestEntityManager.class);
 
-  private volatile EntityManager m_aEntityManager;
+  @GuardedBy ("m_aRWLock")
+  private EntityManager m_aEntityManager;
   private boolean m_bDestroyed = false;
 
   public AbstractPerRequestEntityManager ()
