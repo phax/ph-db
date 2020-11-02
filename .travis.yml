@@ -11,7 +11,18 @@ odzJ4JRCtL14tzpKbRJqeI1xg7kg62J0CiVROTm/qu/+LW19OoX0logG8wWySWWX5EJZ5rIiCNswBbwK
 NYD+SEf+2HfnxqfC1j7STaBoxv0OdQXsZH7yr59vK7T6Cv4cJ4sntfWlwc6YcmRsl0rd8EjjbLGtwGWXQRuOAJ8zrO029Xup/OXm
 zfeflXsYGDsAjh9hHowiNlfa01kOzLFlP9thDcWubz4s2VZWDDjBzlnYu86S2FyMkXU7ZPQcCmKgtSwYxci7k7owJZc0SYAdWBHh
 ANGf1BoobYL6iX7TZVW64ij9+WOxGhfkfSevZK+Wyeq1PI/4dirFqre/g9cOcdK174DauwnZChTyWh+aEro2fbSSBfieKc="
-    
+
+addons:
+  sonarcloud:
+    organization: "phax-github"
+    token:
+      secure: "l7cLq+3JszCxN+glIFZ+jUbkqarxa3qbpF9yc2Wrn5aniM6dgI57VodXHCSzmTKBjQZCMe9dgUNKj0UfWNQUaNd/WRn2JFYlda35KvXlK2+ViVLCSeqrNfb0Cq5KxfK
+wkSNQSGZcl3BFdQydw97Ix4gTai4u52k6xvDI+YKRJAAidf0jOid122dlh29DuKXPlmlYav19ScNQT8sf7t/EjKsGMmn9us2KPMasn+uXE3CPPwQ5KKirdwbSX8Ab8HFn1UfKLmxTj
+htZxOM1pafY9awvhaeyk0/nvBo5JfMgLNMqnriMJTHFO+NlYFeCCd9gU5KdtRJpsDA3HRaWHJd8kBMp5xT/muQsxA2mWFoak6WpMiwW6qq8XJmmXBoyPrzfjsyVw1qJ0G1vGdwazL3
+6vW/ZgU6rb8MhfJvfRQuQa+TZ88PXR1miCM9vjzfpGKfYlfBRtfPdedPlgtn6jgiVe18/dFs0n89I2s/MXCvfKNUwtSN8EjwwWNnTR9hXUgVNMdFUjdcAPv/m7mplKl7mQw58M/CX7
+2g9BeEj2i4Ml4uZJO0ZcLGgImryoj9NvvHxCIXQL0iuQDTwP5nnKZQ2m+jQm4XcJJk84XIFTPE/RCdFQY747UcLRrcDc1hqmspI1NN3fdwv7pc9QAc24yuXDnWpW0Dr12xW/xCoc/I
+oMNE="
+
 install:
 #  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -U -P jdeps
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -U
@@ -35,7 +46,7 @@ jobs:
     - stage: test
       jdk: openjdk11
       script:
-        - mvn test -B -P coverage
+        - mvn test -B -P coverage sonar:sonar
       after_success:
         - bash <(curl -s https://codecov.io/bash)
     - stage: test
