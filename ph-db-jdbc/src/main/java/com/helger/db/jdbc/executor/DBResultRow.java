@@ -55,18 +55,35 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
   private final DBResultField [] m_aCols;
   private int m_nIndex;
 
-  private DBResultRow (@Nonnull final DBResultRow aOther)
+  /**
+   * Copy constructor
+   *
+   * @param aOther
+   *        other DB row to use
+   */
+  protected DBResultRow (@Nonnull final DBResultRow aOther)
   {
     m_aCols = ArrayHelper.getCopy (aOther.m_aCols);
     m_nIndex = aOther.m_nIndex;
   }
 
+  /**
+   * Create an empty result row with the specified number of colums.
+   *
+   * @param nCols
+   *        Number of columns. Must be be &ge; 0.
+   */
   public DBResultRow (@Nonnegative final int nCols)
   {
+    ValueEnforcer.isGE0 (nCols, "Columns");
     m_aCols = new DBResultField [nCols];
     m_nIndex = 0;
   }
 
+  /**
+   * Set all columns to <code>null</code> and restart the index at 0. This is
+   * mainly intended to resuse the same object in a loop.
+   */
   protected void internalClear ()
   {
     for (int i = 0; i < m_aCols.length; ++i)
@@ -74,6 +91,14 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
     m_nIndex = 0;
   }
 
+  /**
+   * Add a new result field in the the first free column. This method increases
+   * the index.
+   *
+   * @param aResultField
+   *        The result field to add. May not be <code>null</code>.
+   * @see #getUsedColumnIndex()
+   */
   protected void internalAdd (@Nonnull final DBResultField aResultField)
   {
     ValueEnforcer.notNull (aResultField, "ResultField");
@@ -81,35 +106,89 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
     m_aCols[m_nIndex++] = aResultField;
   }
 
+  /**
+   * @return The last used column. For an empty object that is
+   *         <code>null</code>.
+   */
   @Nonnegative
   public int getUsedColumnIndex ()
   {
     return m_nIndex;
   }
 
+  /**
+   * @return The number of columns as provided in the constructor. Always &ge;
+   *         0.
+   */
   @Nonnegative
   public int getColumnCount ()
   {
     return m_aCols.length;
   }
 
+  /**
+   * Get the result field at the specified index
+   *
+   * @param nIndex
+   *        The 0-based index to query
+   * @return The result field at the specific index.
+   * @throws ArrayIndexOutOfBoundsException
+   *         If the index is invalid
+   */
   @Nullable
-  public DBResultField get (@Nonnegative final int nIndex) throws ArrayIndexOutOfBoundsException
+  public DBResultField get (@Nonnegative final int nIndex)
   {
     return m_aCols[nIndex];
   }
 
+  /**
+   * Get the column type of the column at the specified index.
+   *
+   * @param nIndex
+   *        The 0-based index to query
+   * @return The column type as defined in {@link java.sql.Types}.
+   * @throws ArrayIndexOutOfBoundsException
+   *         If the index is invalid
+   * @throws NullPointerException
+   *         if the column at the specified index contains a <code>null</code>
+   *         value
+   */
   public int getColumnType (@Nonnegative final int nIndex)
   {
     return get (nIndex).getColumnType ();
   }
 
+  /**
+   * Get the column type name of the column at the specified index.
+   *
+   * @param nIndex
+   *        The 0-based index to query
+   * @return The column type name based on the constants of
+   *         {@link java.sql.Types}.
+   * @throws ArrayIndexOutOfBoundsException
+   *         If the index is invalid
+   * @throws NullPointerException
+   *         if the column at the specified index contains a <code>null</code>
+   *         value
+   */
   @Nullable
   public String getColumnTypeName (@Nonnegative final int nIndex)
   {
     return get (nIndex).getColumnTypeName ();
   }
 
+  /**
+   * Get the column name of the column at the specified index.
+   *
+   * @param nIndex
+   *        The 0-based index to query
+   * @return The name of the column. Neither <code>null</code> nor empty.
+   * @throws ArrayIndexOutOfBoundsException
+   *         If the index is invalid
+   * @throws NullPointerException
+   *         if the column at the specified index contains a <code>null</code>
+   *         value
+   */
   @Nonnull
   @Nonempty
   public String getColumnName (@Nonnegative final int nIndex)
@@ -361,6 +440,6 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("cols", m_aCols).append ("index", m_nIndex).getToString ();
+    return new ToStringGenerator (this).append ("Cols", m_aCols).append ("Index", m_nIndex).getToString ();
   }
 }

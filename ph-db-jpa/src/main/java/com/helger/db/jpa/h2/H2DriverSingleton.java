@@ -38,6 +38,11 @@ public final class H2DriverSingleton extends AbstractGlobalSingleton
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (H2DriverSingleton.class);
 
+  /**
+   * Invoked via reflection.
+   *
+   * @deprecated to call it directly
+   */
   @Deprecated
   @UsedViaReflection
   public H2DriverSingleton ()

@@ -162,7 +162,7 @@ public class DBExecutor implements Serializable
    * @param sMessage
    *        The message to log. May not be <code>null</code>.
    */
-  protected final void debugLog (@Nonnull final String sMessage)
+  protected static final void debugLog (@Nonnull final String sMessage)
   {
     if (LOGGER.isInfoEnabled ())
       LOGGER.info (sMessage);
@@ -685,9 +685,7 @@ public class DBExecutor implements Serializable
       if (m_bDebugSQLStatements)
         debugLog ("Will execute " + sWhat);
 
-      withTimingDo (sWhat, () -> {
-        aStatement.execute (sSQL);
-      });
+      withTimingDo (sWhat, () -> aStatement.execute (sSQL));
     }, aGeneratedKeysCB, aExtraExCB);
   }
 

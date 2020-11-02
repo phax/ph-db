@@ -48,6 +48,9 @@ public class DBResultField implements IGetterDirectTrait, Serializable
     m_aValue = aValue;
   }
 
+  /**
+   * @return The name of the column. Neither <code>null</code> nor empty.
+   */
   @Nonnull
   @Nonempty
   public String getColumnName ()
@@ -63,6 +66,11 @@ public class DBResultField implements IGetterDirectTrait, Serializable
     return m_nColumnType;
   }
 
+  /**
+   * @return The column type name based on the constants of
+   *         {@link java.sql.Types}.
+   * @see JDBCHelper#getJDBCTypeName(int)
+   */
   @Nullable
   public String getColumnTypeName ()
   {
@@ -81,9 +89,9 @@ public class DBResultField implements IGetterDirectTrait, Serializable
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("columnName", m_sColumnName)
-                                       .append ("columnType", m_nColumnType)
-                                       .append ("value", m_aValue)
+    return new ToStringGenerator (this).append ("ColumnName", m_sColumnName)
+                                       .append ("ColumnType", m_nColumnType)
+                                       .append ("Value", m_aValue)
                                        .getToString ();
   }
 }
