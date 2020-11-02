@@ -113,9 +113,10 @@ public class DBExecutor implements Serializable
   private static final AtomicLong COUNTER_SQL_STATEMENT = new AtomicLong (0);
   private static final AtomicLong COUNTER_TRANSACTION = new AtomicLong (0);
 
+  private static ETriState s_eConnectionEstablished = ETriState.UNDEFINED;
+  private static IConnectionStatusChangeCallback s_aConnectionStatusChangeCallback;
+
   private final IHasConnection m_aConnectionProvider;
-  private ETriState m_eConnectionEstablished = ETriState.UNDEFINED;
-  private IConnectionStatusChangeCallback m_aConnectionStatusChangeCallback;
   private final CallbackList <IExceptionCallback <? super Exception>> m_aExceptionCallbacks = new CallbackList <> ();
   private IConnectionExecutor m_aConnectionExecutor;
 
@@ -159,9 +160,9 @@ public class DBExecutor implements Serializable
    *         <code>null</code>.
    */
   @Nonnull
-  public final ETriState getConnectionEstablished ()
+  public static final ETriState getConnectionEstablished ()
   {
-    return m_eConnectionEstablished;
+    return s_eConnectionEstablished;
   }
 
   /**
@@ -169,35 +170,29 @@ public class DBExecutor implements Serializable
    *
    * @param eNewState
    *        The new state. May not be <code>null</code>.
-   * @return this for chaining
    */
-  @Nonnull
-  public final DBExecutor setConnectionEstablished (@Nonnull final ETriState eNewState)
+  public static final void setConnectionEstablished (@Nonnull final ETriState eNewState)
   {
     ValueEnforcer.notNull (eNewState, "NewState");
-    if (eNewState != m_eConnectionEstablished)
+    if (eNewState != s_eConnectionEstablished)
     {
-      final ETriState eOldState = m_eConnectionEstablished;
-      if (m_bDebugConnections)
-        debugLog ("Setting connection established state from " + eOldState + " to " + eNewState);
-      m_eConnectionEstablished = eNewState;
+      final ETriState eOldState = s_eConnectionEstablished;
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Setting connection established state from " + eOldState + " to " + eNewState);
+      s_eConnectionEstablished = eNewState;
 
-      if (m_aConnectionStatusChangeCallback != null)
-        m_aConnectionStatusChangeCallback.onConnectionStatusChanged (eOldState, eNewState);
+      if (s_aConnectionStatusChangeCallback != null)
+        s_aConnectionStatusChangeCallback.onConnectionStatusChanged (eOldState, eNewState);
     }
-    return this;
   }
 
   /**
    * Reset the "Connection established" flag. This is a shortcut for
    * <code>setConnectionEstablished (ETriState.UNDEFINED)</code>.
-   *
-   * @return this for chaining.
    */
-  @Nonnull
-  public final DBExecutor resetConnectionEstablished ()
+  public static final void resetConnectionEstablished ()
   {
-    return setConnectionEstablished (ETriState.UNDEFINED);
+    setConnectionEstablished (ETriState.UNDEFINED);
   }
 
   /**
@@ -205,9 +200,9 @@ public class DBExecutor implements Serializable
    *         be <code>null</code>.
    */
   @Nullable
-  public final IConnectionStatusChangeCallback getConnectionStatusChangeCallback ()
+  public static final IConnectionStatusChangeCallback getConnectionStatusChangeCallback ()
   {
-    return m_aConnectionStatusChangeCallback;
+    return s_aConnectionStatusChangeCallback;
   }
 
   /**
@@ -216,13 +211,10 @@ public class DBExecutor implements Serializable
    *
    * @param aCB
    *        The callback to be invoked. May be <code>null</code>.
-   * @return this for chaining
    */
-  @Nonnull
-  public final DBExecutor setConnectionStatusChangeCallback (@Nullable final IConnectionStatusChangeCallback aCB)
+  public static final void setConnectionStatusChangeCallback (@Nullable final IConnectionStatusChangeCallback aCB)
   {
-    m_aConnectionStatusChangeCallback = aCB;
-    return this;
+    s_aConnectionStatusChangeCallback = aCB;
   }
 
   /**
@@ -313,7 +305,7 @@ public class DBExecutor implements Serializable
   {
     final long nConnectionID = COUNTER_CONNECTION.incrementAndGet ();
 
-    if (m_eConnectionEstablished.isFalse ())
+    if (s_eConnectionEstablished.isFalse ())
     {
       // Avoid trying again
       if (m_bDebugConnections)
@@ -908,8 +900,6 @@ public class DBExecutor implements Serializable
   public String toString ()
   {
     return new ToStringGenerator (this).append ("ConnectionProvider", m_aConnectionProvider)
-                                       .append ("ConnectionEstablished", m_eConnectionEstablished)
-                                       .append ("ConnectionStatusChangeCallback", m_aConnectionStatusChangeCallback)
                                        .append ("ExceptionCalbacks", m_aExceptionCallbacks)
                                        .append ("ConnectionExecutor", m_aConnectionExecutor)
                                        .append ("ExecutionDurationWarnMS", m_nExecutionDurationWarnMS)
