@@ -1582,9 +1582,9 @@ public enum EMySQLConnectionProperty implements IHasName
   private final String m_sDefaultValue;
   private final Version m_aMinVersion;
 
-  private EMySQLConnectionProperty (@Nonnull @Nonempty final String sName,
-                                    @Nullable final String sDefaultValue,
-                                    @Nullable final Version aMinVersion)
+  EMySQLConnectionProperty (@Nonnull @Nonempty final String sName,
+                            @Nullable final String sDefaultValue,
+                            @Nullable final Version aMinVersion)
   {
     m_sName = sName;
     m_sDefaultValue = sDefaultValue;

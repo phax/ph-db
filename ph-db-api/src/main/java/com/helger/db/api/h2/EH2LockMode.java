@@ -34,7 +34,7 @@ public enum EH2LockMode implements IHasIntID
 
   private final int m_nValue;
 
-  private EH2LockMode (final int i)
+  EH2LockMode (final int i)
   {
     m_nValue = i;
   }

@@ -34,7 +34,7 @@ public enum EH2Log implements IHasIntID
 
   private final int m_nValue;
 
-  private EH2Log (final int i)
+  EH2Log (final int i)
   {
     m_nValue = i;
   }
