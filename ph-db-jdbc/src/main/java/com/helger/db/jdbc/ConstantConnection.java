@@ -48,6 +48,7 @@ public class ConstantConnection implements IHasConnection
     return m_aConnection;
   }
 
+  @Override
   public boolean shouldCloseConnection ()
   {
     return m_bShouldCloseConnection;
