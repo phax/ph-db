@@ -16,7 +16,6 @@
  */
 package com.helger.db.jdbc;
 
-import java.io.Serializable;
 import java.sql.Connection;
 
 import javax.annotation.Nonnull;
@@ -28,7 +27,7 @@ import com.helger.db.jdbc.executor.DBNoConnectionException;
  *
  * @author Philip Helger
  */
-public interface IHasConnection extends Serializable
+public interface IHasConnection
 {
   @Nonnull
   Connection getConnection () throws DBNoConnectionException;

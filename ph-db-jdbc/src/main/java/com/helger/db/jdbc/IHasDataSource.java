@@ -16,8 +16,6 @@
  */
 package com.helger.db.jdbc;
 
-import java.io.Serializable;
-
 import javax.annotation.Nonnull;
 import javax.sql.DataSource;
 
@@ -27,7 +25,7 @@ import javax.sql.DataSource;
  * @author Philip Helger
  */
 @FunctionalInterface
-public interface IHasDataSource extends Serializable
+public interface IHasDataSource
 {
 
   /**
