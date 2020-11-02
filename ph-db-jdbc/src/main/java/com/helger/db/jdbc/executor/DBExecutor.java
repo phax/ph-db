@@ -109,6 +109,10 @@ public class DBExecutor implements Serializable
   private static final Logger LOGGER = LoggerFactory.getLogger (DBExecutor.class);
   private static final Long MINUS1 = Long.valueOf (CGlobal.ILLEGAL_UINT);
 
+  private static final AtomicLong COUNTER_CONNECTION = new AtomicLong (0);
+  private static final AtomicLong COUNTER_SQL_STATEMENT = new AtomicLong (0);
+  private static final AtomicLong COUNTER_TRANSACTION = new AtomicLong (0);
+
   private final IHasConnection m_aConnectionProvider;
   private ETriState m_eConnectionEstablished = ETriState.UNDEFINED;
   private IConnectionStatusChangeCallback m_aConnectionStatusChangeCallback;
@@ -117,10 +121,6 @@ public class DBExecutor implements Serializable
 
   private long m_nExecutionDurationWarnMS = DEFAULT_EXECUTION_DURATION_WARN_MS;
   private static final CallbackList <IExecutionTimeExceededCallback> m_aExecutionTimeExceededHandlers = new CallbackList <> ();
-
-  private static final AtomicLong s_aConnectionCounter = new AtomicLong (0);
-  private static final AtomicLong s_aSQLStatementCounter = new AtomicLong (0);
-  private static final AtomicLong s_aTransactionCounter = new AtomicLong (0);
 
   private final AtomicInteger m_aTransactionLevel = new AtomicInteger (0);
   private boolean m_bDebugConnections = DEFAULT_DEBUG_CONNECTIONS;
@@ -311,7 +311,7 @@ public class DBExecutor implements Serializable
   protected final synchronized ESuccess withNewConnectionDo (@Nonnull final IWithConnectionCallback aCB,
                                                              @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
-    final long nConnectionID = s_aConnectionCounter.incrementAndGet ();
+    final long nConnectionID = COUNTER_CONNECTION.incrementAndGet ();
 
     if (m_eConnectionEstablished.isFalse ())
     {
@@ -331,6 +331,10 @@ public class DBExecutor implements Serializable
       aConnection = m_aConnectionProvider.getConnection ();
       if (aConnection == null)
         return ESuccess.FAILURE;
+
+      if (m_bDebugConnections)
+        debugLog ("Opened SQL Connection [" + nConnectionID + "] is " + aConnection);
+
       try
       {
         if (aConnection.isClosed ())
@@ -365,7 +369,7 @@ public class DBExecutor implements Serializable
       if (aConnection != null && m_aConnectionProvider.shouldCloseConnection ())
       {
         if (m_bDebugConnections)
-          debugLog ("Now closing SQL Connection [" + nConnectionID + "]");
+          debugLog ("Now closing SQL Connection [" + nConnectionID + "] " + aConnection);
         JDBCHelper.close (aConnection);
       }
     }
@@ -435,13 +439,9 @@ public class DBExecutor implements Serializable
       final int nTransactionLevel = m_aTransactionLevel.incrementAndGet ();
       try
       {
-        final long nTransactionID = s_aTransactionCounter.incrementAndGet ();
+        final long nTransactionID = COUNTER_TRANSACTION.incrementAndGet ();
         if (m_bDebugTransactions)
           debugLog ("Starting a level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
-
-        // Disable auto commit
-        // final boolean bOldAutoCommit = aConnection.getAutoCommit ();
-        // aConnection.setAutoCommit (false);
 
         // Avoid creating a new connection
         final IConnectionExecutor aOldConnectionExecutor = m_aConnectionExecutor;
@@ -508,16 +508,6 @@ public class DBExecutor implements Serializable
         {
           // Reset state
           m_aConnectionExecutor = aOldConnectionExecutor;
-
-          // try
-          // {
-          // aConnection.setAutoCommit (bOldAutoCommit);
-          // }
-          // catch (final SQLException ex)
-          // {
-          // LOGGER.warn ("Error in resetting AutoCommit for transaction [" +
-          // nTransactionID + "] to " + bOldAutoCommit, ex);
-          // }
 
           if (m_bDebugTransactions)
             debugLog ("Finished level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
@@ -589,7 +579,7 @@ public class DBExecutor implements Serializable
                                                     @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
-      final long nSQLStatementID = s_aSQLStatementCounter.incrementAndGet ();
+      final long nSQLStatementID = COUNTER_SQL_STATEMENT.incrementAndGet ();
       final String sWhat = "PreparedStatement [" + nSQLStatementID + "] <" + sSQL + "> with " + aPSDP.getValueCount () + " values";
       if (m_bDebugSQLStatements)
         debugLog ("Will execute " + sWhat);
@@ -647,7 +637,7 @@ public class DBExecutor implements Serializable
                                     @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     return withStatementDo (aStatement -> {
-      final long nSQLStatementID = s_aSQLStatementCounter.incrementAndGet ();
+      final long nSQLStatementID = COUNTER_SQL_STATEMENT.incrementAndGet ();
       final String sWhat = "Statement [" + nSQLStatementID + "] <" + sSQL + ">";
       if (m_bDebugSQLStatements)
         debugLog ("Will execute " + sWhat);
@@ -831,7 +821,7 @@ public class DBExecutor implements Serializable
   public ESuccess queryAll (@Nonnull @Nonempty final String sSQL, @Nonnull final IResultSetRowCallback aResultItemCallback)
   {
     return withStatementDo (aStatement -> {
-      final long nSQLStatementID = s_aSQLStatementCounter.incrementAndGet ();
+      final long nSQLStatementID = COUNTER_SQL_STATEMENT.incrementAndGet ();
       final String sWhat = "Query [" + nSQLStatementID + "] <" + sSQL + ">";
       if (m_bDebugSQLStatements)
         debugLog ("Will execute " + sWhat);
@@ -918,8 +908,13 @@ public class DBExecutor implements Serializable
   public String toString ()
   {
     return new ToStringGenerator (this).append ("ConnectionProvider", m_aConnectionProvider)
+                                       .append ("ConnectionEstablished", m_eConnectionEstablished)
+                                       .append ("ConnectionStatusChangeCallback", m_aConnectionStatusChangeCallback)
                                        .append ("ExceptionCalbacks", m_aExceptionCallbacks)
                                        .append ("ConnectionExecutor", m_aConnectionExecutor)
+                                       .append ("ExecutionDurationWarnMS", m_nExecutionDurationWarnMS)
+                                       .append ("ExecutionTimeExceededHandlers", m_aExecutionTimeExceededHandlers)
+                                       .append ("TransactionLevel", m_aTransactionLevel)
                                        .append ("DebugConnections", m_bDebugConnections)
                                        .append ("DebugTransactions", m_bDebugTransactions)
                                        .append ("DebugSQLStatements", m_bDebugSQLStatements)
