@@ -130,11 +130,11 @@ public class DBExecutor implements Serializable
   private IConnectionExecutor m_aConnectionExecutor;
 
   private long m_nExecutionDurationWarnMS = DEFAULT_EXECUTION_DURATION_WARN_MS;
-  private static final CallbackList <IExecutionTimeExceededCallback> s_aExecutionTimeExceededHandlers = new CallbackList <> ();
+  private static final CallbackList <IExecutionTimeExceededCallback> EXECUTION_TIME_EXCEEDED_HANDLERS = new CallbackList <> ();
 
   static
   {
-    s_aExecutionTimeExceededHandlers.add (new LoggingExecutionTimeExceededCallback (true));
+    EXECUTION_TIME_EXCEEDED_HANDLERS.add (new LoggingExecutionTimeExceededCallback (true));
   }
 
   private final AtomicInteger m_aTransactionLevel = new AtomicInteger (0);
@@ -284,12 +284,12 @@ public class DBExecutor implements Serializable
   @ReturnsMutableObject
   public static final CallbackList <IExecutionTimeExceededCallback> executionTimeExceededHandlers ()
   {
-    return s_aExecutionTimeExceededHandlers;
+    return EXECUTION_TIME_EXCEEDED_HANDLERS;
   }
 
   public final void onExecutionTimeExceeded (@Nonnull final String sMsg, @Nonnegative final long nExecutionMillis)
   {
-    s_aExecutionTimeExceededHandlers.forEach (x -> x.onExecutionTimeExceeded (sMsg, nExecutionMillis, m_nExecutionDurationWarnMS));
+    EXECUTION_TIME_EXCEEDED_HANDLERS.forEach (x -> x.onExecutionTimeExceeded (sMsg, nExecutionMillis, m_nExecutionDurationWarnMS));
   }
 
   public final boolean isDebugConnections ()
