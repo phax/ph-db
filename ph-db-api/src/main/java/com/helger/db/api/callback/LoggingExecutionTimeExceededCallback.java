@@ -56,8 +56,7 @@ public class LoggingExecutionTimeExceededCallback implements IExecutionTimeExcee
                                        @Nonnegative final long nExecutionMillis,
                                        @Nonnegative final long nLimitMillis)
   {
-    LOGGER.warn (sMsg + " took " + nExecutionMillis + "ms (limit is  " + nLimitMillis + " ms)",
-                 m_bEmitStackTrace ? new Exception () : null);
+    LOGGER.warn (sMsg + " took " + nExecutionMillis + "ms (limit is " + nLimitMillis + " ms)", m_bEmitStackTrace ? new Exception () : null);
   }
 
   @Override
