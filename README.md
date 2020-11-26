@@ -32,7 +32,9 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 
 # News and noteworthy
 
-* v6.4.0 - work in progress
+* v6.4.1 - work in progress
+    * Added conversion from CLOB to String - thanks to GG
+* v6.4.0 - 2020-11-02
     * Updated to MySQLConnector/J 8.0.21
     * Improved debug logging in `DBExecutor`
     * Made `DBExecutor` consistently not thread-safe

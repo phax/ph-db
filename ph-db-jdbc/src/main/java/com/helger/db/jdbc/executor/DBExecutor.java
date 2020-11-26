@@ -16,6 +16,8 @@
  */
 package com.helger.db.jdbc.executor;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -51,6 +54,7 @@ import com.helger.commons.callback.exception.LoggingExceptionCallback;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
+import com.helger.commons.io.stream.NonBlockingBufferedReader;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.EChange;
 import com.helger.commons.state.ESuccess;
@@ -631,11 +635,14 @@ public class DBExecutor implements Serializable
         try (final PreparedStatement aPS = aConnection.prepareStatement (sSQL, Statement.RETURN_GENERATED_KEYS))
         {
           if (aPS.getParameterMetaData ().getParameterCount () != aPSDP.getValueCount ())
+          {
+            // TODO why should this be commented out?
             throw new IllegalArgumentException ("parameter count (" +
                                                 aPS.getParameterMetaData ().getParameterCount () +
                                                 ") does not match passed column name count (" +
                                                 aPSDP.getValueCount () +
                                                 ")");
+          }
 
           // assign values
           int nIndex = 1;
@@ -800,6 +807,30 @@ public class DBExecutor implements Serializable
     return new CountAndKey (nUpdateCount, nUpdateCount != IUpdatedRowCountCallback.NOT_INITIALIZED ? aCB.getGeneratedKey () : null);
   }
 
+  @Nullable
+  private static String _clobToString (@Nullable final java.sql.Clob data) throws SQLException
+  {
+    if (data == null)
+      return "";
+
+    final StringBuilder aSB = new StringBuilder ();
+
+    try (final Reader reader = data.getCharacterStream (); final NonBlockingBufferedReader br = new NonBlockingBufferedReader (reader))
+    {
+      int ch;
+      while ((ch = br.read ()) > -1)
+      {
+        aSB.append ((char) ch);
+      }
+    }
+    catch (final IOException ex)
+    {
+      throw new SQLException ("Could not convert CLOB to String", ex);
+    }
+
+    return aSB.toString ();
+  }
+
   /**
    * Iterate the passed result set, collect all values of a single result row,
    * and call the callback for each row of result objects.
@@ -842,7 +873,16 @@ public class DBExecutor implements Serializable
         aRow.internalClear ();
         for (int i = 1; i <= nCols; ++i)
         {
-          final Object aColumnValue = aRS.getObject (i);
+          Object aColumnValue = aRS.getObject (i);
+          if (aColumnTypes[i - 1] == Types.CLOB)
+          {
+            final java.sql.Clob aCLOB = (java.sql.Clob) aColumnValue;
+            if (aCLOB.length () <= Integer.MAX_VALUE)
+              aColumnValue = _clobToString (aCLOB);
+            else
+              LOGGER.warn ("The contained CLOB is larger than 2GB (" + aCLOB.length () + " chars) and therefore not converted to a String");
+          }
+
           aRow.internalAdd (new DBResultField (aColumnNames[i - 1], aColumnTypes[i - 1], aColumnValue));
         }
 
