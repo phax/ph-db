@@ -1042,7 +1042,6 @@ public class DBExecutor implements Serializable
   @Nonnull
   public ESuccess querySingle (@Nonnull @Nonempty final String sSQL, @Nonnull final Consumer <? super DBResultRow> aConsumer)
   {
-
     final ICommonsList <DBResultRow> aList = queryAll (sSQL);
     if (aList == null)
       return ESuccess.FAILURE;
