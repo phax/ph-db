@@ -26,9 +26,9 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 
 import javax.annotation.CheckForSigned;
 import javax.annotation.Nonnegative;
@@ -115,7 +115,6 @@ public class DBExecutor implements Serializable
   public static final boolean DEFAULT_DEBUG_SQL_STATEMENTS = false;
 
   private static final Logger LOGGER = LoggerFactory.getLogger (DBExecutor.class);
-  private static final Long MINUS1 = Long.valueOf (CGlobal.ILLEGAL_UINT);
 
   private static final AtomicLong COUNTER_CONNECTION = new AtomicLong (0);
   private static final AtomicLong COUNTER_CONNECTION_OPEN = new AtomicLong (0);
@@ -634,15 +633,17 @@ public class DBExecutor implements Serializable
       withTimingDo (sWhat, () -> {
         try (final PreparedStatement aPS = aConnection.prepareStatement (sSQL, Statement.RETURN_GENERATED_KEYS))
         {
-          if (aPS.getParameterMetaData ().getParameterCount () != aPSDP.getValueCount ())
-          {
-            // TODO why should this be commented out?
-            throw new IllegalArgumentException ("parameter count (" +
-                                                aPS.getParameterMetaData ().getParameterCount () +
-                                                ") does not match passed column name count (" +
-                                                aPSDP.getValueCount () +
-                                                ")");
-          }
+          // Handle by JDBC driver
+          // Oracle counts incorrectly
+          if (false)
+            if (aPS.getParameterMetaData ().getParameterCount () != aPSDP.getValueCount ())
+            {
+              throw new IllegalArgumentException ("parameter count (" +
+                                                  aPS.getParameterMetaData ().getParameterCount () +
+                                                  ") does not match passed column name count (" +
+                                                  aPSDP.getValueCount () +
+                                                  ")");
+            }
 
           // assign values
           int nIndex = 1;
@@ -712,15 +713,28 @@ public class DBExecutor implements Serializable
     return withPreparedStatementDo (sSQL, aPSDP, PreparedStatement::execute, aURWCC, aGeneratedKeysCB, aExtraExCB);
   }
 
+  /**
+   * Execute a prepared statement and return the generated key.
+   *
+   * @param sSQL
+   *        The SQL to execute. May not be <code>null</code>.
+   * @param aPSDP
+   *        The data provider for the prepared statement. May not be
+   *        <code>null</code>.
+   * @param aExtraExCB
+   *        An additional exception callback for this execution only.
+   * @return <code>null</code> if the execution failed (see exception handler)
+   *         and no key was created, or a non-<code>null</code> key.
+   */
   @Nonnull
-  public Optional <Object> executePreparedStatementAndGetGeneratedKey (@Nonnull final String sSQL,
-                                                                       @Nonnull final IPreparedStatementDataProvider aPSDP,
-                                                                       @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
+  public Object executePreparedStatementAndGetGeneratedKey (@Nonnull final String sSQL,
+                                                            @Nonnull final IPreparedStatementDataProvider aPSDP,
+                                                            @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final GetSingleGeneratedKeyCallback aCB = new GetSingleGeneratedKeyCallback ();
     if (executePreparedStatement (sSQL, aPSDP, null, aCB, aExtraExCB).isFailure ())
-      return Optional.empty ();
-    return Optional.of (aCB.getGeneratedKey ());
+      return null;
+    return aCB.getGeneratedKey ();
   }
 
   /**
@@ -876,6 +890,7 @@ public class DBExecutor implements Serializable
           Object aColumnValue = aRS.getObject (i);
           if (aColumnTypes[i - 1] == Types.CLOB)
           {
+            // Special CLOB handling
             final java.sql.Clob aCLOB = (java.sql.Clob) aColumnValue;
             if (aCLOB.length () <= Integer.MAX_VALUE)
               aColumnValue = _clobToString (aCLOB);
@@ -898,9 +913,22 @@ public class DBExecutor implements Serializable
     }
   }
 
+  /**
+   * Perform an SQL query that does not contain any parameters.
+   *
+   * @param sSQL
+   *        The SQL to query. May neither be <code>null</code> nor empty.
+   * @param aResultItemCallback
+   *        The result item callback to be invoked. May not be
+   *        <code>null</code>.
+   * @return {@link ESuccess} and never <code>null</code>.
+   */
   @Nonnull
   public ESuccess queryAll (@Nonnull @Nonempty final String sSQL, @Nonnull final IResultSetRowCallback aResultItemCallback)
   {
+    ValueEnforcer.notEmpty (sSQL, "SQL");
+    ValueEnforcer.notNull (aResultItemCallback, "aResultItemCallbackSQL");
+
     return withStatementDo (aStatement -> {
       final long nSQLStatementID = COUNTER_SQL_STATEMENT.incrementAndGet ();
       final String sWhat = "Query [" + nSQLStatementID + "] <" + sSQL + ">";
@@ -917,11 +945,29 @@ public class DBExecutor implements Serializable
     }, (IGeneratedKeysCallback) null, null);
   }
 
+  /**
+   * Perform an SQL query that does contains parameters to be filled with the
+   * provided {@link IPreparedStatementDataProvider}.
+   *
+   * @param sSQL
+   *        The SQL to query. May neither be <code>null</code> nor empty.
+   * @param aPSDP
+   *        The data provider for the SQL statement. May not be
+   *        <code>null</code>.
+   * @param aResultItemCallback
+   *        The result item callback to be invoked. May not be
+   *        <code>null</code>.
+   * @return {@link ESuccess} and never <code>null</code>.
+   */
   @Nonnull
   public ESuccess queryAll (@Nonnull final String sSQL,
                             @Nonnull final IPreparedStatementDataProvider aPSDP,
                             @Nonnull final IResultSetRowCallback aResultItemCallback)
   {
+    ValueEnforcer.notEmpty (sSQL, "SQL");
+    ValueEnforcer.notNull (aPSDP, "PreparedStatementDataProvider");
+    ValueEnforcer.notNull (aResultItemCallback, "aResultItemCallbackSQL");
+
     return withPreparedStatementDo (sSQL, aPSDP, aPreparedStatement -> {
       final ResultSet aResultSet = aPreparedStatement.executeQuery ();
       final long nResultRows = iterateResultSet (aResultSet, aResultItemCallback);
@@ -930,8 +976,17 @@ public class DBExecutor implements Serializable
     }, (IUpdatedRowCountCallback) null, (IGeneratedKeysCallback) null, null);
   }
 
-  @Nonnull
-  public Optional <ICommonsList <DBResultRow>> queryAll (@Nonnull @Nonempty final String sSQL)
+  /**
+   * Query a list of 0-n rows with an SQL script without parameters.
+   *
+   * @param sSQL
+   *        The SQL to query. May neither be <code>null</code> nor empty.
+   * @return <code>null</code> in case of error (see the provided exception
+   *         handler) or a non-<code>null</code> but maybe empty list if
+   *         querying was successful.
+   */
+  @Nullable
+  public ICommonsList <DBResultRow> queryAll (@Nonnull @Nonempty final String sSQL)
   {
     final ICommonsList <DBResultRow> aAllResultRows = new CommonsArrayList <> ();
     if (queryAll (sSQL, aCurrentObject -> {
@@ -941,13 +996,24 @@ public class DBExecutor implements Serializable
         aAllResultRows.add (aCurrentObject.getClone ());
       }
     }).isFailure ())
-      return Optional.empty ();
-    return Optional.of (aAllResultRows);
+      return null;
+    return aAllResultRows;
   }
 
-  @Nonnull
-  public Optional <ICommonsList <DBResultRow>> queryAll (@Nonnull @Nonempty final String sSQL,
-                                                         @Nonnull final IPreparedStatementDataProvider aPSDP)
+  /**
+   * Query a list of 0-n rows with an SQL script with parameters.
+   *
+   * @param sSQL
+   *        The SQL to query. May neither be <code>null</code> nor empty.
+   * @param aPSDP
+   *        The data provider for the SQL statement. May not be
+   *        <code>null</code>.
+   * @return <code>null</code> in case of error (see the provided exception
+   *         handler) or a non-<code>null</code> but maybe empty list if
+   *         querying was successful.
+   */
+  @Nullable
+  public ICommonsList <DBResultRow> queryAll (@Nonnull @Nonempty final String sSQL, @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
     final ICommonsList <DBResultRow> aAllResultRows = new CommonsArrayList <> ();
     if (queryAll (sSQL, aPSDP, aCurrentObject -> {
@@ -957,32 +1023,82 @@ public class DBExecutor implements Serializable
         aAllResultRows.add (aCurrentObject.getClone ());
       }
     }).isFailure ())
-      return Optional.empty ();
-    return Optional.of (aAllResultRows);
+      return null;
+    return aAllResultRows;
   }
 
+  /**
+   * Query a a single result row with an SQL script without parameters.
+   *
+   * @param sSQL
+   *        The SQL to query. May neither be <code>null</code> nor empty.
+   * @param aConsumer
+   *        The consumer to be invoked with the result row. May not be
+   *        <code>null</code>. This is necessary to differentiate a
+   *        <code>null</code>-result was a "not found" or "a DB error". The
+   *        consumer is only invoked if no exception occurred.
+   * @return {@link ESuccess} and never <code>null</code>.
+   */
   @Nonnull
-  public Optional <DBResultRow> querySingle (@Nonnull @Nonempty final String sSQL)
+  public ESuccess querySingle (@Nonnull @Nonempty final String sSQL, @Nonnull final Consumer <? super DBResultRow> aConsumer)
   {
-    return queryAll (sSQL).map (ICommonsList::getFirst);
+
+    final ICommonsList <DBResultRow> aList = queryAll (sSQL);
+    if (aList == null)
+      return ESuccess.FAILURE;
+
+    if (aList.size () > 1)
+      LOGGER.warn ("The query '" + sSQL + "' returned " + aList.size () + " results but only the first one is used.");
+    // No need to clone again - already cloned
+    aConsumer.accept (aList.getFirst ());
+    return ESuccess.SUCCESS;
   }
 
+  /**
+   * Query a a single result row with an SQL script with parameters.
+   *
+   * @param sSQL
+   *        The SQL to query. May neither be <code>null</code> nor empty.
+   * @param aPSDP
+   *        The data provider for the SQL statement. May not be
+   *        <code>null</code>.
+   * @param aConsumer
+   *        The consumer to be invoked with the result row. May not be
+   *        <code>null</code>. This is necessary to differentiate a
+   *        <code>null</code>-result was a "not found" or "a DB error". The
+   *        consumer is only invoked if no exception occurred.
+   * @return {@link ESuccess} and never <code>null</code>.
+   */
   @Nonnull
-  public Optional <DBResultRow> querySingle (@Nonnull @Nonempty final String sSQL, @Nonnull final IPreparedStatementDataProvider aPSDP)
+  public ESuccess querySingle (@Nonnull @Nonempty final String sSQL,
+                               @Nonnull final IPreparedStatementDataProvider aPSDP,
+                               @Nonnull final Consumer <? super DBResultRow> aConsumer)
   {
-    return queryAll (sSQL, aPSDP).map (ICommonsList::getFirst);
+    final ICommonsList <DBResultRow> aList = queryAll (sSQL, aPSDP);
+    if (aList == null)
+      return ESuccess.FAILURE;
+
+    if (aList.size () > 1)
+      LOGGER.warn ("The query '" + sSQL + "' returned " + aList.size () + " results but only the first one is used.");
+    // No need to clone again - already cloned
+    aConsumer.accept (aList.getFirst ());
+    return ESuccess.SUCCESS;
   }
 
   @CheckForSigned
   public long queryCount (@Nonnull final String sSQL)
   {
-    return querySingle (sSQL).map (x -> (Number) x.getValue (0)).orElse (MINUS1).longValue ();
+    final Wrapper <DBResultRow> ret = new Wrapper <> ();
+    querySingle (sSQL, ret::set);
+    return ret.isNotSet () ? CGlobal.ILLEGAL_UINT : ((Number) ret.get ().getValue (0)).longValue ();
   }
 
   @CheckForSigned
   public long queryCount (@Nonnull final String sSQL, @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
-    return querySingle (sSQL, aPSDP).map (x -> (Number) x.getValue (0)).orElse (MINUS1).longValue ();
+    final Wrapper <DBResultRow> ret = new Wrapper <> ();
+    querySingle (sSQL, aPSDP, ret::set);
+    return ret.isNotSet () ? CGlobal.ILLEGAL_UINT : ((Number) ret.get ().getValue (0)).longValue ();
   }
 
   @Override
