@@ -34,6 +34,7 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 
 * v6.5.1 - work in progress
     * Updated to EclipseLink 2.7.8
+    * Updated to MySQLConnector/J 8.0.23
 * v6.5.0 - 2020-11-27
     * Added conversion from CLOB to String - thanks to GG
     * Commented out the parameter check in favour of the default JDBC driver - thanks to GG for pointing that out
