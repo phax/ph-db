@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class ConnectionFromDataSource implements IHasConnection
 {
-  public static final boolean DEFAULT_VALIDITY_CHECK_ENABLED = true;
+  public static final boolean DEFAULT_VALIDITY_CHECK_ENABLED = false;
   public static final int DEFAULT_VALIDITY_CHECK_TIMEOUT_SECONDS = 3;
   private static final Logger LOGGER = LoggerFactory.getLogger (ConnectionFromDataSource.class);
 
@@ -125,7 +125,10 @@ public class ConnectionFromDataSource implements IHasConnection
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("DataSource", m_aDS).getToString ();
+    return new ToStringGenerator (this).append ("DataSource", m_aDS)
+                                       .append ("ValidityCheckEnabled", m_bValidityCheckEnabled)
+                                       .append ("ValidityCheckTimeoutSeconds", m_nValidityCheckTimeoutSeconds)
+                                       .getToString ();
   }
 
   @SuppressFBWarnings ("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
