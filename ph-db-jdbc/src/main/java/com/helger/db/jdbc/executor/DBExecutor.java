@@ -65,7 +65,7 @@ import com.helger.commons.wrapper.Wrapper;
 import com.helger.db.api.callback.IExecutionTimeExceededCallback;
 import com.helger.db.api.callback.LoggingExecutionTimeExceededCallback;
 import com.helger.db.api.jdbc.JDBCHelper;
-import com.helger.db.jdbc.ConnectionFromDataSourceProvider;
+import com.helger.db.jdbc.ConnectionFromDataSource;
 import com.helger.db.jdbc.IHasConnection;
 import com.helger.db.jdbc.IHasDataSource;
 import com.helger.db.jdbc.callback.GetSingleGeneratedKeyCallback;
@@ -122,10 +122,10 @@ public class DBExecutor implements Serializable
   private static final AtomicLong COUNTER_SQL_STATEMENT = new AtomicLong (0);
   private static final AtomicLong COUNTER_TRANSACTION = new AtomicLong (0);
 
-  private static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
-  @GuardedBy ("s_aRWLock")
+  private static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
+  @GuardedBy ("RW_LOCK")
   private static ETriState s_eConnectionEstablished = ETriState.UNDEFINED;
-  @GuardedBy ("s_aRWLock")
+  @GuardedBy ("RW_LOCK")
   private static IConnectionStatusChangeCallback s_aConnectionStatusChangeCallback;
 
   private final IHasConnection m_aConnectionProvider;
@@ -147,7 +147,7 @@ public class DBExecutor implements Serializable
 
   public DBExecutor (@Nonnull final IHasDataSource aDataSourceProvider)
   {
-    this (new ConnectionFromDataSourceProvider (aDataSourceProvider));
+    this (ConnectionFromDataSource.create (aDataSourceProvider));
   }
 
   public DBExecutor (@Nonnull final IHasConnection aConnectionProvider)
@@ -178,7 +178,7 @@ public class DBExecutor implements Serializable
   @Nonnull
   public static final ETriState getConnectionEstablished ()
   {
-    return s_aRWLock.readLockedGet ( () -> s_eConnectionEstablished);
+    return RW_LOCK.readLockedGet ( () -> s_eConnectionEstablished);
   }
 
   /**
@@ -195,22 +195,23 @@ public class DBExecutor implements Serializable
       final Wrapper <ETriState> aOldState = new Wrapper <> ();
 
       // Change value
-      final EChange eChange = s_aRWLock.writeLockedGet ( () -> {
+      final EChange eChange = RW_LOCK.writeLockedGet ( () -> {
         aOldState.set (s_eConnectionEstablished);
         // Check again in write lock
         if (eNewState == aOldState.get ())
           return EChange.UNCHANGED;
 
-        if (LOGGER.isInfoEnabled ())
-          LOGGER.info ("Setting connection established state from " + aOldState.get () + " to " + eNewState);
         s_eConnectionEstablished = eNewState;
         return EChange.CHANGED;
       });
 
       if (eChange.isChanged ())
       {
+        if (LOGGER.isInfoEnabled ())
+          LOGGER.info ("Setting connection established state from " + aOldState.get () + " to " + eNewState);
+
         // Callback only if something changed
-        s_aRWLock.readLocked ( () -> {
+        RW_LOCK.readLocked ( () -> {
           if (s_aConnectionStatusChangeCallback != null)
             s_aConnectionStatusChangeCallback.onConnectionStatusChanged (aOldState.get (), eNewState);
         });
@@ -234,7 +235,7 @@ public class DBExecutor implements Serializable
   @Nullable
   public static final IConnectionStatusChangeCallback getConnectionStatusChangeCallback ()
   {
-    return s_aRWLock.readLockedGet ( () -> s_aConnectionStatusChangeCallback);
+    return RW_LOCK.readLockedGet ( () -> s_aConnectionStatusChangeCallback);
   }
 
   /**
@@ -246,7 +247,7 @@ public class DBExecutor implements Serializable
    */
   public static final void setConnectionStatusChangeCallback (@Nullable final IConnectionStatusChangeCallback aCB)
   {
-    s_aRWLock.writeLockedGet ( () -> s_aConnectionStatusChangeCallback = aCB);
+    RW_LOCK.writeLockedGet ( () -> s_aConnectionStatusChangeCallback = aCB);
   }
 
   /**
@@ -368,7 +369,7 @@ public class DBExecutor implements Serializable
       try
       {
         if (aConnection.isClosed ())
-          LOGGER.error ("Received a closed connection from provider " + m_aConnectionProvider);
+          throw new DBNoConnectionException ("Received a closed connection from provider " + m_aConnectionProvider);
       }
       catch (final SQLException ex)
       {

@@ -33,7 +33,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * {@link IHasDataSource}.
  *
  * @author Philip Helger
+ * @deprecated Since 6.5.1 - use {@link ConnectionFromDataSource} instead.
  */
+@Deprecated
 public class ConnectionFromDataSourceProvider implements IHasConnection
 {
   private final DataSource m_aDS;
@@ -61,7 +63,7 @@ public class ConnectionFromDataSourceProvider implements IHasConnection
     {
       // ex.getCause is e.g. a
       // com.mysql.cj.jdbc.exceptions.CommunicationsException
-      throw new DBNoConnectionException ("No connection retrieved from DataSource " + m_aDS, ex);
+      throw new DBNoConnectionException ("No Connection retrieved from DataSource " + m_aDS, ex);
     }
   }
 
