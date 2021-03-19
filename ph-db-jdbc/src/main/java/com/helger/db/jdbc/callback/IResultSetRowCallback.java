@@ -16,8 +16,9 @@
  */
 package com.helger.db.jdbc.callback;
 
+import java.util.function.Consumer;
+
 import com.helger.commons.callback.ICallback;
-import com.helger.commons.functional.IConsumer;
 import com.helger.db.jdbc.executor.DBResultRow;
 
 /**
@@ -27,7 +28,7 @@ import com.helger.db.jdbc.executor.DBResultRow;
  * @author Philip Helger
  */
 @FunctionalInterface
-public interface IResultSetRowCallback extends IConsumer <DBResultRow>, ICallback
+public interface IResultSetRowCallback extends Consumer <DBResultRow>, ICallback
 {
   /* empty */
 }
