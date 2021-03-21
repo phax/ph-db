@@ -37,7 +37,8 @@ public final class JPALocalTimeConverterTest
   public void testAll ()
   {
     // Get a time without milliseconds
-    final LocalTime aNow = PDTFactory.getCurrentLocalTimeMillisOnly ();
+    // java.sql.Time uses only hour, minute and seconds
+    final LocalTime aNow = PDTFactory.getCurrentLocalTime ().withNano (0);
     final JPALocalTimeConverter aConverter = new JPALocalTimeConverter ();
     final Time aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
     assertNotNull (aDataValue);
