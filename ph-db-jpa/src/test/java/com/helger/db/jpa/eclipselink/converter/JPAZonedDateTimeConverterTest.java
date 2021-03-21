@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.sql.Timestamp;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import org.junit.Test;
@@ -36,7 +37,9 @@ public final class JPAZonedDateTimeConverterTest
   @Test
   public void testAll ()
   {
-    final ZonedDateTime aNow = PDTFactory.getCurrentZonedDateTime ().withNano (0);
+    // Don't use named timezone - it will be lost
+    final ZonedDateTime aNow = PDTFactory.getCurrentZonedDateTimeMillisOnly ()
+                                         .withZoneSameLocal (ZoneOffset.ofHours (1));
     final JPAZonedDateTimeConverter aConverter = new JPAZonedDateTimeConverter ();
     final Timestamp aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
     assertNotNull (aDataValue);
