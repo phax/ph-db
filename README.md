@@ -32,7 +32,7 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 
 # News and noteworthy
 
-* v6.6.0 - work in progress
+* v6.6.0 - 2021-03-21
     * Updated to ph-commons 10
     * Updated to EclipseLink 2.7.8
     * Updated to MySQLConnector/J 8.0.23
