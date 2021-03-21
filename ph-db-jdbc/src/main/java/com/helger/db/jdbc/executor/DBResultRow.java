@@ -29,6 +29,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -41,6 +42,7 @@ import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.lang.ICloneable;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -415,6 +417,13 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
   {
     final Timestamp ret = getAsTimestamp (nIndex);
     return ret == null ? null : ret.toLocalDateTime ();
+  }
+
+  @Nullable
+  public OffsetDateTime getAsOffsetDateTime (@Nonnegative final int nIndex)
+  {
+    final Timestamp ret = getAsTimestamp (nIndex);
+    return ret == null ? null : PDTFactory.createOffsetDateTime (ret);
   }
 
   /**
