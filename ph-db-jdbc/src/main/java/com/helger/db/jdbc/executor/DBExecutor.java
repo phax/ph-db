@@ -26,6 +26,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
@@ -123,6 +124,7 @@ public class DBExecutor implements Serializable
   private static final AtomicLong COUNTER_TRANSACTION = new AtomicLong (0);
 
   private static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
+  private static final AtomicBoolean CARE_ABOUT_CONNECTION_STATUS = new AtomicBoolean (false);
   @GuardedBy ("RW_LOCK")
   private static ETriState s_eConnectionEstablished = ETriState.UNDEFINED;
   @GuardedBy ("RW_LOCK")
@@ -172,6 +174,29 @@ public class DBExecutor implements Serializable
   }
 
   /**
+   * @return <code>true</code> if we care about the connection status,
+   *         <code>false</code> if not. Default is <code>false</code>. Only if
+   *         this method returns true,
+   *         {@link #setConnectionEstablished(ETriState)} is called.
+   * @since v6.6.1
+   */
+  public static final boolean isCareAboutConnectionStatus ()
+  {
+    return CARE_ABOUT_CONNECTION_STATUS.get ();
+  }
+
+  /**
+   * @param bCare
+   *        <code>true</code> if connection status should be cared about,
+   *        <code>false</code> if not.
+   * @since v6.6.1
+   */
+  public static final void setCareAboutConnectionStatus (final boolean bCare)
+  {
+    CARE_ABOUT_CONNECTION_STATUS.set (bCare);
+  }
+
+  /**
    * @return The current "connection established" state. Never
    *         <code>null</code>.
    */
@@ -182,7 +207,8 @@ public class DBExecutor implements Serializable
   }
 
   /**
-   * Set the "Connection established" state.
+   * Set the "Connection established" state. This method is only called, if
+   * {@link #isCareAboutConnectionStatus()} returns <code>true</code>.
    *
    * @param eNewState
    *        The new state. May not be <code>null</code>.
@@ -225,7 +251,8 @@ public class DBExecutor implements Serializable
    */
   public static final void resetConnectionEstablished ()
   {
-    setConnectionEstablished (ETriState.UNDEFINED);
+    if (CARE_ABOUT_CONNECTION_STATUS.get ())
+      setConnectionEstablished (ETriState.UNDEFINED);
   }
 
   /**
@@ -339,7 +366,7 @@ public class DBExecutor implements Serializable
   {
     final long nConnectionID = COUNTER_CONNECTION.incrementAndGet ();
 
-    if (s_eConnectionEstablished.isFalse ())
+    if (getConnectionEstablished ().isFalse ())
     {
       // Avoid trying again
       if (m_bDebugConnections)
@@ -376,7 +403,8 @@ public class DBExecutor implements Serializable
         // Ignore
       }
 
-      setConnectionEstablished (ETriState.TRUE);
+      if (CARE_ABOUT_CONNECTION_STATUS.get ())
+        setConnectionEstablished (ETriState.TRUE);
 
       // Okay, connection was established
 
@@ -386,9 +414,12 @@ public class DBExecutor implements Serializable
     catch (final DBNoConnectionException ex)
     {
       // Error creating a connection
-      setConnectionEstablished (ETriState.FALSE);
-      if (LOGGER.isWarnEnabled ())
-        LOGGER.warn ("Connection could not be established. Remembering this status.");
+      if (CARE_ABOUT_CONNECTION_STATUS.get ())
+      {
+        setConnectionEstablished (ETriState.FALSE);
+        if (LOGGER.isWarnEnabled ())
+          LOGGER.warn ("Connection could not be established. Remembering this status.");
+      }
 
       // Invoke callback
       m_aExceptionCallbacks.forEach (x -> x.onException (ex));
