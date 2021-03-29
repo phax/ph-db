@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.sql.Timestamp;
+import java.time.Month;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
@@ -38,8 +39,8 @@ public final class JPAZonedDateTimeConverterTest
   public void testAll ()
   {
     // Don't use named timezone - it will be lost
-    final ZonedDateTime aNow = PDTFactory.getCurrentZonedDateTimeMillisOnly ()
-                                         .withZoneSameLocal (ZoneOffset.ofHours (1));
+    // Fixed date, to avoid timezone change (e.g. CET - CEST)
+    final ZonedDateTime aNow = PDTFactory.createZonedDateTime (2021, Month.JANUARY, 1).withZoneSameLocal (ZoneOffset.ofHours (1));
     final JPAZonedDateTimeConverter aConverter = new JPAZonedDateTimeConverter ();
     final Timestamp aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
     assertNotNull (aDataValue);
