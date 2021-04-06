@@ -32,7 +32,7 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 
 # News and noteworthy
 
-* v6.6.1 - work in progress
+* v6.7.0 - 2021-04-06
     * Added option to enabled/disable the connection state handling (and disabled it by default)
 * v6.6.0 - 2021-03-21
     * Updated to ph-commons 10
