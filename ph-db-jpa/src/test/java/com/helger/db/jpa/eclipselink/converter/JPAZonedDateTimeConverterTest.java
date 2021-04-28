@@ -44,6 +44,7 @@ public final class JPAZonedDateTimeConverterTest
     final JPAZonedDateTimeConverter aConverter = new JPAZonedDateTimeConverter ();
     final Timestamp aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
     assertNotNull (aDataValue);
+    assertEquals (PDTFactory.createLocalDate (2021, Month.JANUARY, 1).atStartOfDay (), aDataValue.toLocalDateTime ());
     assertEquals (aNow, aConverter.convertDataValueToObjectValue (aDataValue, null));
   }
 }
