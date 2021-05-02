@@ -30,6 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -42,7 +43,11 @@ import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.commons.datetime.OffsetDate;
 import com.helger.commons.datetime.PDTFactory;
+import com.helger.commons.datetime.XMLOffsetDate;
+import com.helger.commons.datetime.XMLOffsetDateTime;
+import com.helger.commons.datetime.XMLOffsetTime;
 import com.helger.commons.lang.ICloneable;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -382,6 +387,20 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
   }
 
   @Nullable
+  public OffsetDate getAsOffsetDate (@Nonnegative final int nIndex)
+  {
+    final Date ret = getAsDate (nIndex);
+    return ret == null ? null : PDTFactory.createOffsetDate (ret);
+  }
+
+  @Nullable
+  public XMLOffsetDate getAsXMLOffsetDate (@Nonnegative final int nIndex)
+  {
+    final Date ret = getAsDate (nIndex);
+    return ret == null ? null : PDTFactory.createXMLOffsetDate (ret);
+  }
+
+  @Nullable
   public NClob getAsNClob (@Nonnegative final int nIndex)
   {
     return get (nIndex).getAsSqlNClob ();
@@ -407,6 +426,20 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
   }
 
   @Nullable
+  public OffsetTime getAsOffsetTime (@Nonnegative final int nIndex)
+  {
+    final Time ret = getAsTime (nIndex);
+    return ret == null ? null : PDTFactory.createOffsetTime (ret);
+  }
+
+  @Nullable
+  public XMLOffsetTime getAsXMLOffsetTime (@Nonnegative final int nIndex)
+  {
+    final Time ret = getAsTime (nIndex);
+    return ret == null ? null : PDTFactory.createXMLOffsetTime (ret);
+  }
+
+  @Nullable
   public Timestamp getAsTimestamp (@Nonnegative final int nIndex)
   {
     return get (nIndex).getAsSqlTimestamp ();
@@ -424,6 +457,13 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
   {
     final Timestamp ret = getAsTimestamp (nIndex);
     return ret == null ? null : PDTFactory.createOffsetDateTime (ret);
+  }
+
+  @Nullable
+  public XMLOffsetDateTime getAsXMLOffsetDateTime (@Nonnegative final int nIndex)
+  {
+    final Timestamp ret = getAsTimestamp (nIndex);
+    return ret == null ? null : PDTFactory.createXMLOffsetDateTime (ret);
   }
 
   /**
