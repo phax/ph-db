@@ -35,6 +35,7 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 * v6.7.1 - work in progress
     * Updated to ph-commons 10.1
     * Updated to MySQLConnector/J 8.0.25
+    * Updated to Apache Commons Pool 2.10.0
     * Extended `DBResultRow` with additional methods
 * v6.7.0 - 2021-04-06
     * Added option to enabled/disable the connection state handling (and disabled it by default)
