@@ -32,6 +32,8 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 
 # News and noteworthy
 
+* v6.7.2 - work in progress
+    * Updated to Apache Commons Pool 2.11.1
 * v6.7.1 - 2021-08-20
     * Updated to ph-commons 10.1
     * Updated to MySQLConnector/J 8.0.25
