@@ -89,7 +89,7 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
 
   /**
    * Set all columns to <code>null</code> and restart the index at 0. This is
-   * mainly intended to resuse the same object in a loop.
+   * mainly intended to reuse the same object in a loop.
    */
   protected void internalClear ()
   {
