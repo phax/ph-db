@@ -374,29 +374,35 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
   }
 
   @Nullable
-  public Date getAsDate (@Nonnegative final int nIndex)
+  private Date _getAsDate (@Nonnegative final int nIndex)
   {
     return get (nIndex).getAsSqlDate ();
   }
 
   @Nullable
+  public Date getAsDate (@Nonnegative final int nIndex)
+  {
+    return _getAsDate (nIndex);
+  }
+
+  @Nullable
   public LocalDate getAsLocalDate (@Nonnegative final int nIndex)
   {
-    final Date ret = getAsDate (nIndex);
+    final Date ret = _getAsDate (nIndex);
     return ret == null ? null : ret.toLocalDate ();
   }
 
   @Nullable
   public OffsetDate getAsOffsetDate (@Nonnegative final int nIndex)
   {
-    final Date ret = getAsDate (nIndex);
+    final Date ret = _getAsDate (nIndex);
     return ret == null ? null : PDTFactory.createOffsetDate (ret);
   }
 
   @Nullable
   public XMLOffsetDate getAsXMLOffsetDate (@Nonnegative final int nIndex)
   {
-    final Date ret = getAsDate (nIndex);
+    final Date ret = _getAsDate (nIndex);
     return ret == null ? null : PDTFactory.createXMLOffsetDate (ret);
   }
 
@@ -413,42 +419,62 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
   }
 
   @Nullable
-  public Time getAsTime (@Nonnegative final int nIndex)
+  private Time _getAsTime (@Nonnegative final int nIndex)
   {
     return get (nIndex).getAsSqlTime ();
   }
 
   @Nullable
+  public Time getAsTime (@Nonnegative final int nIndex)
+  {
+    return _getAsTime (nIndex);
+  }
+
+  @Nullable
   public LocalTime getAsLocalTime (@Nonnegative final int nIndex)
   {
-    final Time ret = getAsTime (nIndex);
+    final Time ret = _getAsTime (nIndex);
     return ret == null ? null : ret.toLocalTime ();
   }
 
   @Nullable
   public OffsetTime getAsOffsetTime (@Nonnegative final int nIndex)
   {
-    final Time ret = getAsTime (nIndex);
+    final Time ret = _getAsTime (nIndex);
     return ret == null ? null : PDTFactory.createOffsetTime (ret);
   }
 
   @Nullable
   public XMLOffsetTime getAsXMLOffsetTime (@Nonnegative final int nIndex)
   {
-    final Time ret = getAsTime (nIndex);
+    final Time ret = _getAsTime (nIndex);
     return ret == null ? null : PDTFactory.createXMLOffsetTime (ret);
   }
 
   @Nullable
   public Timestamp getAsTimestamp (@Nonnegative final int nIndex)
   {
-    return get (nIndex).getAsSqlTimestamp ();
+    final DBResultField aField = get (nIndex);
+    final Object aValue = aField.getValue ();
+    if (aValue instanceof Timestamp)
+      return (Timestamp) aValue;
+    if (aValue instanceof LocalDateTime)
+      return Timestamp.valueOf ((LocalDateTime) aValue);
+
+    return aField.getAsSqlTimestamp ();
   }
 
   @Nullable
   public LocalDateTime getAsLocalDateTime (@Nonnegative final int nIndex)
   {
-    final Timestamp ret = getAsTimestamp (nIndex);
+    final DBResultField aField = get (nIndex);
+    final Object aValue = aField.getValue ();
+    if (aValue instanceof LocalDateTime)
+      return (LocalDateTime) aValue;
+    if (aValue instanceof Timestamp)
+      return ((Timestamp) aValue).toLocalDateTime ();
+
+    final Timestamp ret = aField.getAsSqlTimestamp ();
     return ret == null ? null : ret.toLocalDateTime ();
   }
 
