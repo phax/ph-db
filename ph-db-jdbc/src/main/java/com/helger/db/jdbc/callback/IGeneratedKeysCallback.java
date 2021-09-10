@@ -33,7 +33,7 @@ public interface IGeneratedKeysCallback extends ICallback
    * Set all generated keys.
    *
    * @param aGeneratedKeys
-   *        The first list represents all rows, whereas the nested lists
+   *        The outer list represents all rows, whereas the nested inner lists
    *        represents all columns containing the different values.
    */
   void onGeneratedKeys (@Nonnull ICommonsList <ICommonsList <Object>> aGeneratedKeys);

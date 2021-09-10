@@ -161,6 +161,17 @@ public class DBExecutor implements Serializable
   }
 
   /**
+   * @return The internal connection provider. Never <code>null</code>. Don't
+   *         use that except you know what you are doing.
+   * @since 6.7.2
+   */
+  @Nonnull
+  public final IHasConnection getConnectionProvider ()
+  {
+    return m_aConnectionProvider;
+  }
+
+  /**
    * Debug logging method. Only invoked if the respective "debug log" member is
    * set to true
    *
@@ -274,7 +285,7 @@ public class DBExecutor implements Serializable
    */
   public static final void setConnectionStatusChangeCallback (@Nullable final IConnectionStatusChangeCallback aCB)
   {
-    RW_LOCK.writeLockedGet ( () -> s_aConnectionStatusChangeCallback = aCB);
+    RW_LOCK.writeLocked ( () -> s_aConnectionStatusChangeCallback = aCB);
   }
 
   /**
@@ -288,17 +299,38 @@ public class DBExecutor implements Serializable
     return m_aExceptionCallbacks;
   }
 
+  /**
+   * @return The number of milliseconds after which a warning is emitted or a
+   *         value &le; 0 to indicate that the value is not relevant.
+   */
   @CheckForSigned
   public final long getExecutionDurationWarnMS ()
   {
     return m_nExecutionDurationWarnMS;
   }
 
+  /**
+   * Check if the execution duration warning is enabled or not. This uses the
+   * defined execution duration milliseconds.
+   *
+   * @return <code>true</code> if the execution duration warning is enabled,
+   *         <code>false</code> if not.
+   * @see #getExecutionDurationWarnMS()
+   * @see #setExecutionDurationWarnMS(long)
+   */
   public final boolean isExecutionDurationWarnEnabled ()
   {
     return m_nExecutionDurationWarnMS > 0;
   }
 
+  /**
+   * Set the execution duration warning milliseconds.
+   *
+   * @param nExecutionDurationWarnMS
+   *        All values &gt; 0 enable the warning, all other values disable the
+   *        warning.
+   * @return this for chaining
+   */
   @Nonnull
   public final DBExecutor setExecutionDurationWarnMS (final long nExecutionDurationWarnMS)
   {
@@ -323,11 +355,25 @@ public class DBExecutor implements Serializable
     EXECUTION_TIME_EXCEEDED_HANDLERS.forEach (x -> x.onExecutionTimeExceeded (sMsg, nExecutionMillis, m_nExecutionDurationWarnMS));
   }
 
+  /**
+   * @return <code>true</code> if DB connection creation and destruction should
+   *         be debug logged, <code>false</code> otherwise.
+   * @see #setDebugConnections(boolean)
+   */
   public final boolean isDebugConnections ()
   {
     return m_bDebugConnections;
   }
 
+  /**
+   * Enable or disable the debug logging of DB connection actions.
+   *
+   * @param bDebugConnections
+   *        <code>true</code> to enable debug logging, <code>false</code> to not
+   *        do it
+   * @return this for chaining
+   * @see #isDebugConnections()
+   */
   @Nonnull
   public final DBExecutor setDebugConnections (final boolean bDebugConnections)
   {
@@ -335,11 +381,25 @@ public class DBExecutor implements Serializable
     return this;
   }
 
+  /**
+   * @return <code>true</code> if DB transaction handling should be debug
+   *         logged, <code>false</code> otherwise.
+   * @see #setDebugTransactions(boolean)
+   */
   public final boolean isDebugTransactions ()
   {
     return m_bDebugTransactions;
   }
 
+  /**
+   * Enable or disable the debug logging of DB transaction actions.
+   *
+   * @param bDebugTransactions
+   *        <code>true</code> to enable debug logging, <code>false</code> to not
+   *        do it
+   * @return this for chaining
+   * @see #isDebugTransactions()
+   */
   @Nonnull
   public final DBExecutor setDebugTransactions (final boolean bDebugTransactions)
   {
@@ -347,11 +407,25 @@ public class DBExecutor implements Serializable
     return this;
   }
 
+  /**
+   * @return <code>true</code> if SQL statements should be debug logged,
+   *         <code>false</code> otherwise.
+   * @see #setDebugSQLStatements(boolean)
+   */
   public final boolean isDebugSQLStatements ()
   {
     return m_bDebugSQLStatements;
   }
 
+  /**
+   * Enable or disable the debug logging of SQL statements.
+   *
+   * @param bDebugSQLStatements
+   *        <code>true</code> to enable debug logging, <code>false</code> to not
+   *        do it
+   * @return this for chaining
+   * @see #isDebugSQLStatements()
+   */
   @Nonnull
   public final DBExecutor setDebugSQLStatements (final boolean bDebugSQLStatements)
   {
@@ -489,13 +563,13 @@ public class DBExecutor implements Serializable
   protected static void handleGeneratedKeys (@Nonnull final ResultSet aGeneratedKeysRS,
                                              @Nonnull final IGeneratedKeysCallback aGeneratedKeysCB) throws SQLException
   {
-    final int nCols = aGeneratedKeysRS.getMetaData ().getColumnCount ();
+    final int nColCount = aGeneratedKeysRS.getMetaData ().getColumnCount ();
     final ICommonsList <ICommonsList <Object>> aValues = new CommonsArrayList <> ();
     while (aGeneratedKeysRS.next ())
     {
-      final ICommonsList <Object> aRow = new CommonsArrayList <> (nCols);
-      for (int i = 1; i <= nCols; ++i)
-        aRow.add (aGeneratedKeysRS.getObject (i));
+      final ICommonsList <Object> aRow = new CommonsArrayList <> (nColCount);
+      for (int nCol = 1; nCol <= nColCount; ++nCol)
+        aRow.add (aGeneratedKeysRS.getObject (nCol));
       aValues.add (aRow);
     }
     aGeneratedKeysCB.onGeneratedKeys (aValues);
@@ -853,21 +927,19 @@ public class DBExecutor implements Serializable
     return new CountAndKey (nUpdateCount, nUpdateCount != IUpdatedRowCountCallback.NOT_INITIALIZED ? aCB.getGeneratedKey () : null);
   }
 
-  @Nullable
-  private static String _clobToString (@Nullable final java.sql.Clob data) throws SQLException
+  @Nonnull
+  private static String _clobToString (@Nullable final java.sql.Clob aClob) throws SQLException
   {
-    if (data == null)
+    if (aClob == null)
       return "";
 
     final StringBuilder aSB = new StringBuilder ();
-
-    try (final Reader reader = data.getCharacterStream (); final NonBlockingBufferedReader br = new NonBlockingBufferedReader (reader))
+    try (final Reader aReader = aClob.getCharacterStream ();
+         final NonBlockingBufferedReader aBufferedReader = new NonBlockingBufferedReader (aReader))
     {
       int ch;
-      while ((ch = br.read ()) > -1)
-      {
+      while ((ch = aBufferedReader.read ()) > -1)
         aSB.append ((char) ch);
-      }
     }
     catch (final IOException ex)
     {
@@ -923,11 +995,11 @@ public class DBExecutor implements Serializable
           if (aColumnTypes[i - 1] == Types.CLOB)
           {
             // Special CLOB handling
-            final java.sql.Clob aCLOB = (java.sql.Clob) aColumnValue;
-            if (aCLOB.length () <= Integer.MAX_VALUE)
-              aColumnValue = _clobToString (aCLOB);
+            final java.sql.Clob aClob = (java.sql.Clob) aColumnValue;
+            if (aClob.length () <= Integer.MAX_VALUE)
+              aColumnValue = _clobToString (aClob);
             else
-              LOGGER.warn ("The contained CLOB is larger than 2GB (" + aCLOB.length () + " chars) and therefore not converted to a String");
+              LOGGER.warn ("The contained CLOB is larger than 2GB (" + aClob.length () + " chars) and therefore not converted to a String");
           }
 
           aRow.internalAdd (new DBResultField (aColumnNames[i - 1], aColumnTypes[i - 1], aColumnValue));
