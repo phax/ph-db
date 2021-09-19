@@ -45,7 +45,7 @@ public final class CJDBC_PostgreSQL
   public static final String DEFAULT_JDBC_DRIVER_CLASS_NAME = "org.postgresql.Driver";
 
   @PresentForCodeCoverage
-  private static final CJDBC_PostgreSQL s_aInstance = new CJDBC_PostgreSQL ();
+  private static final CJDBC_PostgreSQL INSTANCE = new CJDBC_PostgreSQL ();
 
   private CJDBC_PostgreSQL ()
   {}

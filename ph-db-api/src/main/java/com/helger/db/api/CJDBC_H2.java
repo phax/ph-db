@@ -44,7 +44,7 @@ public final class CJDBC_H2
   public static final String DEFAULT_JDBC_DRIVER_CLASS_NAME = "org.h2.Driver";
 
   @PresentForCodeCoverage
-  private static final CJDBC_H2 s_aInstance = new CJDBC_H2 ();
+  private static final CJDBC_H2 INSTANCE = new CJDBC_H2 ();
 
   private CJDBC_H2 ()
   {}

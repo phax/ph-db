@@ -33,7 +33,7 @@ import javax.persistence.SynchronizationType;
  */
 public class EntityManagerFactoryWithListener extends EntityManagerFactoryProxy implements IEntityManagerListener
 {
-  private static final ThreadLocal <EntityManagerWithListener> s_aTL = new ThreadLocal <> ();
+  private static final ThreadLocal <EntityManagerWithListener> TL = new ThreadLocal <> ();
 
   public EntityManagerFactoryWithListener (@Nonnull final EntityManagerFactory aEntityMgrFactory)
   {
@@ -50,11 +50,11 @@ public class EntityManagerFactoryWithListener extends EntityManagerFactoryProxy 
   @Override
   public EntityManagerWithListener createEntityManager (@Nullable final Map aProperties)
   {
-    EntityManagerWithListener aEntityMgr = s_aTL.get ();
+    EntityManagerWithListener aEntityMgr = TL.get ();
     if (aEntityMgr == null)
     {
       aEntityMgr = new EntityManagerWithListener (super.createEntityManager (aProperties));
-      s_aTL.set (aEntityMgr);
+      TL.set (aEntityMgr);
       // Set special listener, so that the ThreadLocal is cleared after close
       aEntityMgr.setCloseListener (this);
     }
@@ -71,11 +71,11 @@ public class EntityManagerFactoryWithListener extends EntityManagerFactoryProxy 
   @Override
   public EntityManager createEntityManager (final SynchronizationType eSynchronizationType, final Map aProperties)
   {
-    EntityManagerWithListener aEntityMgr = s_aTL.get ();
+    EntityManagerWithListener aEntityMgr = TL.get ();
     if (aEntityMgr == null)
     {
       aEntityMgr = new EntityManagerWithListener (super.createEntityManager (eSynchronizationType, aProperties));
-      s_aTL.set (aEntityMgr);
+      TL.set (aEntityMgr);
       // Set special listener, so that the ThreadLocal is cleared after close
       aEntityMgr.setCloseListener (this);
     }
@@ -85,6 +85,6 @@ public class EntityManagerFactoryWithListener extends EntityManagerFactoryProxy 
   @OverridingMethodsMustInvokeSuper
   public void onAfterEntityManagerClosed ()
   {
-    s_aTL.remove ();
+    TL.remove ();
   }
 }

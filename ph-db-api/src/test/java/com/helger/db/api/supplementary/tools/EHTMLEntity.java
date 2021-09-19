@@ -300,12 +300,12 @@ public enum EHTMLEntity
   lang ("lang", '\u2329', "left-pointing angle bracket = bra"),
   rang ("rang", '\u232a', "right-pointing angle bracket = ket");
 
-  private static final ICommonsOrderedMap <String, EHTMLEntity> s_aEntityRefToEntityMap = new CommonsLinkedHashMap <> ();
-  private static final ICommonsOrderedMap <Character, EHTMLEntity> s_aCharToEntityMap = new CommonsLinkedHashMap <> ();
-  private static final ICommonsOrderedMap <String, Character> s_aEntityRefToCharMap = new CommonsLinkedHashMap <> ();
-  private static final ICommonsOrderedMap <String, String> s_aEntityRefToCharStringMap = new CommonsLinkedHashMap <> ();
-  private static final ICommonsOrderedMap <Character, String> s_aCharToEntityRefMap = new CommonsLinkedHashMap <> ();
-  private static final ICommonsOrderedMap <String, String> s_aCharStringToEntityRefMap = new CommonsLinkedHashMap <> ();
+  private static final ICommonsOrderedMap <String, EHTMLEntity> ENTITY_REF_TO_ENTITY_MAP = new CommonsLinkedHashMap <> ();
+  private static final ICommonsOrderedMap <Character, EHTMLEntity> CHAR_TO_ENTITY_MAP = new CommonsLinkedHashMap <> ();
+  private static final ICommonsOrderedMap <String, Character> ENTITY_REF_TO_CHAR_MAP = new CommonsLinkedHashMap <> ();
+  private static final ICommonsOrderedMap <String, String> ENTITY_REF_TO_CHAR_STRING_MAP = new CommonsLinkedHashMap <> ();
+  private static final ICommonsOrderedMap <Character, String> CHAR_TO_ENTITY_REF_MAP = new CommonsLinkedHashMap <> ();
+  private static final ICommonsOrderedMap <String, String> CHAR_STRING_TO_ENTITY_REF_MAP = new CommonsLinkedHashMap <> ();
 
   static
   {
@@ -314,28 +314,28 @@ public enum EHTMLEntity
       final String sEntityRef = e.m_sEntityReference;
       final Character aChar = e.getCharObj ();
 
-      if (s_aEntityRefToEntityMap.put (sEntityRef, e) != null)
+      if (ENTITY_REF_TO_ENTITY_MAP.put (sEntityRef, e) != null)
         throw new IllegalStateException ("Another entity reference '" + sEntityRef + "' is already contained!");
 
-      if (s_aCharToEntityMap.put (aChar, e) != null)
+      if (CHAR_TO_ENTITY_MAP.put (aChar, e) != null)
         throw new IllegalStateException ("Another entity reference for '" +
                                          "0x" +
                                          StringHelper.getHexStringLeadingZero (e.m_cChar, 4) +
                                          "' is already contained!");
 
-      if (s_aEntityRefToCharMap.put (sEntityRef, aChar) != null)
+      if (ENTITY_REF_TO_CHAR_MAP.put (sEntityRef, aChar) != null)
         throw new IllegalStateException ("Another char for '" + sEntityRef + "' is already contained!");
 
-      if (s_aEntityRefToCharStringMap.put (sEntityRef, aChar.toString ()) != null)
+      if (ENTITY_REF_TO_CHAR_STRING_MAP.put (sEntityRef, aChar.toString ()) != null)
         throw new IllegalStateException ("Another char for '" + sEntityRef + "' is already contained!");
 
-      if (s_aCharToEntityRefMap.put (aChar, sEntityRef) != null)
+      if (CHAR_TO_ENTITY_REF_MAP.put (aChar, sEntityRef) != null)
         throw new IllegalStateException ("Another entity reference for '" +
                                          "0x" +
                                          StringHelper.getHexStringLeadingZero (e.m_cChar, 4) +
                                          "' is already contained!");
 
-      if (s_aCharStringToEntityRefMap.put (aChar.toString (), sEntityRef) != null)
+      if (CHAR_STRING_TO_ENTITY_REF_MAP.put (aChar.toString (), sEntityRef) != null)
         throw new IllegalStateException ("Another entity reference for '" +
                                          "0x" +
                                          StringHelper.getHexStringLeadingZero (e.m_cChar, 4) +
@@ -422,7 +422,7 @@ public enum EHTMLEntity
    */
   public static boolean isValidEntityReference (@Nullable final String sEntityReference)
   {
-    return s_aEntityRefToEntityMap.containsKey (sEntityReference);
+    return ENTITY_REF_TO_ENTITY_MAP.containsKey (sEntityReference);
   }
 
   /**
@@ -436,7 +436,7 @@ public enum EHTMLEntity
   @Nullable
   public static EHTMLEntity getFromEntityReferenceOrNull (@Nullable final String sEntityReference)
   {
-    return s_aEntityRefToEntityMap.get (sEntityReference);
+    return ENTITY_REF_TO_ENTITY_MAP.get (sEntityReference);
   }
 
   /**
@@ -450,7 +450,7 @@ public enum EHTMLEntity
    */
   public static boolean isValidEntityChar (final char c)
   {
-    return s_aCharToEntityMap.containsKey (Character.valueOf (c));
+    return CHAR_TO_ENTITY_MAP.containsKey (Character.valueOf (c));
   }
 
   /**
@@ -464,7 +464,7 @@ public enum EHTMLEntity
   @Nullable
   public static EHTMLEntity getFromCharOrNull (final char c)
   {
-    return s_aCharToEntityMap.get (Character.valueOf (c));
+    return CHAR_TO_ENTITY_MAP.get (Character.valueOf (c));
   }
 
   /**
@@ -477,7 +477,7 @@ public enum EHTMLEntity
   @ReturnsMutableCopy
   public static final ICommonsOrderedMap <String, EHTMLEntity> getEntityRefToEntityMap ()
   {
-    return s_aEntityRefToEntityMap.getClone ();
+    return ENTITY_REF_TO_ENTITY_MAP.getClone ();
   }
 
   /**
@@ -490,7 +490,7 @@ public enum EHTMLEntity
   @ReturnsMutableCopy
   public static final ICommonsOrderedMap <Character, EHTMLEntity> getCharToEntityMap ()
   {
-    return s_aCharToEntityMap.getClone ();
+    return CHAR_TO_ENTITY_MAP.getClone ();
   }
 
   /**
@@ -503,7 +503,7 @@ public enum EHTMLEntity
   @ReturnsMutableCopy
   public static final ICommonsOrderedMap <String, Character> getEntityRefToCharMap ()
   {
-    return s_aEntityRefToCharMap.getClone ();
+    return ENTITY_REF_TO_CHAR_MAP.getClone ();
   }
 
   /**
@@ -516,7 +516,7 @@ public enum EHTMLEntity
   @ReturnsMutableCopy
   public static final ICommonsOrderedMap <String, String> getEntityRefToCharStringMap ()
   {
-    return s_aEntityRefToCharStringMap.getClone ();
+    return ENTITY_REF_TO_CHAR_STRING_MAP.getClone ();
   }
 
   /**
@@ -529,7 +529,7 @@ public enum EHTMLEntity
   @ReturnsMutableCopy
   public static final ICommonsOrderedMap <Character, String> getCharToEntityRefMap ()
   {
-    return s_aCharToEntityRefMap.getClone ();
+    return CHAR_TO_ENTITY_REF_MAP.getClone ();
   }
 
   /**
@@ -542,7 +542,7 @@ public enum EHTMLEntity
   @ReturnsMutableCopy
   public static final ICommonsOrderedMap <String, String> getCharStringToEntityRefMap ()
   {
-    return s_aCharStringToEntityRefMap.getClone ();
+    return CHAR_STRING_TO_ENTITY_REF_MAP.getClone ();
   }
 
   /**
@@ -559,6 +559,6 @@ public enum EHTMLEntity
     if (StringHelper.hasNoText (sSource))
       return sSource;
 
-    return StringHelper.replaceMultiple (sSource, s_aCharStringToEntityRefMap);
+    return StringHelper.replaceMultiple (sSource, CHAR_STRING_TO_ENTITY_REF_MAP);
   }
 }

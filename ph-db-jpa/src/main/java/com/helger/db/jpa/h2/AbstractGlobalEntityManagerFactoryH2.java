@@ -37,7 +37,7 @@ import com.helger.db.jpa.AbstractGlobalEntityManagerFactory;
  */
 public abstract class AbstractGlobalEntityManagerFactoryH2 extends AbstractGlobalEntityManagerFactory
 {
-  private static final ICommonsMap <String, String> s_aDefaultConnectionProperties = new CommonsHashMap <> ();
+  private static final ICommonsMap <String, String> DEFAULT_CONNECTION_PROPS = new CommonsHashMap <> ();
 
   @Nonnull
   @Nonempty
@@ -45,7 +45,7 @@ public abstract class AbstractGlobalEntityManagerFactoryH2 extends AbstractGloba
                                           @Nullable final Map <String, String> aConnectionProperties)
   {
     // Build connection properties from default values and the optional ones
-    final Map <String, String> aProps = s_aDefaultConnectionProperties.getClone ();
+    final Map <String, String> aProps = DEFAULT_CONNECTION_PROPS.getClone ();
     if (aConnectionProperties != null)
       aProps.putAll (aConnectionProperties);
 
@@ -113,8 +113,8 @@ public abstract class AbstractGlobalEntityManagerFactoryH2 extends AbstractGloba
   public static final void setJMXEnabledByDefault (final boolean bEnabled)
   {
     if (bEnabled)
-      s_aDefaultConnectionProperties.put ("JMX", "TRUE");
+      DEFAULT_CONNECTION_PROPS.put ("JMX", "TRUE");
     else
-      s_aDefaultConnectionProperties.remove ("JMX");
+      DEFAULT_CONNECTION_PROPS.remove ("JMX");
   }
 }

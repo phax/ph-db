@@ -34,7 +34,7 @@ import com.helger.commons.CGlobal;
  */
 public class EclipseLinkSessionCustomizer implements SessionCustomizer
 {
-  private static final AtomicInteger s_aLogLevel = new AtomicInteger (CGlobal.ILLEGAL_UINT);
+  private static final AtomicInteger LOG_LEVEL = new AtomicInteger (CGlobal.ILLEGAL_UINT);
 
   public EclipseLinkSessionCustomizer ()
   {}
@@ -48,12 +48,12 @@ public class EclipseLinkSessionCustomizer implements SessionCustomizer
   public static void setGlobalLogLevel (final int nLogLevel)
   {
     if (nLogLevel >= SessionLog.ALL && nLogLevel <= SessionLog.OFF)
-      s_aLogLevel.set (nLogLevel);
+      LOG_LEVEL.set (nLogLevel);
   }
 
   public static int getGlobalLogLevel ()
   {
-    return s_aLogLevel.get ();
+    return LOG_LEVEL.get ();
   }
 
   public void customize (final Session aSession) throws Exception

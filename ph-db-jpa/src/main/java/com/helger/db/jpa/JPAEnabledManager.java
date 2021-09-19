@@ -68,30 +68,30 @@ public class JPAEnabledManager
   public static final int DEFAULT_EXECUTION_WARN_TIME_MS = 1000;
 
   private static final Logger LOGGER = LoggerFactory.getLogger (JPAEnabledManager.class);
-  private static final IMutableStatisticsHandlerCounter s_aStatsCounterTransactions = StatisticsManager.getCounterHandler (JPAEnabledManager.class.getName () +
-                                                                                                                           "$transactions");
-  private static final IMutableStatisticsHandlerCounter s_aStatsCounterRollback = StatisticsManager.getCounterHandler (JPAEnabledManager.class.getName () +
-                                                                                                                       "$rollback");
-  private static final IMutableStatisticsHandlerCounter s_aStatsCounterSuccess = StatisticsManager.getCounterHandler (JPAEnabledManager.class.getName () +
-                                                                                                                      "$success");
-  private static final IMutableStatisticsHandlerCounter s_aStatsCounterError = StatisticsManager.getCounterHandler (JPAEnabledManager.class.getName () +
-                                                                                                                    "$error");
-  private static final IMutableStatisticsHandlerTimer s_aStatsTimerExecutionSuccess = StatisticsManager.getTimerHandler (JPAEnabledManager.class.getName () +
+  private static final IMutableStatisticsHandlerCounter STATS_COUNTER_TRANSACTIONS = StatisticsManager.getCounterHandler (JPAEnabledManager.class.getName () +
+                                                                                                                          "$transactions");
+  private static final IMutableStatisticsHandlerCounter STATS_COUNTER_ROLLBACK = StatisticsManager.getCounterHandler (JPAEnabledManager.class.getName () +
+                                                                                                                      "$rollback");
+  private static final IMutableStatisticsHandlerCounter STATS_COUNTER_SUCCESS = StatisticsManager.getCounterHandler (JPAEnabledManager.class.getName () +
+                                                                                                                     "$success");
+  private static final IMutableStatisticsHandlerCounter STATS_COUNTER_ERROR = StatisticsManager.getCounterHandler (JPAEnabledManager.class.getName () +
+                                                                                                                   "$error");
+  private static final IMutableStatisticsHandlerTimer STATS_TIMER_EXECUTION_SUCCESS = StatisticsManager.getTimerHandler (JPAEnabledManager.class.getName () +
                                                                                                                          "$execSuccess");
-  private static final IMutableStatisticsHandlerTimer s_aStatsTimerExecutionError = StatisticsManager.getTimerHandler (JPAEnabledManager.class.getName () +
+  private static final IMutableStatisticsHandlerTimer STATS_TIMER_EXECUTION_ERROR = StatisticsManager.getTimerHandler (JPAEnabledManager.class.getName () +
                                                                                                                        "$execError");
 
-  protected static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
-  private static final CallbackList <IExceptionCallback <Throwable>> s_aExceptionCallbacks = new CallbackList <> ();
-  private static final AtomicBoolean s_aExecutionWarnEnabled = new AtomicBoolean (DEFAULT_EXECUTION_WARN_ENABLED);
-  private static final AtomicInteger s_aExecutionWarnTime = new AtomicInteger (DEFAULT_EXECUTION_WARN_TIME_MS);
-  private static final CallbackList <IExecutionTimeExceededCallback> s_aExecutionTimeExceededHandlers = new CallbackList <> ();
+  protected static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
+  private static final CallbackList <IExceptionCallback <Throwable>> EXCEPTION_CALLBACKS = new CallbackList <> ();
+  private static final AtomicBoolean EXECUTION_WARN_ENABLED = new AtomicBoolean (DEFAULT_EXECUTION_WARN_ENABLED);
+  private static final AtomicInteger EXECUTION_WARN_DURATION_MS = new AtomicInteger (DEFAULT_EXECUTION_WARN_TIME_MS);
+  private static final CallbackList <IExecutionTimeExceededCallback> EXECUTION_TIME_EXCEEDED_HANDLERS = new CallbackList <> ();
 
   static
   {
     // Add default handler
-    s_aExceptionCallbacks.add (x -> LOGGER.error ("Failed to perform something in a JPAEnabledManager!", x));
-    s_aExecutionTimeExceededHandlers.add (new LoggingExecutionTimeExceededCallback (true));
+    EXCEPTION_CALLBACKS.add (x -> LOGGER.error ("Failed to perform something in a JPAEnabledManager!", x));
+    EXECUTION_TIME_EXCEEDED_HANDLERS.add (new LoggingExecutionTimeExceededCallback (true));
   }
 
   private final IHasEntityManager m_aEntityManagerProvider;
@@ -185,7 +185,7 @@ public class JPAEnabledManager
   @ReturnsMutableObject
   public static final CallbackList <IExceptionCallback <Throwable>> exceptionCallbacks ()
   {
-    return s_aExceptionCallbacks;
+    return EXCEPTION_CALLBACKS;
   }
 
   /**
@@ -196,7 +196,7 @@ public class JPAEnabledManager
    */
   private static void _invokeCustomExceptionCallback (@Nonnull final Throwable ex)
   {
-    s_aExceptionCallbacks.forEach (x -> x.onException (ex));
+    EXCEPTION_CALLBACKS.forEach (x -> x.onException (ex));
   }
 
   /**
@@ -209,7 +209,7 @@ public class JPAEnabledManager
    */
   public static final boolean isDefaultExecutionWarnTimeEnabled ()
   {
-    return s_aExecutionWarnEnabled.get ();
+    return EXECUTION_WARN_ENABLED.get ();
   }
 
   /**
@@ -224,7 +224,7 @@ public class JPAEnabledManager
    */
   public static final void setDefaultExecutionWarnTimeEnabled (final boolean bEnabled)
   {
-    s_aExecutionWarnEnabled.set (bEnabled);
+    EXECUTION_WARN_ENABLED.set (bEnabled);
   }
 
   /**
@@ -235,7 +235,7 @@ public class JPAEnabledManager
   @Nonnegative
   public static final int getDefaultExecutionWarnTime ()
   {
-    return s_aExecutionWarnTime.get ();
+    return EXECUTION_WARN_DURATION_MS.get ();
   }
 
   /**
@@ -249,7 +249,7 @@ public class JPAEnabledManager
   public static final void setDefaultExecutionWarnTime (final int nMillis)
   {
     ValueEnforcer.isGE0 (nMillis, "Milliseconds");
-    s_aExecutionWarnTime.set (nMillis);
+    EXECUTION_WARN_DURATION_MS.set (nMillis);
   }
 
   /**
@@ -260,13 +260,13 @@ public class JPAEnabledManager
   @Nonnull
   public static final CallbackList <IExecutionTimeExceededCallback> executionTimeExceededHandlers ()
   {
-    return s_aExecutionTimeExceededHandlers;
+    return EXECUTION_TIME_EXCEEDED_HANDLERS;
   }
 
   public static final void onExecutionTimeExceeded (@Nonnull final String sMsg, @Nonnegative final long nExecutionMillis)
   {
     final long nLimitMS = getDefaultExecutionWarnTime ();
-    s_aExecutionTimeExceededHandlers.forEach (x -> x.onExecutionTimeExceeded (sMsg, nExecutionMillis, nLimitMS));
+    EXECUTION_TIME_EXCEEDED_HANDLERS.forEach (x -> x.onExecutionTimeExceeded (sMsg, nExecutionMillis, nLimitMS));
   }
 
   @Nonnull
@@ -320,7 +320,7 @@ public class JPAEnabledManager
     final boolean bTransactionRequired = !bAllowNestedTransactions || !aTransaction.isActive ();
     if (bTransactionRequired)
     {
-      s_aStatsCounterTransactions.increment ();
+      STATS_COUNTER_TRANSACTIONS.increment ();
       aTransaction.begin ();
     }
     try
@@ -330,14 +330,14 @@ public class JPAEnabledManager
       // And if no exception was thrown, commit it
       if (bTransactionRequired)
         aTransaction.commit ();
-      s_aStatsCounterSuccess.increment ();
-      s_aStatsTimerExecutionSuccess.addTime (aSW.stopAndGetMillis ());
+      STATS_COUNTER_SUCCESS.increment ();
+      STATS_TIMER_EXECUTION_SUCCESS.addTime (aSW.stopAndGetMillis ());
       return JPAExecutionResult.createSuccess (ret);
     }
     catch (final Exception ex)
     {
-      s_aStatsCounterError.increment ();
-      s_aStatsTimerExecutionError.addTime (aSW.stopAndGetMillis ());
+      STATS_COUNTER_ERROR.increment ();
+      STATS_TIMER_EXECUTION_ERROR.addTime (aSW.stopAndGetMillis ());
       _invokeCustomExceptionCallback (ex);
       return JPAExecutionResult.createFailure (ex);
     }
@@ -349,7 +349,7 @@ public class JPAEnabledManager
           // We got an exception -> rollback
           aTransaction.rollback ();
           LOGGER.warn ("Rolled back transaction for callable " + aCallable);
-          s_aStatsCounterRollback.increment ();
+          STATS_COUNTER_ROLLBACK.increment ();
         }
 
       if (isDefaultExecutionWarnTimeEnabled ())
@@ -402,14 +402,14 @@ public class JPAEnabledManager
     {
       // Call callback
       final T ret = aCallable.call ();
-      s_aStatsCounterSuccess.increment ();
-      s_aStatsTimerExecutionSuccess.addTime (aSW.stopAndGetMillis ());
+      STATS_COUNTER_SUCCESS.increment ();
+      STATS_TIMER_EXECUTION_SUCCESS.addTime (aSW.stopAndGetMillis ());
       return JPAExecutionResult.createSuccess (ret);
     }
     catch (final Exception ex)
     {
-      s_aStatsCounterError.increment ();
-      s_aStatsTimerExecutionError.addTime (aSW.stopAndGetMillis ());
+      STATS_COUNTER_ERROR.increment ();
+      STATS_TIMER_EXECUTION_ERROR.addTime (aSW.stopAndGetMillis ());
       _invokeCustomExceptionCallback (ex);
       return JPAExecutionResult.<T> createFailure (ex);
     }

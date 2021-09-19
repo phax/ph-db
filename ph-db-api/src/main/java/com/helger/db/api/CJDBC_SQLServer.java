@@ -33,7 +33,7 @@ public final class CJDBC_SQLServer
   public static final String DEFAULT_JDBC_DRIVER_CLASS_NAME = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 
   @PresentForCodeCoverage
-  private static final CJDBC_SQLServer s_aInstance = new CJDBC_SQLServer ();
+  private static final CJDBC_SQLServer INSTANCE = new CJDBC_SQLServer ();
 
   private CJDBC_SQLServer ()
   {}

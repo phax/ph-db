@@ -37,7 +37,7 @@ public final class CJDBC_Oracle
   public static final String DEFAULT_JDBC_DRIVER_CLASS_NAME = "oracle.jdbc.driver.OracleDriver";
 
   @PresentForCodeCoverage
-  private static final CJDBC_Oracle s_aInstance = new CJDBC_Oracle ();
+  private static final CJDBC_Oracle INSTANCE = new CJDBC_Oracle ();
 
   private CJDBC_Oracle ()
   {}

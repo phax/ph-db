@@ -37,7 +37,7 @@ import com.helger.db.jpa.AbstractGlobalEntityManagerFactory;
  */
 public abstract class AbstractGlobalEntityManagerFactoryMySQL extends AbstractGlobalEntityManagerFactory
 {
-  private static final ICommonsMap <EMySQLConnectionProperty, String> s_aDefaultConnectionProperties = new CommonsEnumMap <> (EMySQLConnectionProperty.class);
+  private static final ICommonsMap <EMySQLConnectionProperty, String> DEFAULT_CONNECTION_PROPS = new CommonsEnumMap <> (EMySQLConnectionProperty.class);
 
   @Nonnull
   @Nonempty
@@ -45,7 +45,7 @@ public abstract class AbstractGlobalEntityManagerFactoryMySQL extends AbstractGl
                                           @Nullable final Map <EMySQLConnectionProperty, String> aConnectionProperties)
   {
     // Build connection properties from default values and the optional ones
-    final ICommonsMap <EMySQLConnectionProperty, String> aProps = s_aDefaultConnectionProperties.getClone ();
+    final ICommonsMap <EMySQLConnectionProperty, String> aProps = DEFAULT_CONNECTION_PROPS.getClone ();
     aProps.addAll (aConnectionProperties);
 
     return MySQLHelper.buildJDBCString (sJdbcURL, aProps);
