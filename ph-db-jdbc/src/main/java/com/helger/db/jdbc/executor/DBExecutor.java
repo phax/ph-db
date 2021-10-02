@@ -1064,7 +1064,7 @@ public class DBExecutor implements Serializable
    * @return {@link ESuccess} and never <code>null</code>.
    */
   @Nonnull
-  public ESuccess queryAll (@Nonnull final String sSQL,
+  public ESuccess queryAll (@Nonnull @Nonempty final String sSQL,
                             @Nonnull final IPreparedStatementDataProvider aPSDP,
                             @Nonnull final IResultSetRowCallback aResultItemCallback)
   {
