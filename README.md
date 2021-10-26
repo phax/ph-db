@@ -32,6 +32,8 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 
 # News and noteworthy
 
+* v6.7.3 - work in progress
+    * Updated to MySQLConnector/J 8.0.25
 * v6.7.2 - 2021-09-19
     * Updated to Apache Commons Pool 2.11.1
     * Extended the `DBExecutor` API slightly
