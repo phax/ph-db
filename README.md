@@ -2,9 +2,11 @@
 
 Java library with some common DB API, a special JDBC version and a JPA version based on EclipseLink.
 
+Licensed under the Apache 2.0 license.
+
 # Maven usage
 
-Add the following to your pom.xml to use this artifact, where `x.y.z` is to be repalced with the last released version:
+Add the following to your pom.xml to use this artifact, where `x.y.z` is to be replaced with the last released version:
 
 ```xml
 <dependency>
@@ -35,6 +37,7 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 * v6.7.3 - work in progress
     * Updated to MySQLConnector/J 8.0.25
     * Added new class `DBValueHelper`
+    * Added new class `AbstractJDBCEnabledManager`
 * v6.7.2 - 2021-09-19
     * Updated to Apache Commons Pool 2.11.1
     * Extended the `DBExecutor` API slightly
