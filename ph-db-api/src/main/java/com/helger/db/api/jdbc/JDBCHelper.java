@@ -189,11 +189,26 @@ public final class JDBCHelper
       if (aClass.equals (java.time.OffsetDateTime.class))
         return Types.TIMESTAMP;
 
+      if (aClass.equals (com.helger.commons.datetime.XMLOffsetDateTime.class))
+        return Types.TIMESTAMP;
+
       if (aClass.equals (java.time.LocalDateTime.class))
         return Types.TIMESTAMP;
 
+      if (aClass.equals (com.helger.commons.datetime.OffsetDate.class))
+        return Types.DATE;
+
+      if (aClass.equals (com.helger.commons.datetime.XMLOffsetDate.class))
+        return Types.DATE;
+
       if (aClass.equals (java.time.LocalDate.class))
         return Types.DATE;
+
+      if (aClass.equals (java.time.OffsetTime.class))
+        return Types.TIME;
+
+      if (aClass.equals (com.helger.commons.datetime.XMLOffsetTime.class))
+        return Types.TIME;
 
       if (aClass.equals (java.time.LocalTime.class))
         return Types.TIME;

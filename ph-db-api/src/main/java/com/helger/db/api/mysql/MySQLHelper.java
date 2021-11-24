@@ -27,6 +27,11 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.url.SimpleURL;
 import com.helger.db.api.CJDBC_MySQL;
 
+/**
+ * Helper class especially for MySQL.
+ *
+ * @author Philip Helger
+ */
 @Immutable
 public final class MySQLHelper
 {
@@ -61,5 +66,4 @@ public final class MySQLHelper
         aURL.add (aEntry.getKey ().getName (), aEntry.getValue ());
     return aURL.getAsStringWithoutEncodedParameters ();
   }
-
 }
