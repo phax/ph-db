@@ -34,6 +34,8 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 
 # News and noteworthy
 
+* v6.7.4 - work in progress
+    * Updated to H2 2.0.202
 * v6.7.3 - 2021-11-24
     * Updated to MySQLConnector/J 8.0.25
     * Added new class `DBValueHelper`

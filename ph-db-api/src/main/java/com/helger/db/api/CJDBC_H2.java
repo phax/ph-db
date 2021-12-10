@@ -36,8 +36,8 @@ public final class CJDBC_H2
   public static final IThirdPartyModule H2 = new ThirdPartyModule ("H2 Database Engine",
                                                                    "Eclipse Foundation",
                                                                    ELicense.EPL10,
-                                                                   new Version (1, 4, 200),
-                                                                   "http://www.h2database.com/");
+                                                                   new Version (2, 0, 202),
+                                                                   "https://www.h2database.com/");
 
   /** Default JDBC URL prefix */
   public static final String CONNECTION_PREFIX = "jdbc:h2:";
