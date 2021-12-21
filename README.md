@@ -1,5 +1,8 @@
 # ph-db
 
+[![javadoc](https://javadoc.io/badge2/com.helger/ph-db-parent-pom/javadoc.svg)](https://javadoc.io/doc/com.helger/ph-db-parent-pom)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.helger/ph-db-parent-pom/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.helger/ph-db-parent-pom) 
+
 Java library with some common DB API, a special JDBC version and a JPA version based on EclipseLink.
 
 Licensed under the Apache 2.0 license.
