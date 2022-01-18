@@ -52,10 +52,6 @@
     <url>http://www.helger.com</url>
   </organization>
 
-  <properties>
-    <eclipselink.version>2.7.8</eclipselink.version>
-  </properties>
-
   <developers>
     <developer>
       <id>philip</id>
@@ -64,6 +60,13 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
+
+  <properties>
+    <eclipselink.version>2.7.8</eclipselink.version>
+    <h2.version>2.1.210</h2.version>
+      <!-- 5.1.47 for MySQL < 5.5 -->
+    <mysql.version>8.0.27</mysql.version>
+  </properties>
   
   <dependencyManagement>
     <dependencies>
@@ -73,53 +76,6 @@
         <version>10.1.5</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>com.h2database</groupId>
-        <artifactId>h2</artifactId>
-        <version>2.0.206</version>
-      </dependency>
-      <!-- 5.1.47 for MySQL < 5.5 -->
-      <dependency>
-        <groupId>mysql</groupId>
-        <artifactId>mysql-connector-java</artifactId>
-        <version>8.0.27</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-pool2</artifactId>
-        <version>2.11.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-dbcp2</artifactId>
-        <version>2.9.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.persistence</groupId>
-        <artifactId>jakarta.persistence</artifactId>
-        <version>2.2.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.persistence</groupId>
-        <artifactId>org.eclipse.persistence.core</artifactId>
-        <version>${eclipselink.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.persistence</groupId>
-        <artifactId>org.eclipse.persistence.jpa</artifactId>
-        <version>${eclipselink.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.persistence</groupId>
-        <artifactId>org.eclipse.persistence.antlr</artifactId>
-        <version>2.7.10</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.persistence</groupId>
-        <artifactId>org.eclipse.persistence.asm</artifactId>
-        <version>${eclipselink.version}</version>
       </dependency>
 
       <dependency>
