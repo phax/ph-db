@@ -1000,7 +1000,9 @@ public class DBExecutor implements Serializable
             if (nClobLength <= Integer.MAX_VALUE)
               aColumnValue = _clobToString (aClob);
             else
-              LOGGER.warn ("The contained CLOB is larger than 2GB (" + nClobLength + " chars) and therefore not converted to a String");
+              LOGGER.error ("The contained CLOB is larger than 2GB (" +
+                            nClobLength +
+                            " chars) and therefore cannot be converted to a String");
           }
 
           aRow.internalAdd (new DBResultField (aColumnNames[i - 1], aColumnTypes[i - 1], aColumnValue));
