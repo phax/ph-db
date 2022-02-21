@@ -996,10 +996,11 @@ public class DBExecutor implements Serializable
           {
             // Special CLOB handling
             final java.sql.Clob aClob = (java.sql.Clob) aColumnValue;
-            if (aClob.length () <= Integer.MAX_VALUE)
+            final long nClobLength = aClob == null ? 0 : aClob.length ();
+            if (nClobLength <= Integer.MAX_VALUE)
               aColumnValue = _clobToString (aClob);
             else
-              LOGGER.warn ("The contained CLOB is larger than 2GB (" + aClob.length () + " chars) and therefore not converted to a String");
+              LOGGER.warn ("The contained CLOB is larger than 2GB (" + nClobLength + " chars) and therefore not converted to a String");
           }
 
           aRow.internalAdd (new DBResultField (aColumnNames[i - 1], aColumnTypes[i - 1], aColumnValue));
