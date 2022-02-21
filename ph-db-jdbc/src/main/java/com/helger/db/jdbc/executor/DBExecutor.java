@@ -933,7 +933,16 @@ public class DBExecutor implements Serializable
     if (aClob == null)
       return "";
 
-    final StringBuilder aSB = new StringBuilder ();
+    // Check conversion possibility
+    final long nClobLength = aClob.length ();
+    if (nClobLength > Integer.MAX_VALUE)
+    {
+      LOGGER.error ("The contained CLOB is larger than 2GB (" + nClobLength + " chars) and therefore cannot be converted to a String");
+      return "";
+    }
+
+    // length was ensured previously
+    final StringBuilder aSB = new StringBuilder ((int) nClobLength);
     try (final Reader aReader = aClob.getCharacterStream ();
          final NonBlockingBufferedReader aBufferedReader = new NonBlockingBufferedReader (aReader))
     {
@@ -995,14 +1004,7 @@ public class DBExecutor implements Serializable
           if (aColumnTypes[i - 1] == Types.CLOB)
           {
             // Special CLOB handling
-            final java.sql.Clob aClob = (java.sql.Clob) aColumnValue;
-            final long nClobLength = aClob == null ? 0 : aClob.length ();
-            if (nClobLength <= Integer.MAX_VALUE)
-              aColumnValue = _clobToString (aClob);
-            else
-              LOGGER.error ("The contained CLOB is larger than 2GB (" +
-                            nClobLength +
-                            " chars) and therefore cannot be converted to a String");
+            aColumnValue = _clobToString ((java.sql.Clob) aColumnValue);
           }
 
           aRow.internalAdd (new DBResultField (aColumnNames[i - 1], aColumnTypes[i - 1], aColumnValue));
