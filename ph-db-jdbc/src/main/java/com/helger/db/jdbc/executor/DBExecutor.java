@@ -1049,7 +1049,7 @@ public class DBExecutor implements Serializable
         final long nResultRows = iterateResultSet (aResultSet, aResultItemCallback);
 
         if (m_bDebugSQLStatements)
-          debugLog ("  Found " + nResultRows + " result rows [" + nSQLStatementID + "]");
+          debugLog ("  Found " + nResultRows + " result " + (nResultRows == 1 ? "row" : "rows") + " [" + nSQLStatementID + "]");
       });
     }, (IGeneratedKeysCallback) null, null);
   }
@@ -1081,7 +1081,7 @@ public class DBExecutor implements Serializable
       final ResultSet aResultSet = aPreparedStatement.executeQuery ();
       final long nResultRows = iterateResultSet (aResultSet, aResultItemCallback);
       if (m_bDebugSQLStatements)
-        debugLog ("  Found " + nResultRows + " result rows");
+        debugLog ("  Found " + nResultRows + " result " + (nResultRows == 1 ? "row" : "rows"));
     }, (IUpdatedRowCountCallback) null, (IGeneratedKeysCallback) null, null);
   }
 
