@@ -37,6 +37,10 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 
 # News and noteworthy
 
+* v7.0.0 - 2023-01-09
+    * Using Java 11 as the baseline
+    * Updated to ph-commons 11
+    * Updated to EclipseLink 4.0.0
 * v6.7.4 - 2022-02-21
     * Updated to H2 2.0.210
     * Fixed a `NullPointerException` in CLOB handling
