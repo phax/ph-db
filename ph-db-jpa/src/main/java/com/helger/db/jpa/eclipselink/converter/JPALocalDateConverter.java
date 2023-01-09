@@ -22,7 +22,7 @@ import java.time.LocalDate;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
@@ -59,7 +59,11 @@ public class JPALocalDateConverter implements Converter
       catch (final IllegalArgumentException ex)
       {
         // failed to convert
-        LOGGER.warn ("Failed to convert '" + aDataValue + "' of type " + ClassHelper.getSafeClassName (aDataValue) + " to LocalDate!");
+        LOGGER.warn ("Failed to convert '" +
+                     aDataValue +
+                     "' of type " +
+                     ClassHelper.getSafeClassName (aDataValue) +
+                     " to LocalDate!");
       }
     return null;
   }
@@ -78,7 +82,7 @@ public class JPALocalDateConverter implements Converter
       // Allow user to specify field type to override computed value. (i.e.
       // blob, nchar)
       if (aDirectMapping.getFieldClassification () == null)
-        aDirectMapping.setFieldClassification (ClassConstants.SQLDATE);
+        aDirectMapping.setFieldClassification (CoreClassConstants.SQLDATE);
     }
   }
 }

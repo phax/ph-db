@@ -21,7 +21,7 @@ import java.util.Locale;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
@@ -57,7 +57,11 @@ public class JPALocaleConverter implements Converter
       catch (final Exception ex)
       {
         // failed to convert
-        LOGGER.warn ("Failed to convert '" + aDataValue + "' of type " + ClassHelper.getSafeClassName (aDataValue) + "to Locale!");
+        LOGGER.warn ("Failed to convert '" +
+                     aDataValue +
+                     "' of type " +
+                     ClassHelper.getSafeClassName (aDataValue) +
+                     "to Locale!");
       }
     return null;
   }
@@ -76,7 +80,7 @@ public class JPALocaleConverter implements Converter
       // Allow user to specify field type to override computed value. (i.e.
       // blob, nchar)
       if (aDirectMapping.getFieldClassification () == null)
-        aDirectMapping.setFieldClassification (ClassConstants.STRING);
+        aDirectMapping.setFieldClassification (CoreClassConstants.STRING);
     }
   }
 }

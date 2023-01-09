@@ -22,7 +22,7 @@ import java.time.OffsetDateTime;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
@@ -59,7 +59,11 @@ public class JPAOffsetDateTimeConverter implements Converter
       catch (final RuntimeException ex)
       {
         // failed to convert
-        LOGGER.warn ("Failed to convert '" + aDataValue + "' of type " + ClassHelper.getSafeClassName (aDataValue) + " to DateTime!");
+        LOGGER.warn ("Failed to convert '" +
+                     aDataValue +
+                     "' of type " +
+                     ClassHelper.getSafeClassName (aDataValue) +
+                     " to DateTime!");
       }
     return null;
   }
@@ -78,7 +82,7 @@ public class JPAOffsetDateTimeConverter implements Converter
       // Allow user to specify field type to override computed value. (i.e.
       // blob, nchar)
       if (aDirectMapping.getFieldClassification () == null)
-        aDirectMapping.setFieldClassification (ClassConstants.TIMESTAMP);
+        aDirectMapping.setFieldClassification (CoreClassConstants.TIMESTAMP);
     }
   }
 }

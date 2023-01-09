@@ -20,7 +20,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
-import javax.persistence.EntityManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +28,8 @@ import com.helger.commons.annotation.ELockType;
 import com.helger.commons.annotation.IsLocked;
 import com.helger.scope.IScope;
 import com.helger.scope.singleton.AbstractRequestSingleton;
+
+import jakarta.persistence.EntityManager;
 
 /**
  * Abstract request singleton to handle a single {@link EntityManager}.<br>

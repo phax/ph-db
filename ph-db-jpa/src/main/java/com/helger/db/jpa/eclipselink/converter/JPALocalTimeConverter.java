@@ -22,7 +22,7 @@ import java.time.LocalTime;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
@@ -59,7 +59,11 @@ public class JPALocalTimeConverter implements Converter
       catch (final IllegalArgumentException ex)
       {
         // failed to convert
-        LOGGER.warn ("Failed to convert '" + aDataValue + "' of type " + ClassHelper.getSafeClassName (aDataValue) + "to LocalTime!");
+        LOGGER.warn ("Failed to convert '" +
+                     aDataValue +
+                     "' of type " +
+                     ClassHelper.getSafeClassName (aDataValue) +
+                     "to LocalTime!");
       }
     return null;
   }
@@ -78,7 +82,7 @@ public class JPALocalTimeConverter implements Converter
       // Allow user to specify field type to override computed value. (i.e.
       // blob, nchar)
       if (aDirectMapping.getFieldClassification () == null)
-        aDirectMapping.setFieldClassification (ClassConstants.TIME);
+        aDirectMapping.setFieldClassification (CoreClassConstants.TIME);
     }
   }
 }

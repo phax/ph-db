@@ -24,9 +24,6 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.ThreadSafe;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Query;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +40,10 @@ import com.helger.commons.statistics.StatisticsManager;
 import com.helger.commons.timing.StopWatch;
 import com.helger.db.api.callback.IExecutionTimeExceededCallback;
 import com.helger.db.api.callback.LoggingExecutionTimeExceededCallback;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Query;
 
 /**
  * JPA enabled manager with transaction handling etc. The
@@ -263,7 +264,8 @@ public class JPAEnabledManager
     return EXECUTION_TIME_EXCEEDED_HANDLERS;
   }
 
-  public static final void onExecutionTimeExceeded (@Nonnull final String sMsg, @Nonnegative final long nExecutionMillis)
+  public static final void onExecutionTimeExceeded (@Nonnull final String sMsg,
+                                                    @Nonnegative final long nExecutionMillis)
   {
     final long nLimitMS = getDefaultExecutionWarnTime ();
     EXECUTION_TIME_EXCEEDED_HANDLERS.forEach (x -> x.onExecutionTimeExceeded (sMsg, nExecutionMillis, nLimitMS));
