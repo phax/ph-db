@@ -121,8 +121,7 @@ public abstract class AbstractDBConnector implements IHasDataSource, Closeable
         // Remember when ready
         m_aDataSource = ret;
 
-        if (LOGGER.isInfoEnabled ())
-          LOGGER.info ("Created new DataSource " + ret);
+        LOGGER.info ("Created new DataSource " + ret);
       }
       return ret;
     });
@@ -141,8 +140,7 @@ public abstract class AbstractDBConnector implements IHasDataSource, Closeable
           m_aDataSource.close ();
           m_aDataSource = null;
 
-          if (LOGGER.isInfoEnabled ())
-            LOGGER.info ("Closed DataSource");
+          LOGGER.info ("Closed DataSource");
         }
       });
     }

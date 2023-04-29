@@ -107,7 +107,8 @@ public class DBExecutor implements Serializable
   private interface IConnectionExecutor
   {
     @Nonnull
-    ESuccess execute (@Nonnull IWithConnectionCallback aCB, @Nullable IExceptionCallback <? super Exception> aExtraExCB);
+    ESuccess execute (@Nonnull IWithConnectionCallback aCB,
+                      @Nullable IExceptionCallback <? super Exception> aExtraExCB);
   }
 
   public static final long DEFAULT_EXECUTION_DURATION_WARN_MS = CGlobal.MILLISECONDS_PER_SECOND;
@@ -180,8 +181,7 @@ public class DBExecutor implements Serializable
    */
   protected static final void debugLog (@Nonnull final String sMessage)
   {
-    if (LOGGER.isInfoEnabled ())
-      LOGGER.info (sMessage);
+    LOGGER.info (sMessage);
   }
 
   /**
@@ -241,11 +241,9 @@ public class DBExecutor implements Serializable
         s_eConnectionEstablished = eNewState;
         return EChange.CHANGED;
       });
-
       if (eChange.isChanged ())
       {
-        if (LOGGER.isInfoEnabled ())
-          LOGGER.info ("Setting connection established state from " + aOldState.get () + " to " + eNewState);
+        LOGGER.info ("Setting connection established state from " + aOldState.get () + " to " + eNewState);
 
         // Callback only if something changed
         RW_LOCK.readLocked ( () -> {
@@ -352,7 +350,9 @@ public class DBExecutor implements Serializable
 
   public final void onExecutionTimeExceeded (@Nonnull final String sMsg, @Nonnegative final long nExecutionMillis)
   {
-    EXECUTION_TIME_EXCEEDED_HANDLERS.forEach (x -> x.onExecutionTimeExceeded (sMsg, nExecutionMillis, m_nExecutionDurationWarnMS));
+    EXECUTION_TIME_EXCEEDED_HANDLERS.forEach (x -> x.onExecutionTimeExceeded (sMsg,
+                                                                              nExecutionMillis,
+                                                                              m_nExecutionDurationWarnMS));
   }
 
   /**
@@ -439,7 +439,6 @@ public class DBExecutor implements Serializable
                                                 @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final long nConnectionID = COUNTER_CONNECTION.incrementAndGet ();
-
     if (getConnectionEstablished ().isFalse ())
     {
       // Avoid trying again
@@ -447,7 +446,6 @@ public class DBExecutor implements Serializable
         debugLog ("Refuse to open SQL Connection [" + nConnectionID + "] because it failed previously");
       return ESuccess.FAILURE;
     }
-
     Connection aConnection = null;
     try
     {
@@ -459,14 +457,11 @@ public class DBExecutor implements Serializable
       aConnection = m_aConnectionProvider.getConnection ();
       if (aConnection == null)
       {
-        if (LOGGER.isWarnEnabled ())
-          LOGGER.warn ("  Failed to open SQL Connection [" + nConnectionID + "]");
+        LOGGER.warn ("  Failed to open SQL Connection [" + nConnectionID + "]");
         return ESuccess.FAILURE;
       }
-
       if (m_bDebugConnections)
         debugLog ("  Opened SQL Connection [" + nConnectionID + "] is " + aConnection);
-
       try
       {
         if (aConnection.isClosed ())
@@ -476,7 +471,6 @@ public class DBExecutor implements Serializable
       {
         // Ignore
       }
-
       if (CARE_ABOUT_CONNECTION_STATUS.get ())
         setConnectionEstablished (ETriState.TRUE);
 
@@ -491,10 +485,8 @@ public class DBExecutor implements Serializable
       if (CARE_ABOUT_CONNECTION_STATUS.get ())
       {
         setConnectionEstablished (ETriState.FALSE);
-        if (LOGGER.isWarnEnabled ())
-          LOGGER.warn ("Connection could not be established. Remembering this status.");
+        LOGGER.warn ("Connection could not be established. Remembering this status.");
       }
-
       // Invoke callback
       m_aExceptionCallbacks.forEach (x -> x.onException (ex));
       if (aExtraExCB != null)
@@ -520,9 +512,12 @@ public class DBExecutor implements Serializable
         }
         COUNTER_CONNECTION_CLOSE.incrementAndGet ();
       }
-
       if (m_bDebugConnections)
-        debugLog ("Opened " + COUNTER_CONNECTION_OPEN.intValue () + " and closed " + COUNTER_CONNECTION_CLOSE.intValue () + " connections");
+        debugLog ("Opened " +
+                  COUNTER_CONNECTION_OPEN.intValue () +
+                  " and closed " +
+                  COUNTER_CONNECTION_CLOSE.intValue () +
+                  " connections");
     }
   }
 
@@ -597,12 +592,10 @@ public class DBExecutor implements Serializable
         // Avoid creating a new connection
         final IConnectionExecutor aOldConnectionExecutor = m_aConnectionExecutor;
         m_aConnectionExecutor = (aCB2, aExCB2) -> this.withExistingConnectionDo (aConnection, aCB2, aExCB2);
-
         try
         {
           // Run the callback
           aRunnable.run ();
-
           if (nTransactionLevel == 1)
           {
             if (m_bDebugTransactions)
@@ -614,7 +607,11 @@ public class DBExecutor implements Serializable
           else
           {
             if (m_bDebugTransactions)
-              debugLog ("Not commiting level " + nTransactionLevel + " transaction [" + nTransactionID + "] because it is nested");
+              debugLog ("Not commiting level " +
+                        nTransactionLevel +
+                        " transaction [" +
+                        nTransactionID +
+                        "] because it is nested");
           }
         }
         catch (final Exception ex)
@@ -637,9 +634,12 @@ public class DBExecutor implements Serializable
           else
           {
             if (m_bDebugTransactions)
-              debugLog ("Not rolling back level " + nTransactionLevel + " transaction [" + nTransactionID + "] because it is nested");
+              debugLog ("Not rolling back level " +
+                        nTransactionLevel +
+                        " transaction [" +
+                        nTransactionID +
+                        "] because it is nested");
           }
-
           // Exception handler
           if (aExtraExCB != null)
             aExtraExCB.onException (ex);
@@ -708,7 +708,6 @@ public class DBExecutor implements Serializable
     {
       aSW.stop ();
       final long nDurationMillis = aSW.getMillis ();
-
       if (isExecutionDurationWarnEnabled ())
       {
         if (nDurationMillis > m_nExecutionDurationWarnMS)
@@ -732,7 +731,13 @@ public class DBExecutor implements Serializable
   {
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
       final long nSQLStatementID = COUNTER_SQL_STATEMENT.incrementAndGet ();
-      final String sWhat = "PreparedStatement [" + nSQLStatementID + "] <" + sSQL + "> with " + aPSDP.getValueCount () + " values";
+      final String sWhat = "PreparedStatement [" +
+                           nSQLStatementID +
+                           "] <" +
+                           sSQL +
+                           "> with " +
+                           aPSDP.getValueCount () +
+                           " values";
       if (m_bDebugSQLStatements)
         debugLog ("Will execute " + sWhat);
 
@@ -772,7 +777,6 @@ public class DBExecutor implements Serializable
               aUpdatedRowCountCB.setUpdatedRowCount (aPS.getUpdateCount ());
             }
           }
-
           // retrieve generated keys?
           if (aGeneratedKeysCB != null)
             handleGeneratedKeys (aPS.getGeneratedKeys (), aGeneratedKeysCB);
@@ -804,7 +808,8 @@ public class DBExecutor implements Serializable
   }
 
   @Nonnull
-  public ESuccess executePreparedStatement (@Nonnull final String sSQL, @Nonnull final IPreparedStatementDataProvider aPSDP)
+  public ESuccess executePreparedStatement (@Nonnull final String sSQL,
+                                            @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
     return executePreparedStatement (sSQL, aPSDP, null, null, null);
   }
@@ -924,7 +929,8 @@ public class DBExecutor implements Serializable
   {
     final GetSingleGeneratedKeyCallback aCB = new GetSingleGeneratedKeyCallback ();
     final long nUpdateCount = insertOrUpdateOrDelete (sSQL, aPSDP, aCB, aExtraExCB);
-    return new CountAndKey (nUpdateCount, nUpdateCount != IUpdatedRowCountCallback.NOT_INITIALIZED ? aCB.getGeneratedKey () : null);
+    return new CountAndKey (nUpdateCount,
+                            nUpdateCount != IUpdatedRowCountCallback.NOT_INITIALIZED ? aCB.getGeneratedKey () : null);
   }
 
   @Nonnull
@@ -937,10 +943,11 @@ public class DBExecutor implements Serializable
     final long nClobLength = aClob.length ();
     if (nClobLength > Integer.MAX_VALUE)
     {
-      LOGGER.error ("The contained CLOB is larger than 2GB (" + nClobLength + " chars) and therefore cannot be converted to a String");
+      LOGGER.error ("The contained CLOB is larger than 2GB (" +
+                    nClobLength +
+                    " chars) and therefore cannot be converted to a String");
       return "";
     }
-
     // length was ensured previously
     final StringBuilder aSB = new StringBuilder ((int) nClobLength);
     try (final Reader aReader = aClob.getCharacterStream ();
@@ -954,7 +961,6 @@ public class DBExecutor implements Serializable
     {
       throw new SQLException ("Could not convert CLOB to String", ex);
     }
-
     return aSB.toString ();
   }
 
@@ -986,7 +992,6 @@ public class DBExecutor implements Serializable
         aColumnNames[i - 1] = aRSMD.getColumnName (i).intern ();
         aColumnTypes[i - 1] = aRSMD.getColumnType (i);
       }
-
       // create object once for all rows
       final DBResultRow aRow = new DBResultRow (nCols);
 
@@ -1006,14 +1011,11 @@ public class DBExecutor implements Serializable
             // Special CLOB handling
             aColumnValue = _clobToString ((java.sql.Clob) aColumnValue);
           }
-
           aRow.internalAdd (new DBResultField (aColumnNames[i - 1], aColumnTypes[i - 1], aColumnValue));
         }
-
         // handle result row
         aCallback.accept (aRow);
       }
-
       return nResultRows;
     }
     finally
@@ -1033,7 +1035,8 @@ public class DBExecutor implements Serializable
    * @return {@link ESuccess} and never <code>null</code>.
    */
   @Nonnull
-  public ESuccess queryAll (@Nonnull @Nonempty final String sSQL, @Nonnull final IResultSetRowCallback aResultItemCallback)
+  public ESuccess queryAll (@Nonnull @Nonempty final String sSQL,
+                            @Nonnull final IResultSetRowCallback aResultItemCallback)
   {
     ValueEnforcer.notEmpty (sSQL, "SQL");
     ValueEnforcer.notNull (aResultItemCallback, "aResultItemCallbackSQL");
@@ -1049,7 +1052,13 @@ public class DBExecutor implements Serializable
         final long nResultRows = iterateResultSet (aResultSet, aResultItemCallback);
 
         if (m_bDebugSQLStatements)
-          debugLog ("  Found " + nResultRows + " result " + (nResultRows == 1 ? "row" : "rows") + " [" + nSQLStatementID + "]");
+          debugLog ("  Found " +
+                    nResultRows +
+                    " result " +
+                    (nResultRows == 1 ? "row" : "rows") +
+                    " [" +
+                    nSQLStatementID +
+                    "]");
       });
     }, (IGeneratedKeysCallback) null, null);
   }
@@ -1122,7 +1131,8 @@ public class DBExecutor implements Serializable
    *         querying was successful.
    */
   @Nullable
-  public ICommonsList <DBResultRow> queryAll (@Nonnull @Nonempty final String sSQL, @Nonnull final IPreparedStatementDataProvider aPSDP)
+  public ICommonsList <DBResultRow> queryAll (@Nonnull @Nonempty final String sSQL,
+                                              @Nonnull final IPreparedStatementDataProvider aPSDP)
   {
     final ICommonsList <DBResultRow> aAllResultRows = new CommonsArrayList <> ();
     if (queryAll (sSQL, aPSDP, aCurrentObject -> {
@@ -1149,7 +1159,8 @@ public class DBExecutor implements Serializable
    * @return {@link ESuccess} and never <code>null</code>.
    */
   @Nonnull
-  public ESuccess querySingle (@Nonnull @Nonempty final String sSQL, @Nonnull final Consumer <? super DBResultRow> aConsumer)
+  public ESuccess querySingle (@Nonnull @Nonempty final String sSQL,
+                               @Nonnull final Consumer <? super DBResultRow> aConsumer)
   {
     final ICommonsList <DBResultRow> aList = queryAll (sSQL);
     if (aList == null)

@@ -46,7 +46,8 @@ public class EclipseLinkLogger extends AbstractSessionLog
       return;
 
     // JPA uses the System property for adding line breaks
-    final ICommonsList <String> aMsgLines = StringHelper.getExploded (ENewLineMode.DEFAULT.getText (), formatMessage (aSessionLogEntry));
+    final ICommonsList <String> aMsgLines = StringHelper.getExploded (ENewLineMode.DEFAULT.getText (),
+                                                                      formatMessage (aSessionLogEntry));
     final int nMaxIndex = aMsgLines.size ();
     for (int i = 0; i < nMaxIndex; ++i)
     {
@@ -61,8 +62,7 @@ public class EclipseLinkLogger extends AbstractSessionLog
         {
           // Ensure all other levels logged as Info to honor e.g. the SQL "FINE"
           // logging as suggested by the EclipseLink documentation
-          if (LOGGER.isInfoEnabled ())
-            LOGGER.info (sMsg, t);
+          LOGGER.info (sMsg, t);
         }
     }
   }
