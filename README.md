@@ -37,6 +37,8 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 
 # News and noteworthy
 
+* v7.0.2 - 2023-07-31
+    * Updated to ph-commons 11.1
 * v7.0.1 - 2023-01-12
     * Updated to MySQLConnector/J 8.0.31 with new Maven coordinates
     * Updated to Protobuf 3.21.12
