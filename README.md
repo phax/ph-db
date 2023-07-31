@@ -1,7 +1,8 @@
 # ph-db
 
-[![javadoc](https://javadoc.io/badge2/com.helger/ph-db-parent-pom/javadoc.svg)](https://javadoc.io/doc/com.helger/ph-db-parent-pom)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.helger/ph-db-parent-pom/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.helger/ph-db-parent-pom) 
+[![javadoc](https://javadoc.io/badge2/com.helger/ph-db-parent-pom/javadoc.svg)](https://javadoc.io/doc/com.helger/ph-db-parent-pom)
+[![CodeCov](https://codecov.io/gh/phax/ph-db/branch/master/graph/badge.svg)](https://codecov.io/gh/phax/ph-db)
 
 Java library with some common DB API, a special JDBC version and a JPA version based on EclipseLink.
 
