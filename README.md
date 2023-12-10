@@ -38,6 +38,8 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 
 # News and noteworthy
 
+* v7.0.3 - 2023-12-10
+    * Updated all dependencies
 * v7.0.2 - 2023-07-31
     * Updated to ph-commons 11.1
 * v7.0.1 - 2023-01-12
