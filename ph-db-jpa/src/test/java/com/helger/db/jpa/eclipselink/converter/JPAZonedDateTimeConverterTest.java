@@ -41,7 +41,7 @@ public final class JPAZonedDateTimeConverterTest
     // Don't use named timezone - it will be lost
     // Fixed date, to avoid timezone change (e.g. CET - CEST)
     final ZonedDateTime aNow = PDTFactory.createZonedDateTime (2021, Month.JANUARY, 1)
-                                         .withZoneSameLocal (ZoneOffset.ofHours (1));
+                                         .withZoneSameInstant (ZoneOffset.ofHours (1));
     final JPAZonedDateTimeConverter aConverter = new JPAZonedDateTimeConverter ();
     final Timestamp aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
     assertNotNull (aDataValue);
