@@ -36,7 +36,7 @@ public final class JPALocalDateConverterTest
   @Test
   public void testAll ()
   {
-    final LocalDate aNow = PDTFactory.getCurrentLocalDate ();
+    final LocalDate aNow = PDTFactory.getCurrentLocalDateUTC ();
     final JPALocalDateConverter aConverter = new JPALocalDateConverter ();
     final Date aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
     assertNotNull (aDataValue);

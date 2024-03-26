@@ -23,7 +23,6 @@ import java.sql.Timestamp;
 import java.time.Month;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.TimeZone;
 
 import org.junit.Test;
 
@@ -39,23 +38,16 @@ public final class JPAZonedDateTimeConverterTest
   @Test
   public void testAll ()
   {
-    final TimeZone aTZ = TimeZone.getDefault ();
-    try
-    {
-      TimeZone.setDefault (TimeZone.getTimeZone ("Europe/Berlin"));
+    // Don't use named timezone - it will be lost
+    // Fixed date, to avoid timezone change (e.g. CET - CEST)
+    final ZonedDateTime aNow = PDTFactory.createZonedDateTime (2021, Month.JANUARY, 1)
+                                         .withZoneSameLocal (ZoneOffset.ofHours (1));
+    final JPAZonedDateTimeConverter aConverter = new JPAZonedDateTimeConverter ();
+    final Timestamp aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
+    assertNotNull (aDataValue);
+    assertEquals (PDTFactory.createLocalDate (2021, Month.JANUARY, 1).atStartOfDay (), aDataValue.toLocalDateTime ());
 
-      // Don't use named timezone - it will be lost
-      // Fixed date, to avoid timezone change (e.g. CET - CEST)
-      final ZonedDateTime aNow = PDTFactory.createZonedDateTime (2021, Month.JANUARY, 1).withZoneSameLocal (ZoneOffset.ofHours (1));
-      final JPAZonedDateTimeConverter aConverter = new JPAZonedDateTimeConverter ();
-      final Timestamp aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
-      assertNotNull (aDataValue);
-      assertEquals (PDTFactory.createLocalDate (2021, Month.JANUARY, 1).atStartOfDay (), aDataValue.toLocalDateTime ());
-      assertEquals (aNow, aConverter.convertDataValueToObjectValue (aDataValue, null));
-    }
-    finally
-    {
-      TimeZone.setDefault (aTZ);
-    }
+    // Must be the same Instant - TZ info might differ
+    assertEquals (aNow.toInstant (), aConverter.convertDataValueToObjectValue (aDataValue, null).toInstant ());
   }
 }
