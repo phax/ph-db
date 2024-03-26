@@ -23,8 +23,11 @@ import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.datetime.PDTFactory;
+import com.helger.commons.typeconvert.TypeConverter;
 
 /**
  * Test class for class {@link JPAOffsetDateTimeConverter}.
@@ -33,10 +36,20 @@ import com.helger.commons.datetime.PDTFactory;
  */
 public final class JPAOffsetDateTimeConverterTest
 {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger (JPAOffsetDateTimeConverterTest.class);
+
   @Test
   public void testAll ()
   {
     final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTimeMillisOnly ();
+
+    LOGGER.info ("OffsetDateTime: " + aNow);
+    final java.util.Date aDate = TypeConverter.convert (aNow, java.util.Date.class);
+    LOGGER.info ("Date: " + aDate);
+    final OffsetDateTime aNow2 = TypeConverter.convert (aDate, OffsetDateTime.class);
+    LOGGER.info ("OffsetDateTime 2: " + aNow2);
+
     final JPAOffsetDateTimeConverter aConverter = new JPAOffsetDateTimeConverter ();
     final Timestamp aDataValue = aConverter.convertObjectValueToDataValue (aNow, null);
     assertNotNull (aDataValue);
