@@ -40,6 +40,8 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 
 * v7.0.4 - 2024-03-27
     * Updated to ph-commons 11.1.5
+    * Updated to MySQLConnector/J 8.3.0
+    * Updated to Apache Commons DBCP 2.12.0
     * Created Java 21 compatibility
 * v7.0.3 - 2023-12-10
     * Updated all dependencies
