@@ -42,11 +42,15 @@ public class GetSingleGeneratedKeyCallback implements IGeneratedKeysCallback
     ValueEnforcer.notNull (aGeneratedValues, "GeneratedValues");
 
     if (aGeneratedValues.size () != 1)
-      throw new IllegalArgumentException ("Found not exactly 1 generated value row but " + aGeneratedValues.size () + " rows!");
-    final ICommonsList <Object> aRow = aGeneratedValues.getFirst ();
+      throw new IllegalArgumentException ("Found not exactly 1 generated value row but " +
+                                          aGeneratedValues.size () +
+                                          " rows!");
+    final ICommonsList <Object> aRow = aGeneratedValues.getFirstOrNull ();
     if (aRow.size () != 1)
-      throw new IllegalArgumentException ("The generated row does not contain exactly 1 item but " + aRow.size () + " items!");
-    m_aGeneratedKey = aRow.getFirst ();
+      throw new IllegalArgumentException ("The generated row does not contain exactly 1 item but " +
+                                          aRow.size () +
+                                          " items!");
+    m_aGeneratedKey = aRow.getFirstOrNull ();
   }
 
   @Nonnull
@@ -60,6 +64,6 @@ public class GetSingleGeneratedKeyCallback implements IGeneratedKeysCallback
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("generatedKey", m_aGeneratedKey).getToString ();
+    return new ToStringGenerator (null).append ("GeneratedKey", m_aGeneratedKey).getToString ();
   }
 }

@@ -951,7 +951,7 @@ public class DBExecutor implements Serializable
     // length was ensured previously
     final StringBuilder aSB = new StringBuilder ((int) nClobLength);
     try (final Reader aReader = aClob.getCharacterStream ();
-         final NonBlockingBufferedReader aBufferedReader = new NonBlockingBufferedReader (aReader))
+        final NonBlockingBufferedReader aBufferedReader = new NonBlockingBufferedReader (aReader))
     {
       int ch;
       while ((ch = aBufferedReader.read ()) > -1)
@@ -1169,7 +1169,7 @@ public class DBExecutor implements Serializable
     if (aList.size () > 1)
       LOGGER.warn ("The query '" + sSQL + "' returned " + aList.size () + " results but only the first one is used.");
     // No need to clone again - already cloned
-    aConsumer.accept (aList.getFirst ());
+    aConsumer.accept (aList.getFirstOrNull ());
     return ESuccess.SUCCESS;
   }
 
@@ -1200,7 +1200,7 @@ public class DBExecutor implements Serializable
     if (aList.size () > 1)
       LOGGER.warn ("The query '" + sSQL + "' returned " + aList.size () + " results but only the first one is used.");
     // No need to clone again - already cloned
-    aConsumer.accept (aList.getFirst ());
+    aConsumer.accept (aList.getFirstOrNull ());
     return ESuccess.SUCCESS;
   }
 
