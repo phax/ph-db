@@ -17,8 +17,6 @@
 package com.helger.db.jpa.proxy;
 
 import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
@@ -29,12 +27,9 @@ import jakarta.persistence.Cache;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.PersistenceUnitTransactionType;
 import jakarta.persistence.PersistenceUnitUtil;
 import jakarta.persistence.Query;
-import jakarta.persistence.SchemaManager;
 import jakarta.persistence.SynchronizationType;
-import jakarta.persistence.TypedQueryReference;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.metamodel.Metamodel;
 
@@ -64,7 +59,7 @@ public class EntityManagerFactoryProxy implements EntityManagerFactory
     return m_aEntityMgrFactory.createEntityManager ();
   }
 
-  public EntityManager createEntityManager (final Map <?, ?> map)
+  public EntityManager createEntityManager (final Map map)
   {
     return m_aEntityMgrFactory.createEntityManager (map);
   }
@@ -74,7 +69,7 @@ public class EntityManagerFactoryProxy implements EntityManagerFactory
     return m_aEntityMgrFactory.createEntityManager (synchronizationType);
   }
 
-  public EntityManager createEntityManager (final SynchronizationType synchronizationType, final Map <?, ?> map)
+  public EntityManager createEntityManager (final SynchronizationType synchronizationType, final Map map)
   {
     return m_aEntityMgrFactory.createEntityManager (synchronizationType, map);
   }
@@ -89,10 +84,10 @@ public class EntityManagerFactoryProxy implements EntityManagerFactory
     m_aEntityMgrFactory.close ();
   }
 
-  public String getName ()
-  {
-    return m_aEntityMgrFactory.getName ();
-  }
+  // public String getName ()
+  // {
+  // return m_aEntityMgrFactory.getName ();
+  // }
 
   public CriteriaBuilder getCriteriaBuilder ()
   {
@@ -120,15 +115,15 @@ public class EntityManagerFactoryProxy implements EntityManagerFactory
     return m_aEntityMgrFactory.getPersistenceUnitUtil ();
   }
 
-  public PersistenceUnitTransactionType getTransactionType ()
-  {
-    return m_aEntityMgrFactory.getTransactionType ();
-  }
+  // public PersistenceUnitTransactionType getTransactionType ()
+  // {
+  // return m_aEntityMgrFactory.getTransactionType ();
+  // }
 
-  public SchemaManager getSchemaManager ()
-  {
-    return m_aEntityMgrFactory.getSchemaManager ();
-  }
+  // public SchemaManager getSchemaManager ()
+  // {
+  // return m_aEntityMgrFactory.getSchemaManager ();
+  // }
 
   public void addNamedQuery (final String name, final Query query)
   {
@@ -145,23 +140,25 @@ public class EntityManagerFactoryProxy implements EntityManagerFactory
     m_aEntityMgrFactory.addNamedEntityGraph (graphName, entityGraph);
   }
 
-  public <R> Map <String, TypedQueryReference <R>> getNamedQueries (final Class <R> resultType)
-  {
-    return m_aEntityMgrFactory.getNamedQueries (resultType);
-  }
-
-  public <E> Map <String, EntityGraph <? extends E>> getNamedEntityGraphs (final Class <E> entityType)
-  {
-    return m_aEntityMgrFactory.getNamedEntityGraphs (entityType);
-  }
-
-  public void runInTransaction (final Consumer <EntityManager> work)
-  {
-    m_aEntityMgrFactory.runInTransaction (work);
-  }
-
-  public <R> R callInTransaction (final Function <EntityManager, R> work)
-  {
-    return m_aEntityMgrFactory.callInTransaction (work);
-  }
+  // public <R> Map <String, TypedQueryReference <R>> getNamedQueries (final
+  // Class <R> resultType)
+  // {
+  // return m_aEntityMgrFactory.getNamedQueries (resultType);
+  // }
+  //
+  // public <E> Map <String, EntityGraph <? extends E>> getNamedEntityGraphs
+  // (final Class <E> entityType)
+  // {
+  // return m_aEntityMgrFactory.getNamedEntityGraphs (entityType);
+  // }
+  //
+  // public void runInTransaction (final Consumer <EntityManager> work)
+  // {
+  // m_aEntityMgrFactory.runInTransaction (work);
+  // }
+  //
+  // public <R> R callInTransaction (final Function <EntityManager, R> work)
+  // {
+  // return m_aEntityMgrFactory.callInTransaction (work);
+  // }
 }

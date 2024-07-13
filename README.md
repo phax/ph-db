@@ -38,8 +38,8 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 
 # News and noteworthy
 
-* v7.0.5 - 2024-07-13
-    * Updated to Jakarta Persistence 3.2
+* v7.0.5 - work in progress
+    * Updated to MySQLConnector/J 9.0.0
 * v7.0.4 - 2024-03-27
     * Updated to ph-commons 11.1.5
     * Updated to MySQLConnector/J 8.3.0

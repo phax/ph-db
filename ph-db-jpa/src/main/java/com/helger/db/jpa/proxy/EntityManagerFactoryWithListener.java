@@ -49,7 +49,7 @@ public class EntityManagerFactoryWithListener extends EntityManagerFactoryProxy 
   }
 
   @Override
-  public EntityManagerWithListener createEntityManager (@Nullable final Map <?, ?> aProperties)
+  public EntityManagerWithListener createEntityManager (@Nullable final Map aProperties)
   {
     EntityManagerWithListener aEntityMgr = TL.get ();
     if (aEntityMgr == null)
@@ -70,8 +70,7 @@ public class EntityManagerFactoryWithListener extends EntityManagerFactoryProxy 
   }
 
   @Override
-  public EntityManager createEntityManager (final SynchronizationType eSynchronizationType,
-                                            final Map <?, ?> aProperties)
+  public EntityManager createEntityManager (final SynchronizationType eSynchronizationType, final Map aProperties)
   {
     EntityManagerWithListener aEntityMgr = TL.get ();
     if (aEntityMgr == null)
