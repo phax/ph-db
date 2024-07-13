@@ -18,9 +18,9 @@ package com.helger.db.jpa.eclipselink;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.SessionCustomizer;
 
 import com.helger.commons.CGlobal;
 

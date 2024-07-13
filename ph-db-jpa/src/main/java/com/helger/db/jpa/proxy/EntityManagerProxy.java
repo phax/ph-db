@@ -24,18 +24,27 @@ import javax.annotation.Nonnull;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.CodingStyleguideUnaware;
 
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
+import jakarta.persistence.ConnectionConsumer;
+import jakarta.persistence.ConnectionFunction;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.FindOption;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
+import jakarta.persistence.LockOption;
 import jakarta.persistence.Query;
+import jakarta.persistence.RefreshOption;
 import jakarta.persistence.StoredProcedureQuery;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.TypedQueryReference;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaSelect;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.metamodel.Metamodel;
 
@@ -85,6 +94,11 @@ public class EntityManagerProxy implements EntityManager
     return m_aEntityMgr.getReference (entityClass, primaryKey);
   }
 
+  public <T> T getReference (final T entity)
+  {
+    return m_aEntityMgr.getReference (entity);
+  }
+
   public void flush ()
   {
     m_aEntityMgr.flush ();
@@ -105,9 +119,19 @@ public class EntityManagerProxy implements EntityManager
     m_aEntityMgr.lock (object, lockModeType);
   }
 
+  public void lock (final Object entity, final LockModeType lockMode, final LockOption... options)
+  {
+    m_aEntityMgr.lock (entity, lockMode, options);
+  }
+
   public void refresh (final Object object)
   {
     m_aEntityMgr.refresh (object);
+  }
+
+  public void refresh (final Object entity, final RefreshOption... options)
+  {
+    m_aEntityMgr.refresh (entity, options);
   }
 
   public void clear ()
@@ -135,7 +159,7 @@ public class EntityManagerProxy implements EntityManager
     return m_aEntityMgr.createNativeQuery (string);
   }
 
-  public Query createNativeQuery (final String string, final Class aClass)
+  public <T> Query createNativeQuery (final String string, final Class <T> aClass)
   {
     return m_aEntityMgr.createNativeQuery (string, aClass);
   }
@@ -188,6 +212,16 @@ public class EntityManagerProxy implements EntityManager
     return m_aEntityMgr.find (entityClass, primaryKey, lockMode, properties);
   }
 
+  public <T> T find (final Class <T> entityClass, final Object primaryKey, final FindOption... options)
+  {
+    return m_aEntityMgr.find (entityClass, primaryKey, options);
+  }
+
+  public <T> T find (final EntityGraph <T> entityGraph, final Object primaryKey, final FindOption... options)
+  {
+    return m_aEntityMgr.find (entityGraph, primaryKey, options);
+  }
+
   public void lock (final Object entity, final LockModeType lockMode, final Map <String, Object> properties)
   {
     m_aEntityMgr.lock (entity, lockMode, properties);
@@ -218,6 +252,26 @@ public class EntityManagerProxy implements EntityManager
     return m_aEntityMgr.getLockMode (entity);
   }
 
+  public void setCacheRetrieveMode (final CacheRetrieveMode cacheRetrieveMode)
+  {
+    m_aEntityMgr.setCacheRetrieveMode (cacheRetrieveMode);
+  }
+
+  public void setCacheStoreMode (final CacheStoreMode cacheStoreMode)
+  {
+    m_aEntityMgr.setCacheStoreMode (cacheStoreMode);
+  }
+
+  public CacheRetrieveMode getCacheRetrieveMode ()
+  {
+    return m_aEntityMgr.getCacheRetrieveMode ();
+  }
+
+  public CacheStoreMode getCacheStoreMode ()
+  {
+    return m_aEntityMgr.getCacheStoreMode ();
+  }
+
   public void setProperty (final String propertyName, final Object value)
   {
     m_aEntityMgr.setProperty (propertyName, value);
@@ -234,12 +288,17 @@ public class EntityManagerProxy implements EntityManager
     return m_aEntityMgr.createQuery (criteriaQuery);
   }
 
-  public Query createQuery (final CriteriaUpdate updateQuery)
+  public <T> TypedQuery <T> createQuery (final CriteriaSelect <T> selectQuery)
+  {
+    return m_aEntityMgr.createQuery (selectQuery);
+  }
+
+  public Query createQuery (final CriteriaUpdate <?> updateQuery)
   {
     return m_aEntityMgr.createQuery (updateQuery);
   }
 
-  public Query createQuery (final CriteriaDelete deleteQuery)
+  public Query createQuery (final CriteriaDelete <?> deleteQuery)
   {
     return m_aEntityMgr.createQuery (deleteQuery);
   }
@@ -254,6 +313,11 @@ public class EntityManagerProxy implements EntityManager
     return m_aEntityMgr.createNamedQuery (name, resultClass);
   }
 
+  public <T> TypedQuery <T> createQuery (final TypedQueryReference <T> reference)
+  {
+    return m_aEntityMgr.createQuery (reference);
+  }
+
   public StoredProcedureQuery createNamedStoredProcedureQuery (final String name)
   {
     return m_aEntityMgr.createNamedStoredProcedureQuery (name);
@@ -264,7 +328,7 @@ public class EntityManagerProxy implements EntityManager
     return m_aEntityMgr.createStoredProcedureQuery (procedureName);
   }
 
-  public StoredProcedureQuery createStoredProcedureQuery (final String procedureName, final Class... resultClasses)
+  public StoredProcedureQuery createStoredProcedureQuery (final String procedureName, final Class <?>... resultClasses)
   {
     return m_aEntityMgr.createStoredProcedureQuery (procedureName, resultClasses);
   }
@@ -319,4 +383,15 @@ public class EntityManagerProxy implements EntityManager
   {
     return m_aEntityMgr.getEntityGraphs (entityClass);
   }
+
+  public <C> void runWithConnection (final ConnectionConsumer <C> action)
+  {
+    m_aEntityMgr.runWithConnection (action);
+  }
+
+  public <C, T> T callWithConnection (final ConnectionFunction <C, T> function)
+  {
+    return m_aEntityMgr.callWithConnection (function);
+  }
+
 }
