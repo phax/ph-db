@@ -62,8 +62,8 @@
   </developers>
 
   <properties>
-    <eclipselink.version>4.0.3</eclipselink.version>
-    <h2.version>2.2.224</h2.version>
+    <eclipselink.version>4.0.4</eclipselink.version>
+    <h2.version>2.3.230</h2.version>
     <mysql.version>9.0.0</mysql.version>
     <protobuf.version>3.25.3</protobuf.version>
   </properties>
