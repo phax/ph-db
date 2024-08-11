@@ -22,6 +22,8 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -71,6 +73,18 @@ public final class DBValueHelper
     return aODT == null ? null : Timestamp.from (aODT.toInstant ());
   }
 
+  @Nullable
+  public static Timestamp toTimestamp (@Nullable final OffsetDateTime aODT)
+  {
+    return aODT == null ? null : Timestamp.from (aODT.toInstant ());
+  }
+
+  @Nullable
+  public static Timestamp toTimestamp (@Nullable final ZonedDateTime aODT)
+  {
+    return aODT == null ? null : Timestamp.from (aODT.toInstant ());
+  }
+
   @FunctionalInterface
   public interface ITrimmedToLengthCallback
   {
@@ -80,7 +94,9 @@ public final class DBValueHelper
   @Nullable
   public static String getTrimmedToLength (@Nullable final String s, final int nMaxLengthIncl)
   {
-    return getTrimmedToLength (s, nMaxLengthIncl, (m, n) -> LOGGER.warn ("Cutting value with length " + m + " to " + n + " for DB"));
+    return getTrimmedToLength (s,
+                               nMaxLengthIncl,
+                               (m, n) -> LOGGER.warn ("Cutting value with length " + m + " to " + n + " for DB"));
   }
 
   @Nullable
