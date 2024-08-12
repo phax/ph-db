@@ -31,6 +31,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.util.Arrays;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -93,8 +94,7 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
    */
   protected void internalClear ()
   {
-    for (int i = 0; i < m_aCols.length; ++i)
-      m_aCols[i] = null;
+    Arrays.fill (m_aCols, null);
     m_nIndex = 0;
   }
 
