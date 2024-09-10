@@ -29,8 +29,6 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.db.jdbc.executor.DBNoConnectionException;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * Implementation of {@link IHasConnection} that creates a connection from an
  * {@link DataSource}.
@@ -131,7 +129,7 @@ public class ConnectionFromDataSource implements IHasConnection
                                        .getToString ();
   }
 
-  @SuppressFBWarnings ("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
+  @Nonnull
   public static ConnectionFromDataSource create (@Nonnull final IHasDataSource aDSP)
   {
     ValueEnforcer.notNull (aDSP, "DataSourceProvider");
