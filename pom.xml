@@ -64,7 +64,7 @@
   <properties>
     <eclipselink.version>4.0.4</eclipselink.version>
     <h2.version>2.3.232</h2.version>
-    <mysql.version>9.0.0</mysql.version>
+    <mysql.version>9.1.0</mysql.version>
     <protobuf.version>4.28.2</protobuf.version>
   </properties>
   
@@ -73,7 +73,7 @@
       <dependency>
         <groupId>com.helger.commons</groupId>
         <artifactId>ph-commons-parent-pom</artifactId>
-        <version>11.1.8</version>
+        <version>11.1.9</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
