@@ -44,7 +44,7 @@ public final class ThirdPartyModuleProvider_ph_db_jdbc implements IThirdPartyMod
   public static final IThirdPartyModule COMMONS_DBCP = new ThirdPartyModule ("Apache Commons DBCP",
                                                                              "Apache",
                                                                              ELicense.APACHE2,
-                                                                             new Version (2, 12, 0),
+                                                                             new Version (2, 13, 0),
                                                                              "http://commons.apache.org/proper/commons-dbcp/");
 
   @Nullable
