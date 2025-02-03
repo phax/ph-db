@@ -38,6 +38,8 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 
 # News and noteworthy
 
+* v7.0.7 - work in progress
+    * Updated to Apache Commons Pool 2.12.1
 * v7.0.6 - 2024-09-20
     * Updated to Protobuf 4.28.2 to fix CVE-2024-7254
 * v7.0.5 - 2024-08-09
