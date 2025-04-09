@@ -65,6 +65,7 @@ import com.helger.commons.timing.StopWatch;
 import com.helger.commons.wrapper.Wrapper;
 import com.helger.db.api.callback.IExecutionTimeExceededCallback;
 import com.helger.db.api.callback.LoggingExecutionTimeExceededCallback;
+import com.helger.db.api.config.JdbcConfiguration;
 import com.helger.db.api.jdbc.JDBCHelper;
 import com.helger.db.jdbc.ConnectionFromDataSource;
 import com.helger.db.jdbc.IHasConnection;
@@ -111,10 +112,14 @@ public class DBExecutor implements Serializable
                       @Nullable IExceptionCallback <? super Exception> aExtraExCB);
   }
 
-  public static final long DEFAULT_EXECUTION_DURATION_WARN_MS = CGlobal.MILLISECONDS_PER_SECOND;
-  public static final boolean DEFAULT_DEBUG_CONNECTIONS = false;
-  public static final boolean DEFAULT_DEBUG_TRANSACTIONS = false;
-  public static final boolean DEFAULT_DEBUG_SQL_STATEMENTS = false;
+  @Deprecated (forRemoval = true, since = "7.1.0")
+  public static final long DEFAULT_EXECUTION_DURATION_WARN_MS = JdbcConfiguration.DEFAULT_EXECUTION_DURATION_WARN_MS;
+  @Deprecated (forRemoval = true, since = "7.1.0")
+  public static final boolean DEFAULT_DEBUG_CONNECTIONS = JdbcConfiguration.DEFAULT_DEBUG_CONNECTIONS;
+  @Deprecated (forRemoval = true, since = "7.1.0")
+  public static final boolean DEFAULT_DEBUG_TRANSACTIONS = JdbcConfiguration.DEFAULT_DEBUG_TRANSACTIONS;
+  @Deprecated (forRemoval = true, since = "7.1.0")
+  public static final boolean DEFAULT_DEBUG_SQL_STATEMENTS = JdbcConfiguration.DEFAULT_DEBUG_SQL_STATEMENTS;
 
   private static final Logger LOGGER = LoggerFactory.getLogger (DBExecutor.class);
 
@@ -135,7 +140,7 @@ public class DBExecutor implements Serializable
   private final CallbackList <IExceptionCallback <? super Exception>> m_aExceptionCallbacks = new CallbackList <> ();
   private IConnectionExecutor m_aConnectionExecutor;
 
-  private long m_nExecutionDurationWarnMS = DEFAULT_EXECUTION_DURATION_WARN_MS;
+  private long m_nExecutionDurationWarnMS = JdbcConfiguration.DEFAULT_EXECUTION_DURATION_WARN_MS;
   private static final CallbackList <IExecutionTimeExceededCallback> EXECUTION_TIME_EXCEEDED_HANDLERS = new CallbackList <> ();
 
   static
@@ -144,9 +149,9 @@ public class DBExecutor implements Serializable
   }
 
   private final AtomicInteger m_aTransactionLevel = new AtomicInteger (0);
-  private boolean m_bDebugConnections = DEFAULT_DEBUG_CONNECTIONS;
-  private boolean m_bDebugTransactions = DEFAULT_DEBUG_TRANSACTIONS;
-  private boolean m_bDebugSQLStatements = DEFAULT_DEBUG_SQL_STATEMENTS;
+  private boolean m_bDebugConnections = JdbcConfiguration.DEFAULT_DEBUG_CONNECTIONS;
+  private boolean m_bDebugTransactions = JdbcConfiguration.DEFAULT_DEBUG_TRANSACTIONS;
+  private boolean m_bDebugSQLStatements = JdbcConfiguration.DEFAULT_DEBUG_SQL_STATEMENTS;
 
   public DBExecutor (@Nonnull final IHasDataSource aDataSourceProvider)
   {
@@ -162,8 +167,8 @@ public class DBExecutor implements Serializable
   }
 
   /**
-   * @return The internal connection provider. Never <code>null</code>. Don't
-   *         use that except you know what you are doing.
+   * @return The internal connection provider. Never <code>null</code>. Don't use that except you
+   *         know what you are doing.
    * @since 6.7.2
    */
   @Nonnull
@@ -173,8 +178,7 @@ public class DBExecutor implements Serializable
   }
 
   /**
-   * Debug logging method. Only invoked if the respective "debug log" member is
-   * set to true
+   * Debug logging method. Only invoked if the respective "debug log" member is set to true
    *
    * @param sMessage
    *        The message to log. May not be <code>null</code>.
@@ -185,9 +189,8 @@ public class DBExecutor implements Serializable
   }
 
   /**
-   * @return <code>true</code> if we care about the connection status,
-   *         <code>false</code> if not. Default is <code>false</code>. Only if
-   *         this method returns true,
+   * @return <code>true</code> if we care about the connection status, <code>false</code> if not.
+   *         Default is <code>false</code>. Only if this method returns true,
    *         {@link #setConnectionEstablished(ETriState)} is called.
    * @since v6.6.1
    */
@@ -198,8 +201,7 @@ public class DBExecutor implements Serializable
 
   /**
    * @param bCare
-   *        <code>true</code> if connection status should be cared about,
-   *        <code>false</code> if not.
+   *        <code>true</code> if connection status should be cared about, <code>false</code> if not.
    * @since v6.6.1
    */
   public static final void setCareAboutConnectionStatus (final boolean bCare)
@@ -208,8 +210,7 @@ public class DBExecutor implements Serializable
   }
 
   /**
-   * @return The current "connection established" state. Never
-   *         <code>null</code>.
+   * @return The current "connection established" state. Never <code>null</code>.
    */
   @Nonnull
   public static final ETriState getConnectionEstablished ()
@@ -265,8 +266,7 @@ public class DBExecutor implements Serializable
   }
 
   /**
-   * @return The callback to be invoked, if the connection status changes. May
-   *         be <code>null</code>.
+   * @return The callback to be invoked, if the connection status changes. May be <code>null</code>.
    */
   @Nullable
   public static final IConnectionStatusChangeCallback getConnectionStatusChangeCallback ()
@@ -275,8 +275,8 @@ public class DBExecutor implements Serializable
   }
 
   /**
-   * Set the callback to be invoked, if the connection status changes. Only one
-   * callback can be invoked.
+   * Set the callback to be invoked, if the connection status changes. Only one callback can be
+   * invoked.
    *
    * @param aCB
    *        The callback to be invoked. May be <code>null</code>.
@@ -287,8 +287,7 @@ public class DBExecutor implements Serializable
   }
 
   /**
-   * @return The mutable list of exception callbacks to be invoked in case of an
-   *         Exception.
+   * @return The mutable list of exception callbacks to be invoked in case of an Exception.
    */
   @Nonnull
   @ReturnsMutableObject
@@ -298,8 +297,8 @@ public class DBExecutor implements Serializable
   }
 
   /**
-   * @return The number of milliseconds after which a warning is emitted or a
-   *         value &le; 0 to indicate that the value is not relevant.
+   * @return The number of milliseconds after which a warning is emitted or a value &le; 0 to
+   *         indicate that the value is not relevant.
    */
   @CheckForSigned
   public final long getExecutionDurationWarnMS ()
@@ -308,11 +307,11 @@ public class DBExecutor implements Serializable
   }
 
   /**
-   * Check if the execution duration warning is enabled or not. This uses the
-   * defined execution duration milliseconds.
+   * Check if the execution duration warning is enabled or not. This uses the defined execution
+   * duration milliseconds.
    *
-   * @return <code>true</code> if the execution duration warning is enabled,
-   *         <code>false</code> if not.
+   * @return <code>true</code> if the execution duration warning is enabled, <code>false</code> if
+   *         not.
    * @see #getExecutionDurationWarnMS()
    * @see #setExecutionDurationWarnMS(long)
    */
@@ -325,8 +324,7 @@ public class DBExecutor implements Serializable
    * Set the execution duration warning milliseconds.
    *
    * @param nExecutionDurationWarnMS
-   *        All values &gt; 0 enable the warning, all other values disable the
-   *        warning.
+   *        All values &gt; 0 enable the warning, all other values disable the warning.
    * @return this for chaining
    */
   @Nonnull
@@ -356,8 +354,8 @@ public class DBExecutor implements Serializable
   }
 
   /**
-   * @return <code>true</code> if DB connection creation and destruction should
-   *         be debug logged, <code>false</code> otherwise.
+   * @return <code>true</code> if DB connection creation and destruction should be debug logged,
+   *         <code>false</code> otherwise.
    * @see #setDebugConnections(boolean)
    */
   public final boolean isDebugConnections ()
@@ -369,8 +367,7 @@ public class DBExecutor implements Serializable
    * Enable or disable the debug logging of DB connection actions.
    *
    * @param bDebugConnections
-   *        <code>true</code> to enable debug logging, <code>false</code> to not
-   *        do it
+   *        <code>true</code> to enable debug logging, <code>false</code> to not do it
    * @return this for chaining
    * @see #isDebugConnections()
    */
@@ -382,8 +379,8 @@ public class DBExecutor implements Serializable
   }
 
   /**
-   * @return <code>true</code> if DB transaction handling should be debug
-   *         logged, <code>false</code> otherwise.
+   * @return <code>true</code> if DB transaction handling should be debug logged, <code>false</code>
+   *         otherwise.
    * @see #setDebugTransactions(boolean)
    */
   public final boolean isDebugTransactions ()
@@ -395,8 +392,7 @@ public class DBExecutor implements Serializable
    * Enable or disable the debug logging of DB transaction actions.
    *
    * @param bDebugTransactions
-   *        <code>true</code> to enable debug logging, <code>false</code> to not
-   *        do it
+   *        <code>true</code> to enable debug logging, <code>false</code> to not do it
    * @return this for chaining
    * @see #isDebugTransactions()
    */
@@ -408,8 +404,8 @@ public class DBExecutor implements Serializable
   }
 
   /**
-   * @return <code>true</code> if SQL statements should be debug logged,
-   *         <code>false</code> otherwise.
+   * @return <code>true</code> if SQL statements should be debug logged, <code>false</code>
+   *         otherwise.
    * @see #setDebugSQLStatements(boolean)
    */
   public final boolean isDebugSQLStatements ()
@@ -421,8 +417,7 @@ public class DBExecutor implements Serializable
    * Enable or disable the debug logging of SQL statements.
    *
    * @param bDebugSQLStatements
-   *        <code>true</code> to enable debug logging, <code>false</code> to not
-   *        do it
+   *        <code>true</code> to enable debug logging, <code>false</code> to not do it
    * @return this for chaining
    * @see #isDebugSQLStatements()
    */
@@ -830,12 +825,11 @@ public class DBExecutor implements Serializable
    * @param sSQL
    *        The SQL to execute. May not be <code>null</code>.
    * @param aPSDP
-   *        The data provider for the prepared statement. May not be
-   *        <code>null</code>.
+   *        The data provider for the prepared statement. May not be <code>null</code>.
    * @param aExtraExCB
    *        An additional exception callback for this execution only.
-   * @return <code>null</code> if the execution failed (see exception handler)
-   *         and no key was created, or a non-<code>null</code> key.
+   * @return <code>null</code> if the execution failed (see exception handler) and no key was
+   *         created, or a non-<code>null</code> key.
    */
   @Nonnull
   public Object executePreparedStatementAndGetGeneratedKey (@Nonnull final String sSQL,
@@ -870,8 +864,7 @@ public class DBExecutor implements Serializable
    * @param aPSDP
    *        The prepared statement provider.
    * @param aGeneratedKeysCB
-   *        An optional callback to retrieve eventually generated values. May be
-   *        <code>null</code>.
+   *        An optional callback to retrieve eventually generated values. May be <code>null</code>.
    * @param aExtraExCB
    *        Per-call Exception callback. May be <code>null</code>.
    * @return The number of modified/inserted rows.
@@ -951,7 +944,7 @@ public class DBExecutor implements Serializable
     // length was ensured previously
     final StringBuilder aSB = new StringBuilder ((int) nClobLength);
     try (final Reader aReader = aClob.getCharacterStream ();
-        final NonBlockingBufferedReader aBufferedReader = new NonBlockingBufferedReader (aReader))
+         final NonBlockingBufferedReader aBufferedReader = new NonBlockingBufferedReader (aReader))
     {
       int ch;
       while ((ch = aBufferedReader.read ()) > -1)
@@ -965,8 +958,8 @@ public class DBExecutor implements Serializable
   }
 
   /**
-   * Iterate the passed result set, collect all values of a single result row,
-   * and call the callback for each row of result objects.
+   * Iterate the passed result set, collect all values of a single result row, and call the callback
+   * for each row of result objects.
    *
    * @param aRS
    *        The result set to iterate.
@@ -1030,8 +1023,7 @@ public class DBExecutor implements Serializable
    * @param sSQL
    *        The SQL to query. May neither be <code>null</code> nor empty.
    * @param aResultItemCallback
-   *        The result item callback to be invoked. May not be
-   *        <code>null</code>.
+   *        The result item callback to be invoked. May not be <code>null</code>.
    * @return {@link ESuccess} and never <code>null</code>.
    */
   @Nonnull
@@ -1064,17 +1056,15 @@ public class DBExecutor implements Serializable
   }
 
   /**
-   * Perform an SQL query that does contains parameters to be filled with the
-   * provided {@link IPreparedStatementDataProvider}.
+   * Perform an SQL query that does contains parameters to be filled with the provided
+   * {@link IPreparedStatementDataProvider}.
    *
    * @param sSQL
    *        The SQL to query. May neither be <code>null</code> nor empty.
    * @param aPSDP
-   *        The data provider for the SQL statement. May not be
-   *        <code>null</code>.
+   *        The data provider for the SQL statement. May not be <code>null</code>.
    * @param aResultItemCallback
-   *        The result item callback to be invoked. May not be
-   *        <code>null</code>.
+   *        The result item callback to be invoked. May not be <code>null</code>.
    * @return {@link ESuccess} and never <code>null</code>.
    */
   @Nonnull
@@ -1099,9 +1089,8 @@ public class DBExecutor implements Serializable
    *
    * @param sSQL
    *        The SQL to query. May neither be <code>null</code> nor empty.
-   * @return <code>null</code> in case of error (see the provided exception
-   *         handler) or a non-<code>null</code> but maybe empty list if
-   *         querying was successful.
+   * @return <code>null</code> in case of error (see the provided exception handler) or a
+   *         non-<code>null</code> but maybe empty list if querying was successful.
    */
   @Nullable
   public ICommonsList <DBResultRow> queryAll (@Nonnull @Nonempty final String sSQL)
@@ -1124,11 +1113,9 @@ public class DBExecutor implements Serializable
    * @param sSQL
    *        The SQL to query. May neither be <code>null</code> nor empty.
    * @param aPSDP
-   *        The data provider for the SQL statement. May not be
-   *        <code>null</code>.
-   * @return <code>null</code> in case of error (see the provided exception
-   *         handler) or a non-<code>null</code> but maybe empty list if
-   *         querying was successful.
+   *        The data provider for the SQL statement. May not be <code>null</code>.
+   * @return <code>null</code> in case of error (see the provided exception handler) or a
+   *         non-<code>null</code> but maybe empty list if querying was successful.
    */
   @Nullable
   public ICommonsList <DBResultRow> queryAll (@Nonnull @Nonempty final String sSQL,
@@ -1152,10 +1139,9 @@ public class DBExecutor implements Serializable
    * @param sSQL
    *        The SQL to query. May neither be <code>null</code> nor empty.
    * @param aConsumer
-   *        The consumer to be invoked with the result row. May not be
-   *        <code>null</code>. This is necessary to differentiate a
-   *        <code>null</code>-result was a "not found" or "a DB error". The
-   *        consumer is only invoked if no exception occurred.
+   *        The consumer to be invoked with the result row. May not be <code>null</code>. This is
+   *        necessary to differentiate a <code>null</code>-result was a "not found" or "a DB error".
+   *        The consumer is only invoked if no exception occurred.
    * @return {@link ESuccess} and never <code>null</code>.
    */
   @Nonnull
@@ -1179,13 +1165,11 @@ public class DBExecutor implements Serializable
    * @param sSQL
    *        The SQL to query. May neither be <code>null</code> nor empty.
    * @param aPSDP
-   *        The data provider for the SQL statement. May not be
-   *        <code>null</code>.
+   *        The data provider for the SQL statement. May not be <code>null</code>.
    * @param aConsumer
-   *        The consumer to be invoked with the result row. May not be
-   *        <code>null</code>. This is necessary to differentiate a
-   *        <code>null</code>-result was a "not found" or "a DB error". The
-   *        consumer is only invoked if no exception occurred.
+   *        The consumer to be invoked with the result row. May not be <code>null</code>. This is
+   *        necessary to differentiate a <code>null</code>-result was a "not found" or "a DB error".
+   *        The consumer is only invoked if no exception occurred.
    * @return {@link ESuccess} and never <code>null</code>.
    */
   @Nonnull

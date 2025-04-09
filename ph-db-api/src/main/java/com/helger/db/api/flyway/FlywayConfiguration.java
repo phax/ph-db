@@ -32,7 +32,7 @@ import com.helger.commons.string.ToStringGenerator;
  * Default implementation of {@link IFlywayConfiguration}.
  *
  * @author Philip Helger
- * @since 7.0.7
+ * @since 7.1.0
  */
 @Immutable
 public class FlywayConfiguration implements IFlywayConfiguration

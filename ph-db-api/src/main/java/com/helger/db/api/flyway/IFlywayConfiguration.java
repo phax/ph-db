@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
  * Flyway configuration interface
  *
  * @author Philip Helger
- * @since 7.0.7
+ * @since 7.1.0
  */
 public interface IFlywayConfiguration
 {

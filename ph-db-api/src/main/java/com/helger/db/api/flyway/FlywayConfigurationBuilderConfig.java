@@ -24,10 +24,13 @@ import com.helger.config.IConfig;
 import com.helger.db.api.flyway.FlywayConfiguration.FlywayConfigurationBuilder;
 
 /**
- * A specific {@link FlywayConfiguration} builder that takes values from configuration properties.
+ * A specific {@link FlywayConfiguration} builder that takes values from configuration
+ * properties.<br>
+ * Note: this must be in a separate file, because it relies on {@link IConfig} which is an optional
+ * compile time dependency to this module.
  *
  * @author Philip Helger
- * @since 7.0.7
+ * @since 7.1.0
  */
 public class FlywayConfigurationBuilderConfig extends FlywayConfigurationBuilder
 {

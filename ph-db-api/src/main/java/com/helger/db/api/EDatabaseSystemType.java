@@ -28,7 +28,7 @@ import com.helger.commons.name.IHasDisplayName;
  * Relational database system type. All IDs must be lowercase.
  *
  * @author Philip Helger
- * @since 7.0.7
+ * @since 7.1.0
  */
 public enum EDatabaseSystemType implements IHasID <String>, IHasDisplayName
 {
