@@ -18,37 +18,23 @@ package com.helger.db.api.config;
 
 import javax.annotation.Nullable;
 
-import com.helger.db.api.EDatabaseSystemType;
-
 /**
- * Read-only interface for JDBC configuration options.
+ * Read-only interface for JDBC data source configuration options.
  *
  * @author Philip Helger
  * @since 7.1.0
  */
-public interface IJdbcConfiguration extends IJdbcDataSourceConfiguration
+public interface IJdbcDataSourceConfiguration
 {
   @Nullable
-  String getJdbcDatabaseType ();
+  String getJdbcDriver ();
 
   @Nullable
-  default EDatabaseSystemType getJdbcDatabaseSystemType ()
-  {
-    final String sID = getJdbcDatabaseType ();
-    // Use case insensitive resolution by default
-    return EDatabaseSystemType.getFromIDCaseInsensitiveOrNull (sID);
-  }
+  String getJdbcUrl ();
 
   @Nullable
-  String getJdbcSchema ();
+  String getJdbcUser ();
 
-  boolean isJdbcExecutionTimeWarningEnabled ();
-
-  long getJdbcExecutionTimeWarningMilliseconds ();
-
-  boolean isJdbcDebugConnections ();
-
-  boolean isJdbcDebugTransactions ();
-
-  boolean isJdbcDebugSQL ();
+  @Nullable
+  String getJdbcPassword ();
 }
