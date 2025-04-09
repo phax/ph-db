@@ -41,7 +41,8 @@ public final class EDatabaseSystemTypeTest
       assertTrue (StringHelper.hasText (e.getID ()));
       assertEquals (e.getID (), e.getID ().toLowerCase (Locale.ROOT));
       assertTrue (StringHelper.hasText (e.getDisplayName ()));
-      assertSame (e, EDatabaseSystemType.getFromCaseIDInsensitiveOrNull (e.getID ()));
+      assertSame (e, EDatabaseSystemType.getFromIDOrNull (e.getID ()));
+      assertSame (e, EDatabaseSystemType.getFromIDCaseInsensitiveOrNull (e.getID ()));
     }
   }
 }
