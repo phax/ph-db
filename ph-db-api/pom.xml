@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger</groupId>
     <artifactId>ph-db-parent-pom</artifactId>
-    <version>7.0.7-SNAPSHOT</version>
+    <version>7.1.0-SNAPSHOT</version>
   </parent>
   <artifactId>ph-db-api</artifactId>
   <packaging>bundle</packaging>
@@ -88,6 +88,7 @@
             <Export-Package>
               com.helger.db.api,
               com.helger.db.api.callback,
+              com.helger.db.api.config,
               com.helger.db.api.flyway,
               com.helger.db.api.h2,
               com.helger.db.api.helper,
