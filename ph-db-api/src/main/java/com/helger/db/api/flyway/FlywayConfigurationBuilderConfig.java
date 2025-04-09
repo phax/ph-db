@@ -19,6 +19,7 @@ package com.helger.db.api.flyway;
 import javax.annotation.Nonnull;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.Nonempty;
 import com.helger.config.IConfig;
 import com.helger.db.api.flyway.FlywayConfiguration.FlywayConfigurationBuilder;
 
@@ -37,6 +38,8 @@ public class FlywayConfigurationBuilderConfig extends FlywayConfigurationBuilder
   public static final String SUFFIX_JDBC_SCHEMA_CREATE = "jdbc.schema-create";
   public static final String SUFFIX_BASELINE_VERSION = "baseline.version";
 
+  private final String m_sConfigPrefix;
+
   /**
    * Create a new builder, filled with values from the configuration
    *
@@ -54,6 +57,8 @@ public class FlywayConfigurationBuilderConfig extends FlywayConfigurationBuilder
       ValueEnforcer.isTrue (sConfigPrefix.endsWith ("."),
                             () -> "ConfigPrefix '" + sConfigPrefix + "' should end with a dot");
 
+    m_sConfigPrefix = sConfigPrefix;
+
     enabled (aConfig.getAsBoolean (sConfigPrefix + SUFFIX_ENABLED, FlywayConfiguration.DEFAULT_FLYWAY_ENABLED));
     jdbcUrl (aConfig.getAsString (sConfigPrefix + SUFFIX_JDBC_URL));
     jdbcUser (aConfig.getAsString (sConfigPrefix + SUFFIX_JDBC_USER));
@@ -62,5 +67,56 @@ public class FlywayConfigurationBuilderConfig extends FlywayConfigurationBuilder
                                         FlywayConfiguration.DEFAULT_FLYWAY_JDBC_SCHEMA_CREATE));
     baselineVersion (aConfig.getAsInt (sConfigPrefix + SUFFIX_BASELINE_VERSION,
                                        FlywayConfiguration.DEFAULT_FLYWAY_BASELINE_VERSION));
+  }
+
+  /**
+   * @return The configuration prefix provided in the constructor. Never <code>null</code>.
+   */
+  @Nonnull
+  public final String getConfigPrefix ()
+  {
+    return m_sConfigPrefix;
+  }
+
+  @Nonnull
+  @Nonempty
+  public final String getConfigKeyEnabled ()
+  {
+    return m_sConfigPrefix + SUFFIX_ENABLED;
+  }
+
+  @Nonnull
+  @Nonempty
+  public final String getConfigKeyJdbcUrl ()
+  {
+    return m_sConfigPrefix + SUFFIX_JDBC_URL;
+  }
+
+  @Nonnull
+  @Nonempty
+  public final String getConfigKeyJdbcUser ()
+  {
+    return m_sConfigPrefix + SUFFIX_JDBC_USER;
+  }
+
+  @Nonnull
+  @Nonempty
+  public final String getConfigKeyJdbcPassword ()
+  {
+    return m_sConfigPrefix + SUFFIX_JDBC_PASSWORD;
+  }
+
+  @Nonnull
+  @Nonempty
+  public final String getConfigKeySchemaCreate ()
+  {
+    return m_sConfigPrefix + SUFFIX_JDBC_SCHEMA_CREATE;
+  }
+
+  @Nonnull
+  @Nonempty
+  public final String getConfigKeyBaselineVersion ()
+  {
+    return m_sConfigPrefix + SUFFIX_BASELINE_VERSION;
   }
 }
