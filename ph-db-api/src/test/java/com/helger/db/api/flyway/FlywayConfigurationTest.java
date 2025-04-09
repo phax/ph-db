@@ -98,7 +98,7 @@ public class FlywayConfigurationTest
   {
     // Use an empty builder
     final FlywayConfiguration a = FlywayConfiguration.builder ()
-                                                     .enabled ()
+                                                     .enabled (true)
                                                      .jdbcUrl ("url")
                                                      .jdbcUser ("user")
                                                      .jdbcPassword ("pw")

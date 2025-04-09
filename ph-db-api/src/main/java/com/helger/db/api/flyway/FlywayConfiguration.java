@@ -190,16 +190,9 @@ public class FlywayConfiguration implements IFlywayConfiguration
                                         .baselineVersion (aBase.getFlywayBaselineVersion ());
     }
 
-    @Nonnull
-    public FlywayConfigurationBuilder enabled ()
+    public final boolean enabled ()
     {
-      return enabled (true);
-    }
-
-    @Nonnull
-    public FlywayConfigurationBuilder disabled ()
-    {
-      return enabled (false);
+      return m_bEnabled;
     }
 
     @Nonnull
@@ -209,11 +202,23 @@ public class FlywayConfiguration implements IFlywayConfiguration
       return this;
     }
 
+    @Nullable
+    public final String jdbcUrl ()
+    {
+      return m_sJdbcUrl;
+    }
+
     @Nonnull
     public FlywayConfigurationBuilder jdbcUrl (@Nullable final String s)
     {
       m_sJdbcUrl = s;
       return this;
+    }
+
+    @Nullable
+    public final String jdbcUser ()
+    {
+      return m_sJdbcUser;
     }
 
     @Nonnull
@@ -223,6 +228,12 @@ public class FlywayConfiguration implements IFlywayConfiguration
       return this;
     }
 
+    @Nullable
+    public final String jdbcPassword ()
+    {
+      return m_sJdbcPassword;
+    }
+
     @Nonnull
     public FlywayConfigurationBuilder jdbcPassword (@Nullable final String s)
     {
@@ -230,11 +241,21 @@ public class FlywayConfiguration implements IFlywayConfiguration
       return this;
     }
 
+    public final boolean schemaCreate ()
+    {
+      return m_bSchemaCreate;
+    }
+
     @Nonnull
     public FlywayConfigurationBuilder schemaCreate (final boolean b)
     {
       m_bSchemaCreate = b;
       return this;
+    }
+
+    public final int baselineVersion ()
+    {
+      return m_nBaselineVersion;
     }
 
     @Nonnull
