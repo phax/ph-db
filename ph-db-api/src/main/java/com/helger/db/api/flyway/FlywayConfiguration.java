@@ -140,12 +140,12 @@ public class FlywayConfiguration implements IFlywayConfiguration
   }
 
   /**
-   * @return A new empty {@link Builder}. Never <code>null</code>.
+   * @return A new empty {@link FlywayConfigurationBuilder}. Never <code>null</code>.
    */
   @Nonnull
-  public static Builder builder ()
+  public static FlywayConfigurationBuilder builder ()
   {
-    return new Builder ();
+    return new FlywayConfigurationBuilder ();
   }
 
   /**
@@ -153,12 +153,13 @@ public class FlywayConfiguration implements IFlywayConfiguration
    *
    * @param aBase
    *        The base object to take over the value. May not be <code>null</code>.
-   * @return A new {@link Builder} that contains the values of the existing object.
+   * @return A new {@link FlywayConfigurationBuilder} that contains the values of the existing
+   *         object.
    */
   @Nonnull
-  public static Builder builder (@Nonnull final IFlywayConfiguration aBase)
+  public static FlywayConfigurationBuilder builder (@Nonnull final IFlywayConfiguration aBase)
   {
-    return new Builder (aBase);
+    return new FlywayConfigurationBuilder (aBase);
   }
 
   /**
@@ -167,7 +168,7 @@ public class FlywayConfiguration implements IFlywayConfiguration
    * @author Philip Helger
    */
   @NotThreadSafe
-  public static class Builder implements IBuilder <FlywayConfiguration>
+  public static class FlywayConfigurationBuilder implements IBuilder <FlywayConfiguration>
   {
     private boolean m_bEnabled = DEFAULT_FLYWAY_ENABLED;
     private String m_sJdbcUrl;
@@ -176,10 +177,10 @@ public class FlywayConfiguration implements IFlywayConfiguration
     private boolean m_bSchemaCreate = DEFAULT_FLYWAY_JDBC_SCHEMA_CREATE;
     private int m_nBaselineVersion = DEFAULT_FLYWAY_BASELINE_VERSION;
 
-    public Builder ()
+    public FlywayConfigurationBuilder ()
     {}
 
-    public Builder (@Nonnull final IFlywayConfiguration aBase)
+    public FlywayConfigurationBuilder (@Nonnull final IFlywayConfiguration aBase)
     {
       ValueEnforcer.notNull (aBase, "Base");
       enabled (aBase.isFlywayEnabled ()).jdbcUrl (aBase.getFlywayJdbcUrl ())
@@ -190,54 +191,54 @@ public class FlywayConfiguration implements IFlywayConfiguration
     }
 
     @Nonnull
-    public Builder enabled ()
+    public FlywayConfigurationBuilder enabled ()
     {
       return enabled (true);
     }
 
     @Nonnull
-    public Builder disabled ()
+    public FlywayConfigurationBuilder disabled ()
     {
       return enabled (false);
     }
 
     @Nonnull
-    public Builder enabled (final boolean b)
+    public FlywayConfigurationBuilder enabled (final boolean b)
     {
       m_bEnabled = b;
       return this;
     }
 
     @Nonnull
-    public Builder jdbcUrl (@Nullable final String s)
+    public FlywayConfigurationBuilder jdbcUrl (@Nullable final String s)
     {
       m_sJdbcUrl = s;
       return this;
     }
 
     @Nonnull
-    public Builder jdbcUser (@Nullable final String s)
+    public FlywayConfigurationBuilder jdbcUser (@Nullable final String s)
     {
       m_sJdbcUser = s;
       return this;
     }
 
     @Nonnull
-    public Builder jdbcPassword (@Nullable final String s)
+    public FlywayConfigurationBuilder jdbcPassword (@Nullable final String s)
     {
       m_sJdbcPassword = s;
       return this;
     }
 
     @Nonnull
-    public Builder schemaCreate (final boolean b)
+    public FlywayConfigurationBuilder schemaCreate (final boolean b)
     {
       m_bSchemaCreate = b;
       return this;
     }
 
     @Nonnull
-    public Builder baselineVersion (@Nonnegative final int n)
+    public FlywayConfigurationBuilder baselineVersion (@Nonnegative final int n)
     {
       ValueEnforcer.isGE0 (n, "BaselineVersion");
 
