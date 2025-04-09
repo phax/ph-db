@@ -20,6 +20,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.Nonempty;
 import com.helger.config.IConfig;
 
 /**
@@ -66,10 +67,33 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
     m_sConfigPrefix = sConfigPrefix;
   }
 
+  /**
+   * @return The configuration prefix provided in the constructor. Never <code>null</code>.
+   */
+  @Nonnull
+  public final String getConfigPrefix ()
+  {
+    return m_sConfigPrefix;
+  }
+
+  @Nonnull
+  @Nonempty
+  public final String getConfigKeyDatabaseType ()
+  {
+    return m_sConfigPrefix + SUFFIX_DATABASE_TYPE;
+  }
+
   @Nullable
   public String getJdbcDatabaseType ()
   {
     return m_aConfig.getAsString (m_sConfigPrefix + SUFFIX_DATABASE_TYPE);
+  }
+
+  @Nonnull
+  @Nonempty
+  public final String getConfigKeyJdbcDriver ()
+  {
+    return m_sConfigPrefix + SUFFIX_DRIVER;
   }
 
   @Nullable
@@ -78,10 +102,24 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
     return m_aConfig.getAsString (m_sConfigPrefix + SUFFIX_DRIVER);
   }
 
+  @Nonnull
+  @Nonempty
+  public final String getConfigKeyJdbcUrl ()
+  {
+    return m_sConfigPrefix + SUFFIX_URL;
+  }
+
   @Nullable
   public String getJdbcUrl ()
   {
     return m_aConfig.getAsString (m_sConfigPrefix + SUFFIX_URL);
+  }
+
+  @Nonnull
+  @Nonempty
+  public final String getConfigKeyJdbcUser ()
+  {
+    return m_sConfigPrefix + SUFFIX_USER;
   }
 
   @Nullable
@@ -90,10 +128,24 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
     return m_aConfig.getAsString (m_sConfigPrefix + SUFFIX_USER);
   }
 
+  @Nonnull
+  @Nonempty
+  public final String getConfigKeyJdbcPassword ()
+  {
+    return m_sConfigPrefix + SUFFIX_PASSWORD;
+  }
+
   @Nullable
   public String getJdbcPassword ()
   {
     return m_aConfig.getAsString (m_sConfigPrefix + SUFFIX_PASSWORD);
+  }
+
+  @Nonnull
+  @Nonempty
+  public final String getConfigKeyJdbcSchema ()
+  {
+    return m_sConfigPrefix + SUFFIX_SCHEMA;
   }
 
   @Nullable
@@ -102,10 +154,24 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
     return m_aConfig.getAsString (m_sConfigPrefix + SUFFIX_SCHEMA);
   }
 
+  @Nonnull
+  @Nonempty
+  public final String getConfigKeyJdbcExecutionTimeWarningEnabled ()
+  {
+    return m_sConfigPrefix + SUFFIX_EXECUTION_TIME_WARNING_ENABLED;
+  }
+
   public boolean isJdbcExecutionTimeWarningEnabled ()
   {
     return m_aConfig.getAsBoolean (m_sConfigPrefix + SUFFIX_EXECUTION_TIME_WARNING_ENABLED,
                                    JdbcConfiguration.DEFAULT_EXECUTION_TIME_WARNING_ENABLED);
+  }
+
+  @Nonnull
+  @Nonempty
+  public final String getConfigKeyJdbcExecutionTimeWarningMilliseconds ()
+  {
+    return m_sConfigPrefix + SUFFIX_EXECUTION_TIME_WARNING_MS;
   }
 
   public long getJdbcExecutionTimeWarningMilliseconds ()
@@ -114,16 +180,37 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
                                 JdbcConfiguration.DEFAULT_EXECUTION_DURATION_WARN_MS);
   }
 
+  @Nonnull
+  @Nonempty
+  public final String getConfigKeyJdbcDebugConnections ()
+  {
+    return m_sConfigPrefix + SUFFIX_DEBUG_CONNECTIONS;
+  }
+
   public boolean isJdbcDebugConnections ()
   {
     return m_aConfig.getAsBoolean (m_sConfigPrefix + SUFFIX_DEBUG_CONNECTIONS,
                                    JdbcConfiguration.DEFAULT_DEBUG_CONNECTIONS);
   }
 
+  @Nonnull
+  @Nonempty
+  public final String getConfigKeyJdbcDebugTransactions ()
+  {
+    return m_sConfigPrefix + SUFFIX_DEBUG_TRANSACTIONS;
+  }
+
   public boolean isJdbcDebugTransactions ()
   {
     return m_aConfig.getAsBoolean (m_sConfigPrefix + SUFFIX_DEBUG_TRANSACTIONS,
                                    JdbcConfiguration.DEFAULT_DEBUG_TRANSACTIONS);
+  }
+
+  @Nonnull
+  @Nonempty
+  public final String getConfigKeyJdbcDebugSQL ()
+  {
+    return m_sConfigPrefix + SUFFIX_DEBUG_SQL;
   }
 
   public boolean isJdbcDebugSQL ()
