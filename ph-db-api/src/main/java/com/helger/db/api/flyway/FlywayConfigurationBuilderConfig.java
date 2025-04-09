@@ -44,7 +44,8 @@ public class FlywayConfigurationBuilderConfig extends FlywayConfigurationBuilder
   private final String m_sConfigPrefix;
 
   /**
-   * Create a new builder, filled with values from the configuration
+   * Create a new builder, filled with values from the configuration. This eagerly reads all
+   * configuration properties.
    *
    * @param aConfig
    *        The config object to use. May not be <code>null</code>.

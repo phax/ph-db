@@ -24,7 +24,8 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.config.IConfig;
 
 /**
- * JDBC configuration accessor from configuration
+ * JDBC configuration accessor from configuration. It resolves the configuration properties on
+ * demand.
  *
  * @author Philip Helger
  * @since 7.1.0
