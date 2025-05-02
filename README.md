@@ -38,6 +38,8 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 
 # News and noteworthy
 
+* v7.1.1 - work in progess
+    * Updated to MySQLConnector/J 9.3.0
 * v7.1.0 - 2025-04-11
     * Updated to Apache Commons Pool 2.12.1
     * Added new enum `EDatabaseSystemType`
