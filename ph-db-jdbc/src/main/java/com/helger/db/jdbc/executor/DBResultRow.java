@@ -76,7 +76,7 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
   }
 
   /**
-   * Create an empty result row with the specified number of colums.
+   * Create an empty result row with the specified number of columns.
    *
    * @param nCols
    *        Number of columns. Must be be &ge; 0.
@@ -89,8 +89,8 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
   }
 
   /**
-   * Set all columns to <code>null</code> and restart the index at 0. This is
-   * mainly intended to reuse the same object in a loop.
+   * Set all columns to <code>null</code> and restart the index at 0. This is mainly intended to
+   * reuse the same object in a loop.
    */
   protected void internalClear ()
   {
@@ -99,8 +99,7 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
   }
 
   /**
-   * Add a new result field in the the first free column. This method increases
-   * the index.
+   * Add a new result field in the the first free column. This method increases the index.
    *
    * @param aResultField
    *        The result field to add. May not be <code>null</code>.
@@ -114,8 +113,7 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
   }
 
   /**
-   * @return The last used column. For an empty object that is
-   *         <code>null</code>.
+   * @return The last used column. For an empty object that is <code>null</code>.
    */
   @Nonnegative
   public int getUsedColumnIndex ()
@@ -124,8 +122,7 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
   }
 
   /**
-   * @return The number of columns as provided in the constructor. Always &ge;
-   *         0.
+   * @return The number of columns as provided in the constructor. Always &ge; 0.
    */
   @Nonnegative
   public int getColumnCount ()
@@ -157,8 +154,7 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
    * @throws ArrayIndexOutOfBoundsException
    *         If the index is invalid
    * @throws NullPointerException
-   *         if the column at the specified index contains a <code>null</code>
-   *         value
+   *         if the column at the specified index contains a <code>null</code> value
    */
   public int getColumnType (@Nonnegative final int nIndex)
   {
@@ -170,13 +166,11 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
    *
    * @param nIndex
    *        The 0-based index to query
-   * @return The column type name based on the constants of
-   *         {@link java.sql.Types}.
+   * @return The column type name based on the constants of {@link java.sql.Types}.
    * @throws ArrayIndexOutOfBoundsException
    *         If the index is invalid
    * @throws NullPointerException
-   *         if the column at the specified index contains a <code>null</code>
-   *         value
+   *         if the column at the specified index contains a <code>null</code> value
    */
   @Nullable
   public String getColumnTypeName (@Nonnegative final int nIndex)
@@ -193,8 +187,7 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
    * @throws ArrayIndexOutOfBoundsException
    *         If the index is invalid
    * @throws NullPointerException
-   *         if the column at the specified index contains a <code>null</code>
-   *         value
+   *         if the column at the specified index contains a <code>null</code> value
    */
   @Nonnull
   @Nonempty
@@ -493,8 +486,7 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
   }
 
   /**
-   * @return A map that contains the mapping from column name to the respective
-   *         index
+   * @return A map that contains the mapping from column name to the respective index
    */
   @Nonnull
   @ReturnsMutableCopy
