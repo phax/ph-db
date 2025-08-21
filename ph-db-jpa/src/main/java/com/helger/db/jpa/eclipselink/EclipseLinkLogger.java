@@ -16,7 +16,7 @@
  */
 package com.helger.db.jpa.eclipselink;
 
-import javax.annotation.Nonnull;
+import java.util.List;
 
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
@@ -24,13 +24,13 @@ import org.eclipse.persistence.logging.SessionLogEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.system.ENewLineMode;
+import com.helger.base.string.StringHelper;
+import com.helger.base.system.ENewLineMode;
+
+import jakarta.annotation.Nonnull;
 
 /**
- * A logging adapter that can be hooked into JPA and forwards all logging
- * requests to SLF4J.
+ * A logging adapter that can be hooked into JPA and forwards all logging requests to SLF4J.
  *
  * @author Philip Helger
  */
@@ -46,8 +46,8 @@ public class EclipseLinkLogger extends AbstractSessionLog
       return;
 
     // JPA uses the System property for adding line breaks
-    final ICommonsList <String> aMsgLines = StringHelper.getExploded (ENewLineMode.DEFAULT.getText (),
-                                                                      formatMessage (aSessionLogEntry));
+    final List <String> aMsgLines = StringHelper.getExploded (ENewLineMode.DEFAULT.getText (),
+                                                              formatMessage (aSessionLogEntry));
     final int nMaxIndex = aMsgLines.size ();
     for (int i = 0; i < nMaxIndex; ++i)
     {

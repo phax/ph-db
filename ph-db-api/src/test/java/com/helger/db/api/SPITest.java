@@ -18,7 +18,7 @@ package com.helger.db.api;
 
 import org.junit.Test;
 
-import com.helger.commons.mock.SPITestHelper;
+import com.helger.unittestext.SPITestHelper;
 
 public final class SPITest
 {

@@ -16,9 +16,8 @@
  */
 package com.helger.db.jpa.proxy;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityManager;
 
 public class EntityManagerWithListener extends EntityManagerProxy

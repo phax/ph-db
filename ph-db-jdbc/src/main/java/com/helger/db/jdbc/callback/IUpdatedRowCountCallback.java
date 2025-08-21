@@ -16,10 +16,9 @@
  */
 package com.helger.db.jdbc.callback;
 
-import javax.annotation.CheckForSigned;
-
-import com.helger.commons.CGlobal;
-import com.helger.commons.callback.ICallback;
+import com.helger.annotation.CheckForSigned;
+import com.helger.base.CGlobal;
+import com.helger.base.callback.ICallback;
 
 /**
  * This callback is used to retrieve generated keys upon insertion.

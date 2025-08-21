@@ -16,11 +16,11 @@
  */
 package com.helger.db.jdbc.db2;
 
-import javax.annotation.Nonnull;
-
-import com.helger.commons.annotation.Nonempty;
+import com.helger.annotation.Nonempty;
 import com.helger.db.api.CJDBC_DB2;
 import com.helger.db.jdbc.AbstractDBConnector;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Abstract DB connector for DB2

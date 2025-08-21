@@ -16,12 +16,12 @@
  */
 package com.helger.db.api.flyway;
 
-import javax.annotation.Nonnull;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
+import com.helger.annotation.Nonempty;
+import com.helger.base.enforce.ValueEnforcer;
 import com.helger.config.IConfig;
 import com.helger.db.api.flyway.FlywayConfiguration.FlywayConfigurationBuilder;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * A specific {@link FlywayConfiguration} builder that takes values from configuration

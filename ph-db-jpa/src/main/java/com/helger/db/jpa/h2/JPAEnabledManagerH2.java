@@ -16,17 +16,17 @@
  */
 package com.helger.db.jpa.h2;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.ThreadSafe;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.annotation.Nonempty;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.db.api.h2.EH2LockMode;
 import com.helger.db.api.h2.EH2Log;
 import com.helger.db.jpa.IHasEntityManager;
 import com.helger.db.jpa.JPAEnabledManager;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Special H2 version of {@link JPAEnabledManager}

@@ -16,10 +16,10 @@
  */
 package com.helger.db.api.callback;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+import com.helger.annotation.Nonnegative;
+import com.helger.base.callback.ICallback;
 
-import com.helger.commons.callback.ICallback;
+import jakarta.annotation.Nonnull;
 
 /**
  * Callback interface to be used to notify interested parties when a statement

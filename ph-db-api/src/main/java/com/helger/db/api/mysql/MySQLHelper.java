@@ -18,14 +18,14 @@ package com.helger.db.api.mysql;
 
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.url.SimpleURL;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.base.enforce.ValueEnforcer;
 import com.helger.db.api.CJDBC_MySQL;
+import com.helger.http.url.SimpleURL;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Helper class especially for MySQL.
@@ -39,16 +39,15 @@ public final class MySQLHelper
   {}
 
   /**
-   * Build the final connection string from the base JDBC URL and an optional
-   * set of connection properties.
+   * Build the final connection string from the base JDBC URL and an optional set of connection
+   * properties.
    *
    * @param sJdbcURL
-   *        The base JDBC URL. May neither be <code>null</code> nor empty and
-   *        must started with {@link CJDBC_MySQL#CONNECTION_PREFIX}
+   *        The base JDBC URL. May neither be <code>null</code> nor empty and must started with
+   *        {@link CJDBC_MySQL#CONNECTION_PREFIX}
    * @param aConnectionProperties
    *        An map with all connection properties. May be <code>null</code> .
-   * @return The final JDBC connection string to be used. Never
-   *         <code>null</code> or empty
+   * @return The final JDBC connection string to be used. Never <code>null</code> or empty
    */
   @Nonnull
   @Nonempty

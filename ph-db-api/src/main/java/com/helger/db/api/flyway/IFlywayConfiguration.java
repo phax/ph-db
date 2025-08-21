@@ -16,8 +16,9 @@
  */
 package com.helger.db.api.flyway;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nullable;
+import com.helger.annotation.Nonnegative;
+
+import jakarta.annotation.Nullable;
 
 /**
  * Flyway configuration interface

@@ -25,18 +25,18 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.datetime.XMLOffsetDateTime;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.datetime.xml.XMLOffsetDateTime;
+
+import jakarta.annotation.Nullable;
 
 /**
- * A common helper class that deals with values in databases. Focussing on types
- * as well as on length restrictions.
+ * A common helper class that deals with values in databases. Focussing on types as well as on
+ * length restrictions.
  *
  * @author Philip Helger
  * @since 6.7.3

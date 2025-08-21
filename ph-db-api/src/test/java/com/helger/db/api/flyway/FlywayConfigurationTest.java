@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.helger.commons.mock.CommonsTestHelper;
+import com.helger.unittest.support.TestHelper;
 
 /**
  * Test class for class {@link FlywayConfiguration}.
@@ -42,55 +42,55 @@ public class FlywayConfigurationTest
     assertTrue (a.isFlywaySchemaCreate ());
     assertEquals (0, a.getFlywayBaselineVersion ());
 
-    CommonsTestHelper.testDefaultImplementationWithEqualContentObject (a,
-                                                                       new FlywayConfiguration (false,
-                                                                                                "url",
-                                                                                                "usr",
-                                                                                                "pw",
-                                                                                                true,
-                                                                                                0));
-    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (a,
-                                                                           new FlywayConfiguration (true,
-                                                                                                    "url",
-                                                                                                    "usr",
-                                                                                                    "pw",
-                                                                                                    true,
-                                                                                                    0));
-    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (a,
-                                                                           new FlywayConfiguration (false,
-                                                                                                    "url2",
-                                                                                                    "usr",
-                                                                                                    "pw",
-                                                                                                    true,
-                                                                                                    0));
-    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (a,
-                                                                           new FlywayConfiguration (false,
-                                                                                                    "url",
-                                                                                                    "usr2",
-                                                                                                    "pw",
-                                                                                                    true,
-                                                                                                    0));
-    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (a,
-                                                                           new FlywayConfiguration (false,
-                                                                                                    "url",
-                                                                                                    "usr",
-                                                                                                    "pw2",
-                                                                                                    true,
-                                                                                                    0));
-    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (a,
-                                                                           new FlywayConfiguration (false,
-                                                                                                    "url",
-                                                                                                    "usr",
-                                                                                                    "pw",
-                                                                                                    false,
-                                                                                                    0));
-    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (a,
-                                                                           new FlywayConfiguration (false,
-                                                                                                    "url",
-                                                                                                    "usr",
-                                                                                                    "pw",
-                                                                                                    true,
-                                                                                                    1));
+    TestHelper.testDefaultImplementationWithEqualContentObject (a,
+                                                                new FlywayConfiguration (false,
+                                                                                         "url",
+                                                                                         "usr",
+                                                                                         "pw",
+                                                                                         true,
+                                                                                         0));
+    TestHelper.testDefaultImplementationWithDifferentContentObject (a,
+                                                                    new FlywayConfiguration (true,
+                                                                                             "url",
+                                                                                             "usr",
+                                                                                             "pw",
+                                                                                             true,
+                                                                                             0));
+    TestHelper.testDefaultImplementationWithDifferentContentObject (a,
+                                                                    new FlywayConfiguration (false,
+                                                                                             "url2",
+                                                                                             "usr",
+                                                                                             "pw",
+                                                                                             true,
+                                                                                             0));
+    TestHelper.testDefaultImplementationWithDifferentContentObject (a,
+                                                                    new FlywayConfiguration (false,
+                                                                                             "url",
+                                                                                             "usr2",
+                                                                                             "pw",
+                                                                                             true,
+                                                                                             0));
+    TestHelper.testDefaultImplementationWithDifferentContentObject (a,
+                                                                    new FlywayConfiguration (false,
+                                                                                             "url",
+                                                                                             "usr",
+                                                                                             "pw2",
+                                                                                             true,
+                                                                                             0));
+    TestHelper.testDefaultImplementationWithDifferentContentObject (a,
+                                                                    new FlywayConfiguration (false,
+                                                                                             "url",
+                                                                                             "usr",
+                                                                                             "pw",
+                                                                                             false,
+                                                                                             0));
+    TestHelper.testDefaultImplementationWithDifferentContentObject (a,
+                                                                    new FlywayConfiguration (false,
+                                                                                             "url",
+                                                                                             "usr",
+                                                                                             "pw",
+                                                                                             true,
+                                                                                             1));
   }
 
   @Test
@@ -114,6 +114,6 @@ public class FlywayConfigurationTest
 
     // Create a copy via the builder
     final FlywayConfiguration a2 = FlywayConfiguration.builder (a).build ();
-    CommonsTestHelper.testDefaultImplementationWithEqualContentObject (a, a2);
+    TestHelper.testDefaultImplementationWithEqualContentObject (a, a2);
   }
 }

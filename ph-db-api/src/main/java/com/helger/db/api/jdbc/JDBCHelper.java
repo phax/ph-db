@@ -21,16 +21,16 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.lang.ClassHelper;
-import com.helger.commons.state.ESuccess;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.lang.clazz.ClassHelper;
+import com.helger.base.state.ESuccess;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Small class for safe SQL-as-usual methods.
@@ -189,16 +189,16 @@ public final class JDBCHelper
       if (aClass.equals (java.time.OffsetDateTime.class))
         return Types.TIMESTAMP;
 
-      if (aClass.equals (com.helger.commons.datetime.XMLOffsetDateTime.class))
+      if (aClass.equals (com.helger.datetime.xml.XMLOffsetDateTime.class))
         return Types.TIMESTAMP;
 
       if (aClass.equals (java.time.LocalDateTime.class))
         return Types.TIMESTAMP;
 
-      if (aClass.equals (com.helger.commons.datetime.OffsetDate.class))
+      if (aClass.equals (com.helger.datetime.rt.OffsetDate.class))
         return Types.DATE;
 
-      if (aClass.equals (com.helger.commons.datetime.XMLOffsetDate.class))
+      if (aClass.equals (com.helger.datetime.xml.XMLOffsetDate.class))
         return Types.DATE;
 
       if (aClass.equals (java.time.LocalDate.class))
@@ -207,7 +207,7 @@ public final class JDBCHelper
       if (aClass.equals (java.time.OffsetTime.class))
         return Types.TIME;
 
-      if (aClass.equals (com.helger.commons.datetime.XMLOffsetTime.class))
+      if (aClass.equals (com.helger.datetime.xml.XMLOffsetTime.class))
         return Types.TIME;
 
       if (aClass.equals (java.time.LocalTime.class))

@@ -16,7 +16,7 @@
  */
 package com.helger.db.api.h2;
 
-import com.helger.commons.id.IHasIntID;
+import com.helger.base.id.IHasIntID;
 
 /**
  * H2 lock mode

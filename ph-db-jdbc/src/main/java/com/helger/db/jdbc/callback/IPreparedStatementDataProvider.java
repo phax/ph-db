@@ -18,10 +18,10 @@ package com.helger.db.jdbc.callback;
 
 import java.io.Serializable;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+import com.helger.annotation.Nonnegative;
+import com.helger.collection.commons.ICommonsList;
 
-import com.helger.commons.collection.impl.ICommonsList;
+import jakarta.annotation.Nonnull;
 
 /**
  * Interface for objects that deliver content to pass parameters to a prepared

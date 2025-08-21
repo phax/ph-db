@@ -55,11 +55,10 @@
   
   <dependencyManagement>
     <dependencies>
-      <!-- 3.2.0 requires Java 17 -->
       <dependency>
         <groupId>jakarta.persistence</groupId>
         <artifactId>jakarta.persistence-api</artifactId>
-        <version>3.1.0</version>
+        <version>3.2.0</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.persistence</groupId>
@@ -86,10 +85,6 @@
   </dependencyManagement>
   
   <dependencies>
-    <dependency>
-      <groupId>com.helger.commons</groupId>
-      <artifactId>ph-commons</artifactId>
-    </dependency>
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-db-api</artifactId>

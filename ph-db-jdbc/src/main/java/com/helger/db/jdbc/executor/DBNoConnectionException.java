@@ -18,7 +18,7 @@ package com.helger.db.jdbc.executor;
 
 import java.sql.SQLException;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * A special exception that is thrown to indicate that no Connection could be

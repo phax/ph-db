@@ -16,16 +16,18 @@
  */
 package com.helger.db.api.supplementary.tools;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.style.CodingStyleguideUnaware;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.string.StringHelper;
+import com.helger.base.string.StringHex;
+import com.helger.base.string.StringReplace;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.commons.CommonsLinkedHashMap;
+import com.helger.collection.commons.ICommonsOrderedMap;
 
-import com.helger.commons.annotation.CodingStyleguideUnaware;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.impl.CommonsLinkedHashMap;
-import com.helger.commons.collection.impl.ICommonsOrderedMap;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Contains some predefined entities.
@@ -320,7 +322,7 @@ public enum EHTMLEntity
       if (CHAR_TO_ENTITY_MAP.put (aChar, e) != null)
         throw new IllegalStateException ("Another entity reference for '" +
                                          "0x" +
-                                         StringHelper.getHexStringLeadingZero (e.m_cChar, 4) +
+                                         StringHex.getHexStringLeadingZero (e.m_cChar, 4) +
                                          "' is already contained!");
 
       if (ENTITY_REF_TO_CHAR_MAP.put (sEntityRef, aChar) != null)
@@ -332,23 +334,23 @@ public enum EHTMLEntity
       if (CHAR_TO_ENTITY_REF_MAP.put (aChar, sEntityRef) != null)
         throw new IllegalStateException ("Another entity reference for '" +
                                          "0x" +
-                                         StringHelper.getHexStringLeadingZero (e.m_cChar, 4) +
+                                         StringHex.getHexStringLeadingZero (e.m_cChar, 4) +
                                          "' is already contained!");
 
       if (CHAR_STRING_TO_ENTITY_REF_MAP.put (aChar.toString (), sEntityRef) != null)
         throw new IllegalStateException ("Another entity reference for '" +
                                          "0x" +
-                                         StringHelper.getHexStringLeadingZero (e.m_cChar, 4) +
+                                         StringHex.getHexStringLeadingZero (e.m_cChar, 4) +
                                          "' is already contained!");
     }
   }
 
   private final String m_sEntityName;
   private final String m_sEntityReference;
-  private char m_cChar;
+  private final char m_cChar;
   private final String m_sDescription;
 
-  private EHTMLEntity (@Nonnull @Nonempty final String sName, final char c, @Nonnull @Nonempty final String sDescription)
+  EHTMLEntity (@Nonnull @Nonempty final String sName, final char c, @Nonnull @Nonempty final String sDescription)
   {
     m_sEntityName = sName;
     m_sEntityReference = '&' + sName + ';';
@@ -379,8 +381,7 @@ public enum EHTMLEntity
   }
 
   /**
-   * @return The source character object matching the entity. Never
-   *         <code>null</code>.
+   * @return The source character object matching the entity. Never <code>null</code>.
    */
   @Nonnull
   public Character getCharObj ()
@@ -408,7 +409,7 @@ public enum EHTMLEntity
   public String toString ()
   {
     return new ToStringGenerator (this).append ("name", m_sEntityName)
-                                       .append ("char", "0x" + StringHelper.getHexStringLeadingZero (m_cChar, 4))
+                                       .append ("char", "0x" + StringHex.getHexStringLeadingZero (m_cChar, 4))
                                        .append ("description", m_sDescription)
                                        .getToString ();
   }
@@ -426,8 +427,7 @@ public enum EHTMLEntity
   }
 
   /**
-   * Get the predefined HTML entity for the specified entity reference string is
-   * valid.
+   * Get the predefined HTML entity for the specified entity reference string is valid.
    *
    * @param sEntityReference
    *        The string to be checked (e.g. <code>"&amp;ndash;"</code>)
@@ -440,13 +440,11 @@ public enum EHTMLEntity
   }
 
   /**
-   * Check if the passed character can be presented by an entity reference
-   * string.
+   * Check if the passed character can be presented by an entity reference string.
    *
    * @param c
    *        The char to be checked (e.g. <code>'–'</code>)
-   * @return <code>true</code> if an entity representation is present,
-   *         <code>false</code> if not
+   * @return <code>true</code> if an entity representation is present, <code>false</code> if not
    */
   public static boolean isValidEntityChar (final char c)
   {
@@ -454,8 +452,7 @@ public enum EHTMLEntity
   }
 
   /**
-   * Get the predefined HTML entity to be used to represent the passed
-   * character.
+   * Get the predefined HTML entity to be used to represent the passed character.
    *
    * @param c
    *        The char to be checked (e.g. <code>'–'</code>)
@@ -468,9 +465,9 @@ public enum EHTMLEntity
   }
 
   /**
-   * @return The global map from entity reference string to the according entity
-   *         (e.g. from <code>"&amp;ndash;"</code> to
-   *         <code>EHTMLEntity.ndash</code>). Never <code>null</code> nor empty.
+   * @return The global map from entity reference string to the according entity (e.g. from
+   *         <code>"&amp;ndash;"</code> to <code>EHTMLEntity.ndash</code>). Never <code>null</code>
+   *         nor empty.
    */
   @Nonnull
   @Nonempty
@@ -481,9 +478,8 @@ public enum EHTMLEntity
   }
 
   /**
-   * @return The global map from entity reference string to the according entity
-   *         (e.g. from <code>'–'</code> to <code>EHTMLEntity.ndash</code>).
-   *         Never <code>null</code> nor empty.
+   * @return The global map from entity reference string to the according entity (e.g. from
+   *         <code>'–'</code> to <code>EHTMLEntity.ndash</code>). Never <code>null</code> nor empty.
    */
   @Nonnull
   @Nonempty
@@ -494,9 +490,8 @@ public enum EHTMLEntity
   }
 
   /**
-   * @return The global map from entity reference string to the according
-   *         character (e.g. from <code>"&amp;ndash;"</code> to <code>'–'</code>
-   *         ). Never <code>null</code> nor empty.
+   * @return The global map from entity reference string to the according character (e.g. from
+   *         <code>"&amp;ndash;"</code> to <code>'–'</code> ). Never <code>null</code> nor empty.
    */
   @Nonnull
   @Nonempty
@@ -507,9 +502,9 @@ public enum EHTMLEntity
   }
 
   /**
-   * @return The global map from entity reference string to the according
-   *         character as a String (e.g. from <code>"&amp;ndash;"</code> to
-   *         <code>"–"</code>). Never <code>null</code> nor empty.
+   * @return The global map from entity reference string to the according character as a String
+   *         (e.g. from <code>"&amp;ndash;"</code> to <code>"–"</code>). Never <code>null</code> nor
+   *         empty.
    */
   @Nonnull
   @Nonempty
@@ -520,9 +515,8 @@ public enum EHTMLEntity
   }
 
   /**
-   * @return The global map from character to the according entity reference
-   *         string (e.g. from <code>'–'</code> to <code>"&amp;ndash;"</code> ).
-   *         Never <code>null</code> nor empty.
+   * @return The global map from character to the according entity reference string (e.g. from
+   *         <code>'–'</code> to <code>"&amp;ndash;"</code> ). Never <code>null</code> nor empty.
    */
   @Nonnull
   @Nonempty
@@ -533,9 +527,9 @@ public enum EHTMLEntity
   }
 
   /**
-   * @return The global map from character string to the according entity
-   *         reference string (e.g. from <code>"–"</code> to
-   *         <code>"&amp;ndash;"</code> ). Never <code>null</code> nor empty.
+   * @return The global map from character string to the according entity reference string (e.g.
+   *         from <code>"–"</code> to <code>"&amp;ndash;"</code> ). Never <code>null</code> nor
+   *         empty.
    */
   @Nonnull
   @Nonempty
@@ -546,8 +540,8 @@ public enum EHTMLEntity
   }
 
   /**
-   * Perform an HTML escape on the passed string. For example the string
-   * "abcäöü" is translated to "abc&amp;auml;&amp;ouml;&amp;uuml;"
+   * Perform an HTML escape on the passed string. For example the string "abcäöü" is translated to
+   * "abc&amp;auml;&amp;ouml;&amp;uuml;"
    *
    * @param sSource
    *        The source string. May be <code>null</code>.
@@ -556,9 +550,9 @@ public enum EHTMLEntity
   @Nullable
   public static String htmlEscape (@Nullable final String sSource)
   {
-    if (StringHelper.hasNoText (sSource))
+    if (StringHelper.isEmpty (sSource))
       return sSource;
 
-    return StringHelper.replaceMultiple (sSource, CHAR_STRING_TO_ENTITY_REF_MAP);
+    return StringReplace.replaceMultiple (sSource, CHAR_STRING_TO_ENTITY_REF_MAP);
   }
 }

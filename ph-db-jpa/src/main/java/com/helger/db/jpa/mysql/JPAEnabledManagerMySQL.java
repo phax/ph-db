@@ -16,11 +16,11 @@
  */
 package com.helger.db.jpa.mysql;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.ThreadSafe;
-
+import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.db.jpa.IHasEntityManager;
 import com.helger.db.jpa.JPAEnabledManager;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Special MySQL version of {@link JPAEnabledManager}

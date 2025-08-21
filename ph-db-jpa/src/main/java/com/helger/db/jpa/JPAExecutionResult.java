@@ -16,17 +16,17 @@
  */
 package com.helger.db.jpa;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.base.equals.EqualsHelper;
+import com.helger.base.hashcode.HashCodeGenerator;
+import com.helger.base.lang.clazz.ClassHelper;
+import com.helger.base.state.ESuccess;
+import com.helger.base.state.ISuccessIndicator;
+import com.helger.base.state.SuccessWithValue;
+import com.helger.base.tostring.ToStringGenerator;
 
-import com.helger.commons.equals.EqualsHelper;
-import com.helger.commons.hashcode.HashCodeGenerator;
-import com.helger.commons.lang.ClassHelper;
-import com.helger.commons.state.ESuccess;
-import com.helger.commons.state.ISuccessIndicator;
-import com.helger.commons.state.SuccessWithValue;
-import com.helger.commons.string.ToStringGenerator;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Represents the result of a single transaction/select within this module. It

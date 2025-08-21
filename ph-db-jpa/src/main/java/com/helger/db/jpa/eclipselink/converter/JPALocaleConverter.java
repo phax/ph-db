@@ -18,9 +18,6 @@ package com.helger.db.jpa.eclipselink.converter;
 
 import java.util.Locale;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
@@ -29,8 +26,11 @@ import org.eclipse.persistence.sessions.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.lang.ClassHelper;
-import com.helger.commons.locale.LocaleCache;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.base.lang.clazz.ClassHelper;
+import com.helger.text.locale.LocaleCache;
+
+import jakarta.annotation.Nullable;
 
 @Immutable
 public class JPALocaleConverter implements Converter

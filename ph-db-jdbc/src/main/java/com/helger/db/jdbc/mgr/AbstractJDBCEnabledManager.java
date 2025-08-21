@@ -18,10 +18,10 @@ package com.helger.db.jdbc.mgr;
 
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-
-import com.helger.commons.ValueEnforcer;
+import com.helger.base.enforce.ValueEnforcer;
 import com.helger.db.jdbc.executor.DBExecutor;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Base class for JDBC enabled managers.

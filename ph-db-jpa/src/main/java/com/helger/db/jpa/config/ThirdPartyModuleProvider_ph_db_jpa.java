@@ -16,18 +16,17 @@
  */
 package com.helger.db.jpa.config;
 
-import javax.annotation.Nullable;
+import com.helger.annotation.style.IsSPIImplementation;
+import com.helger.base.thirdparty.ELicense;
+import com.helger.base.thirdparty.IThirdPartyModule;
+import com.helger.base.thirdparty.IThirdPartyModuleProviderSPI;
+import com.helger.base.thirdparty.ThirdPartyModule;
+import com.helger.base.version.Version;
 
-import com.helger.commons.annotation.IsSPIImplementation;
-import com.helger.commons.thirdparty.ELicense;
-import com.helger.commons.thirdparty.IThirdPartyModule;
-import com.helger.commons.thirdparty.IThirdPartyModuleProviderSPI;
-import com.helger.commons.thirdparty.ThirdPartyModule;
-import com.helger.commons.version.Version;
+import jakarta.annotation.Nullable;
 
 /**
- * Implement this SPI interface if your JAR file contains external third party
- * modules.
+ * Implement this SPI interface if your JAR file contains external third party modules.
  *
  * @author Philip Helger
  */
@@ -38,7 +37,7 @@ public final class ThirdPartyModuleProvider_ph_db_jpa implements IThirdPartyModu
   private static final IThirdPartyModule ECLIPSE_LINK = new ThirdPartyModule ("EclipseLink",
                                                                               "Eclipse Foundation",
                                                                               ELicense.EPL10,
-                                                                              new Version (4, 0, 5),
+                                                                              new Version (4, 0, 6),
                                                                               "http://www.eclipse.org/eclipselink/");
 
   @Nullable

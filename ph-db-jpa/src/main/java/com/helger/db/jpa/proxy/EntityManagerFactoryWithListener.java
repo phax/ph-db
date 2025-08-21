@@ -18,17 +18,17 @@ package com.helger.db.jpa.proxy;
 
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.OverridingMethodsMustInvokeSuper;
+import com.helger.annotation.OverridingMethodsMustInvokeSuper;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.SynchronizationType;
 
 /**
- * A special {@link EntityManagerFactory} that creates {@link EntityManager}
- * objects that are unique per thread.
+ * A special {@link EntityManagerFactory} that creates {@link EntityManager} objects that are unique
+ * per thread.
  *
  * @author Philip Helger
  */
@@ -41,15 +41,14 @@ public class EntityManagerFactoryWithListener extends EntityManagerFactoryProxy 
     super (aEntityMgrFactory);
   }
 
-  @SuppressWarnings ("rawtypes")
   @Override
   public EntityManagerWithListener createEntityManager ()
   {
-    return createEntityManager ((Map) null);
+    return createEntityManager ((Map <?, ?>) null);
   }
 
   @Override
-  public EntityManagerWithListener createEntityManager (@Nullable final Map aProperties)
+  public EntityManagerWithListener createEntityManager (@Nullable final Map <?, ?> aProperties)
   {
     EntityManagerWithListener aEntityMgr = TL.get ();
     if (aEntityMgr == null)
@@ -62,15 +61,15 @@ public class EntityManagerFactoryWithListener extends EntityManagerFactoryProxy 
     return aEntityMgr;
   }
 
-  @SuppressWarnings ("rawtypes")
   @Override
   public EntityManager createEntityManager (final SynchronizationType eSynchronizationType)
   {
-    return createEntityManager (eSynchronizationType, (Map) null);
+    return createEntityManager (eSynchronizationType, (Map <?, ?>) null);
   }
 
   @Override
-  public EntityManager createEntityManager (final SynchronizationType eSynchronizationType, final Map aProperties)
+  public EntityManager createEntityManager (final SynchronizationType eSynchronizationType,
+                                            final Map <?, ?> aProperties)
   {
     EntityManagerWithListener aEntityMgr = TL.get ();
     if (aEntityMgr == null)

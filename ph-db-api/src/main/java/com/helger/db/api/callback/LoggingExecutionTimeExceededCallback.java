@@ -16,13 +16,13 @@
  */
 package com.helger.db.api.callback;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.Nonnegative;
+import com.helger.base.tostring.ToStringGenerator;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * A logging implementation of {@link IExecutionTimeExceededCallback}.

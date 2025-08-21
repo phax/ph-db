@@ -22,7 +22,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionCustomizer;
 
-import com.helger.commons.CGlobal;
+import com.helger.base.CGlobal;
 
 /**
  * Class for customizing JPA sessions.<br>

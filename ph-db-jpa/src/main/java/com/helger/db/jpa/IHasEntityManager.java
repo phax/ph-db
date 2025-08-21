@@ -18,8 +18,7 @@ package com.helger.db.jpa;
 
 import java.io.Serializable;
 
-import javax.annotation.Nonnull;
-
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.EntityManager;
 
 /**

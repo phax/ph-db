@@ -16,19 +16,18 @@
  */
 package com.helger.db.jpa;
 
-import javax.annotation.Nonnull;
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.annotation.ELockType;
-import com.helger.commons.annotation.IsLocked;
+import com.helger.annotation.OverridingMethodsMustInvokeSuper;
+import com.helger.annotation.concurrent.ELockType;
+import com.helger.annotation.concurrent.GuardedBy;
+import com.helger.annotation.concurrent.IsLocked;
+import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.scope.IScope;
 import com.helger.scope.singleton.AbstractRequestSingleton;
 
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.EntityManager;
 
 /**

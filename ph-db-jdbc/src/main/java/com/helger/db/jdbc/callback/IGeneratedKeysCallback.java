@@ -16,10 +16,10 @@
  */
 package com.helger.db.jdbc.callback;
 
-import javax.annotation.Nonnull;
+import com.helger.base.callback.ICallback;
+import com.helger.collection.commons.ICommonsList;
 
-import com.helger.commons.callback.ICallback;
-import com.helger.commons.collection.impl.ICommonsList;
+import jakarta.annotation.Nonnull;
 
 /**
  * This callback is used to retrieve generated keys upon insertion.

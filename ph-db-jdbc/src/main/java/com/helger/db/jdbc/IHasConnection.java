@@ -18,9 +18,9 @@ package com.helger.db.jdbc;
 
 import java.sql.Connection;
 
-import javax.annotation.Nonnull;
-
 import com.helger.db.jdbc.executor.DBNoConnectionException;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Simple {@link Connection} provider interface.

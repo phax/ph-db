@@ -19,15 +19,16 @@ package com.helger.db.jdbc;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.annotation.Nonnull;
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.tostring.ToStringGenerator;
 import com.helger.db.jdbc.executor.DBNoConnectionException;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Implementation of {@link IHasConnection} that creates a connection from an

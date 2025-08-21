@@ -81,7 +81,7 @@
   <dependencies>
     <dependency>
       <groupId>com.helger.commons</groupId>
-      <artifactId>ph-commons</artifactId>
+      <artifactId>ph-diagnostics</artifactId>
     </dependency>
     <dependency>
       <groupId>com.helger</groupId>

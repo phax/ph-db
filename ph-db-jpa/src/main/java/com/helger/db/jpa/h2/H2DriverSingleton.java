@@ -18,19 +18,19 @@ package com.helger.db.jpa.h2;
 
 import java.sql.Driver;
 
-import javax.annotation.Nonnull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.UsedViaReflection;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.style.UsedViaReflection;
 import com.helger.scope.IScope;
 import com.helger.scope.singleton.AbstractGlobalSingleton;
 
+import jakarta.annotation.Nonnull;
+
 /**
- * A wrapper around the H2 driver, that gets automatically deregistered, when
- * the global scope is closed.
+ * A wrapper around the H2 driver, that gets automatically deregistered, when the global scope is
+ * closed.
  *
  * @author Philip Helger
  */
@@ -43,7 +43,7 @@ public final class H2DriverSingleton extends AbstractGlobalSingleton
    *
    * @deprecated to call it directly
    */
-  @Deprecated
+  @Deprecated (forRemoval = false)
   @UsedViaReflection
   public H2DriverSingleton ()
   {

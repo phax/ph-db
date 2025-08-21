@@ -20,22 +20,21 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
 
-import javax.annotation.concurrent.Immutable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.io.resource.URLResource;
-import com.helger.commons.lang.ClassLoaderHelper;
-import com.helger.commons.lang.GenericReflection;
-import com.helger.commons.string.StringHelper;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.base.classloader.ClassLoaderHelper;
+import com.helger.base.reflection.GenericReflection;
+import com.helger.base.string.StringHelper;
+import com.helger.io.resource.URLResource;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.serialize.MicroReader;
 
 /**
- * Utility class that scans all META-INF/persistence.xml files available, and
- * checks if all referenced classes are available :)
+ * Utility class that scans all META-INF/persistence.xml files available, and checks if all
+ * referenced classes are available :)
  *
  * @author Philip Helger
  */
@@ -52,8 +51,8 @@ public final class PersistenceXmlHelper
   {}
 
   /**
-   * Read all {@value #PATH_PERSISTENCE_XML} files in the class path and check
-   * if the referenced classes are in the classpath.
+   * Read all {@value #PATH_PERSISTENCE_XML} files in the class path and check if the referenced
+   * classes are in the classpath.
    *
    * @throws IllegalStateException
    *         in case of an error
@@ -64,7 +63,8 @@ public final class PersistenceXmlHelper
     try
     {
       int nCount = 0;
-      final Enumeration <URL> aEnum = ClassLoaderHelper.getResources (ClassLoaderHelper.getDefaultClassLoader (), PATH_PERSISTENCE_XML);
+      final Enumeration <URL> aEnum = ClassLoaderHelper.getResources (ClassLoaderHelper.getDefaultClassLoader (),
+                                                                      PATH_PERSISTENCE_XML);
       while (aEnum.hasMoreElements ())
       {
         nCount++;
@@ -72,11 +72,12 @@ public final class PersistenceXmlHelper
         final IMicroDocument aDoc = MicroReader.readMicroXML (new URLResource (aURL));
         if (aDoc == null || aDoc.getDocumentElement () == null)
           throw new IllegalStateException ("No XML file: " + aURL);
-        for (final IMicroElement ePU : aDoc.getDocumentElement ().getAllChildElements (PERSISTENCE_NAMESPACE_URI, "persistence-unit"))
+        for (final IMicroElement ePU : aDoc.getDocumentElement ()
+                                           .getAllChildElements (PERSISTENCE_NAMESPACE_URI, "persistence-unit"))
           for (final IMicroElement eClass : ePU.getAllChildElements (PERSISTENCE_NAMESPACE_URI, "class"))
           {
             final String sClass = eClass.getTextContent ();
-            if (StringHelper.hasNoTextAfterTrim (sClass))
+            if (StringHelper.isEmptyAfterTrim (sClass))
               throw new IllegalStateException ("Persistence file " + aURL + ": class name is missing!");
             GenericReflection.getClassFromName (sClass.trim ());
           }

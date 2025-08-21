@@ -16,12 +16,12 @@
  */
 package com.helger.db.jdbc.oracle;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.ThreadSafe;
-
-import com.helger.commons.annotation.Nonempty;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.db.api.CJDBC_Oracle;
 import com.helger.db.jdbc.AbstractDBConnector;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Abstract DB connector for Oracle

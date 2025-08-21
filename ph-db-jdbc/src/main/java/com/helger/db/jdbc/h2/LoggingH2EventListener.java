@@ -22,7 +22,7 @@ import org.h2.api.DatabaseEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.base.tostring.ToStringGenerator;
 
 /**
  * A logging H2 event listener.

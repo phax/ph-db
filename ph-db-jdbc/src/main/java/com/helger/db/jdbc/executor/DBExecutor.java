@@ -31,38 +31,34 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
-import javax.annotation.CheckForSigned;
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.WillClose;
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.NotThreadSafe;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.CGlobal;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.CodingStyleguideUnaware;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableObject;
-import com.helger.commons.callback.CallbackList;
-import com.helger.commons.callback.ICallback;
-import com.helger.commons.callback.IThrowingRunnable;
-import com.helger.commons.callback.exception.IExceptionCallback;
-import com.helger.commons.callback.exception.LoggingExceptionCallback;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.concurrent.SimpleReadWriteLock;
-import com.helger.commons.io.stream.NonBlockingBufferedReader;
-import com.helger.commons.io.stream.StreamHelper;
-import com.helger.commons.state.EChange;
-import com.helger.commons.state.ESuccess;
-import com.helger.commons.state.ETriState;
-import com.helger.commons.string.ToStringGenerator;
-import com.helger.commons.timing.StopWatch;
-import com.helger.commons.wrapper.Wrapper;
+import com.helger.annotation.CheckForSigned;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.Nonnegative;
+import com.helger.annotation.WillClose;
+import com.helger.annotation.concurrent.GuardedBy;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.style.CodingStyleguideUnaware;
+import com.helger.annotation.style.ReturnsMutableObject;
+import com.helger.base.CGlobal;
+import com.helger.base.callback.CallbackList;
+import com.helger.base.callback.ICallback;
+import com.helger.base.callback.exception.IExceptionCallback;
+import com.helger.base.concurrent.SimpleReadWriteLock;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.iface.IThrowingRunnable;
+import com.helger.base.io.nonblocking.NonBlockingBufferedReader;
+import com.helger.base.io.stream.StreamHelper;
+import com.helger.base.state.EChange;
+import com.helger.base.state.ESuccess;
+import com.helger.base.state.ETriState;
+import com.helger.base.timing.StopWatch;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.base.wrapper.Wrapper;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.db.api.callback.IExecutionTimeExceededCallback;
 import com.helger.db.api.callback.LoggingExecutionTimeExceededCallback;
 import com.helger.db.api.config.JdbcConfiguration;
@@ -77,6 +73,10 @@ import com.helger.db.jdbc.callback.IPreparedStatementDataProvider;
 import com.helger.db.jdbc.callback.IResultSetRowCallback;
 import com.helger.db.jdbc.callback.IUpdatedRowCountCallback;
 import com.helger.db.jdbc.callback.UpdatedRowCountCallback;
+import com.helger.diagnostics.callback.exception.LoggingExceptionCallback;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Simple wrapper around common JDBC functionality.
@@ -111,15 +111,6 @@ public class DBExecutor implements Serializable
     ESuccess execute (@Nonnull IWithConnectionCallback aCB,
                       @Nullable IExceptionCallback <? super Exception> aExtraExCB);
   }
-
-  @Deprecated (forRemoval = true, since = "7.1.0")
-  public static final long DEFAULT_EXECUTION_DURATION_WARN_MS = JdbcConfiguration.DEFAULT_EXECUTION_DURATION_WARN_MS;
-  @Deprecated (forRemoval = true, since = "7.1.0")
-  public static final boolean DEFAULT_DEBUG_CONNECTIONS = JdbcConfiguration.DEFAULT_DEBUG_CONNECTIONS;
-  @Deprecated (forRemoval = true, since = "7.1.0")
-  public static final boolean DEFAULT_DEBUG_TRANSACTIONS = JdbcConfiguration.DEFAULT_DEBUG_TRANSACTIONS;
-  @Deprecated (forRemoval = true, since = "7.1.0")
-  public static final boolean DEFAULT_DEBUG_SQL_STATEMENTS = JdbcConfiguration.DEFAULT_DEBUG_SQL_STATEMENTS;
 
   private static final Logger LOGGER = LoggerFactory.getLogger (DBExecutor.class);
 

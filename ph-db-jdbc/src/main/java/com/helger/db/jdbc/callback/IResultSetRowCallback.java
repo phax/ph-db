@@ -18,7 +18,7 @@ package com.helger.db.jdbc.callback;
 
 import java.util.function.Consumer;
 
-import com.helger.commons.callback.ICallback;
+import com.helger.base.callback.ICallback;
 import com.helger.db.jdbc.executor.DBResultRow;
 
 /**

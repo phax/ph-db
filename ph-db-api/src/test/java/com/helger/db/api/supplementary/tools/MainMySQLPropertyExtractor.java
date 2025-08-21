@@ -19,18 +19,17 @@ package com.helger.db.api.supplementary.tools;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 
-import javax.annotation.Nonnull;
-
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.hierarchy.visit.DefaultHierarchyVisitorCallback;
-import com.helger.commons.hierarchy.visit.EHierarchyVisitorReturn;
-import com.helger.commons.io.file.SimpleFileIO;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.version.Version;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringHelper;
+import com.helger.base.string.StringReplace;
+import com.helger.base.version.Version;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.hierarchy.visit.DefaultHierarchyVisitorCallback;
+import com.helger.collection.hierarchy.visit.EHierarchyVisitorReturn;
 import com.helger.db.api.mysql.EMySQLConnectionProperty;
+import com.helger.io.file.SimpleFileIO;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.IMicroNode;
@@ -38,11 +37,12 @@ import com.helger.xml.microdom.serialize.MicroReader;
 import com.helger.xml.microdom.util.MicroVisitor;
 import com.helger.xml.serialize.read.SAXReaderSettings;
 
+import jakarta.annotation.Nonnull;
+
 /**
  * Helper tool that reads a local copy of
- * http://dev.mysql.com/doc/connector-j/6.0/en/connector-j-reference-
- * configuration-properties.html and creates the content of the
- * {@link EMySQLConnectionProperty} enum.
+ * http://dev.mysql.com/doc/connector-j/6.0/en/connector-j-reference- configuration-properties.html
+ * and creates the content of the {@link EMySQLConnectionProperty} enum.
  *
  * @author Philip Helger
  */
@@ -53,7 +53,7 @@ public final class MainMySQLPropertyExtractor
     final File aFile = new File ("src/test/resources/mysql/config-properties-6.0.html");
     String sContent = SimpleFileIO.getFileAsString (aFile, StandardCharsets.UTF_8);
     for (final EHTMLEntity e : EHTMLEntity.values ())
-      sContent = StringHelper.replaceAll (sContent, e.getEntityReference (), e.getCharString ());
+      sContent = StringReplace.replaceAll (sContent, e.getEntityReference (), e.getCharString ());
     // Remove all self-closed tags without a trailing "/>"
     sContent = sContent.replaceAll ("<(meta|col)\\s[^>]+>", "");
     // Remove unquoted links
@@ -107,7 +107,7 @@ public final class MainMySQLPropertyExtractor
                   throw new IllegalStateException ("Unexpected version: " + sSince);
 
                 String sIdentifier = sName;
-                sIdentifier = StringHelper.replaceAll (sIdentifier, '.', '_');
+                sIdentifier = StringReplace.replaceAll (sIdentifier, '.', '_');
 
                 // Build output
                 ret.append ("/** ").append (sDescription);

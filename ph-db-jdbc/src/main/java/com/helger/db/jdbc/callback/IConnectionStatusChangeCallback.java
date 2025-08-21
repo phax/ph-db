@@ -16,10 +16,10 @@
  */
 package com.helger.db.jdbc.callback;
 
-import javax.annotation.Nonnull;
+import com.helger.base.callback.ICallback;
+import com.helger.base.state.ETriState;
 
-import com.helger.commons.callback.ICallback;
-import com.helger.commons.state.ETriState;
+import jakarta.annotation.Nonnull;
 
 /**
  * Callback to be invoked if the connection status changes.

@@ -20,14 +20,14 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import javax.annotation.Nonnull;
-
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.db.api.config.IJdbcConfiguration;
 import com.helger.db.api.config.IJdbcDataSourceConfiguration;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Data source provider from {@link IJdbcConfiguration}.

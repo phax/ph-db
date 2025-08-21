@@ -21,10 +21,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
 
-import javax.annotation.concurrent.Immutable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.helger.annotation.concurrent.Immutable;
 
 /**
  * A simple class that deregisters all {@link Driver}'s registered in the

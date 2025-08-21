@@ -24,7 +24,7 @@ import java.util.Locale;
 
 import org.junit.Test;
 
-import com.helger.commons.string.StringHelper;
+import com.helger.base.string.StringHelper;
 
 /**
  * Test class for class {@link EDatabaseSystemType}.
@@ -38,9 +38,9 @@ public final class EDatabaseSystemTypeTest
   {
     for (final EDatabaseSystemType e : EDatabaseSystemType.values ())
     {
-      assertTrue (StringHelper.hasText (e.getID ()));
+      assertTrue (StringHelper.isNotEmpty (e.getID ()));
       assertEquals (e.getID (), e.getID ().toLowerCase (Locale.ROOT));
-      assertTrue (StringHelper.hasText (e.getDisplayName ()));
+      assertTrue (StringHelper.isNotEmpty (e.getDisplayName ()));
       assertSame (e, EDatabaseSystemType.getFromIDOrNull (e.getID ()));
       assertSame (e, EDatabaseSystemType.getFromIDCaseInsensitiveOrNull (e.getID ()));
     }
