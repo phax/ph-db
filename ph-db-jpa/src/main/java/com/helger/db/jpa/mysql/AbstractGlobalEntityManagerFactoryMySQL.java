@@ -46,7 +46,7 @@ public abstract class AbstractGlobalEntityManagerFactoryMySQL extends AbstractGl
   {
     // Build connection properties from default values and the optional ones
     final ICommonsMap <EMySQLConnectionProperty, String> aProps = DEFAULT_CONNECTION_PROPS.getClone ();
-    aProps.addAll (aConnectionProperties);
+    aProps.putAllIfNotNull (aConnectionProperties);
 
     return MySQLHelper.buildJDBCString (sJdbcURL, aProps);
   }

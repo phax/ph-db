@@ -66,8 +66,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
    * Constructor
    *
    * @param sJdbcDriverClass
-   *        Name of the JDBC driver class. Must be a class implementing
-   *        java.sql.Driver.
+   *        Name of the JDBC driver class. Must be a class implementing java.sql.Driver.
    * @param sJdbcURL
    *        JDBC URL
    * @param sUserName
@@ -75,15 +74,14 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
    * @param sPassword
    *        Password to access the DB. May be <code>null</code>.
    * @param sPlatformClass
-   *        The EclipseLink platform name. May either be a fully qualified
-   *        class-name of a recognized abbreviation.
+   *        The EclipseLink platform name. May either be a fully qualified class-name of a
+   *        recognized abbreviation.
    * @param sPersistenceUnitName
    *        The name of the persistence unit as stated in the persistence.xml
    * @param aAdditionalFactoryProperties
-   *        An optional Map with properties for {@link EntityManagerFactory}.
-   *        This can even be used to overwrite the settings specified as
-   *        explicit parameters, so be careful. This map is applied after the
-   *        special properties are set! May be <code>null</code>.
+   *        An optional Map with properties for {@link EntityManagerFactory}. This can even be used
+   *        to overwrite the settings specified as explicit parameters, so be careful. This map is
+   *        applied after the special properties are set! May be <code>null</code>.
    */
   protected AbstractGlobalEntityManagerFactory (@Nonnull @Nonempty final String sJdbcDriverClass,
                                                 @Nonnull @Nonempty final String sJdbcURL,
@@ -98,7 +96,13 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
     ValueEnforcer.notEmpty (sPlatformClass, "PlatformClass");
     ValueEnforcer.notEmpty (sPersistenceUnitName, "PersistenceUnitName");
 
-    LOGGER.info ("Using JDBC URL " + sJdbcURL + " with JDBC driver " + sJdbcDriverClass + " and user '" + sUserName + "'");
+    LOGGER.info ("Using JDBC URL " +
+                 sJdbcURL +
+                 " with JDBC driver " +
+                 sJdbcDriverClass +
+                 " and user '" +
+                 sUserName +
+                 "'");
 
     final ICommonsMap <String, Object> aFactoryProps = new CommonsHashMap <> ();
     aFactoryProps.put (PersistenceUnitProperties.JDBC_DRIVER, sJdbcDriverClass);
@@ -117,7 +121,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
     // configurations are present
 
     // Add parameter properties
-    aFactoryProps.addAll (aAdditionalFactoryProperties);
+    aFactoryProps.putAll (aAdditionalFactoryProperties);
 
     // Consistency check if no explicit DDL generation mode is specified!
     if (aFactoryProps.containsKey (PersistenceUnitProperties.DDL_GENERATION) &&
@@ -133,7 +137,8 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
                      "' - defaulting to '" +
                      PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION +
                      "'!!!");
-        aFactoryProps.put (PersistenceUnitProperties.DDL_GENERATION_MODE, PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION);
+        aFactoryProps.put (PersistenceUnitProperties.DDL_GENERATION_MODE,
+                           PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION);
       }
     }
 
@@ -142,14 +147,12 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
   }
 
   /**
-   * This method allows you to customize the created
-   * {@link EntityManagerFactory} in any way. By default it is returned as
-   * created.
+   * This method allows you to customize the created {@link EntityManagerFactory} in any way. By
+   * default it is returned as created.
    *
    * @param aEMF
    *        The original {@link EntityManagerFactory}. Never <code>null</code>.
-   * @return The final {@link EntityManagerFactory} to use. May not be
-   *         <code>null</code>.
+   * @return The final {@link EntityManagerFactory} to use. May not be <code>null</code>.
    */
   @Nonnull
   @OverrideOnDemand
@@ -163,7 +166,8 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
   protected void onAfterInstantiation (@Nonnull final IScope aScope)
   {
     // Create entity manager factory
-    final EntityManagerFactory aFactory = Persistence.createEntityManagerFactory (m_sPersistenceUnitName, m_aFactoryProps);
+    final EntityManagerFactory aFactory = Persistence.createEntityManagerFactory (m_sPersistenceUnitName,
+                                                                                  m_aFactoryProps);
     if (aFactory == null)
       throw new IllegalStateException ("Failed to create entity manager factory for persistence unit '" +
                                        m_sPersistenceUnitName +
@@ -196,8 +200,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
   }
 
   /**
-   * Called when the global scope is destroyed (e.g. upon servlet context
-   * shutdown)
+   * Called when the global scope is destroyed (e.g. upon servlet context shutdown)
    *
    * @throws Exception
    *         if closing fails
@@ -239,8 +242,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
   }
 
   /**
-   * @return The EntityManagerFactory creation properties. Never
-   *         <code>null</code>.
+   * @return The EntityManagerFactory creation properties. Never <code>null</code>.
    */
   @Nonnull
   @ReturnsMutableCopy
@@ -250,8 +252,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
   }
 
   /**
-   * @return The underlying {@link EntityManagerFactory}. Never
-   *         <code>null</code>.
+   * @return The underlying {@link EntityManagerFactory}. Never <code>null</code>.
    */
   @Nonnull
   public final EntityManagerFactory getEntityManagerFactory ()
@@ -263,8 +264,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
   }
 
   /**
-   * Create a new {@link EntityManager} with the default properties - usually
-   * this is suitable!
+   * Create a new {@link EntityManager} with the default properties - usually this is suitable!
    *
    * @return The created {@link EntityManager} and never <code>null</code>.
    */
@@ -278,8 +278,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
    * Create a new {@link EntityManager} with custom properties!
    *
    * @param aMap
-   *        The custom properties to use. May be <code>null</code> for no
-   *        properties.
+   *        The custom properties to use. May be <code>null</code> for no properties.
    * @return The created {@link EntityManager} and never <code>null</code>.
    */
   @Nonnull
@@ -288,7 +287,11 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
     // Create entity manager (factory may be null - e.g. after close)
     final EntityManager aEntityManager = getEntityManagerFactory ().createEntityManager (aMap);
     if (aEntityManager == null)
-      throw new IllegalStateException ("Failed to create EntityManager from factory " + m_aFactory + " with parameters " + aMap + "!");
+      throw new IllegalStateException ("Failed to create EntityManager from factory " +
+                                       m_aFactory +
+                                       " with parameters " +
+                                       aMap +
+                                       "!");
     return aEntityManager;
   }
 }
