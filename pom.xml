@@ -24,6 +24,7 @@
     <artifactId>parent-pom</artifactId>
     <version>3.0.0</version>
   </parent>
+  <groupId>com.helger.db</groupId>
   <artifactId>ph-db-parent-pom</artifactId>
   <version>8.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
@@ -73,23 +74,23 @@
       <dependency>
         <groupId>com.helger.commons</groupId>
         <artifactId>ph-commons-parent-pom</artifactId>
-        <version>12.0.0-rc1</version>
+        <version>12.0.0-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
 
       <dependency>
-        <groupId>com.helger</groupId>
+        <groupId>com.helger.db</groupId>
         <artifactId>ph-db-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.helger</groupId>
+        <groupId>com.helger.db</groupId>
         <artifactId>ph-db-jdbc</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.helger</groupId>
+        <groupId>com.helger.db</groupId>
         <artifactId>ph-db-jpa</artifactId>
         <version>${project.version}</version>
       </dependency>

@@ -14,7 +14,7 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 
 ```xml
 <dependency>
-  <groupId>com.helger</groupId>
+  <groupId>com.helger.db</groupId>
   <artifactId>ph-db-api</artifactId>
   <version>x.y.z</version>
 </dependency>
@@ -22,7 +22,7 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 
 ```xml
 <dependency>
-  <groupId>com.helger</groupId>
+  <groupId>com.helger.db</groupId>
   <artifactId>ph-db-jdbc</artifactId>
   <version>x.y.z</version>
 </dependency>
@@ -30,11 +30,13 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 
 ```xml
 <dependency>
-  <groupId>com.helger</groupId>
+  <groupId>com.helger.db</groupId>
   <artifactId>ph-db-jpa</artifactId>
   <version>x.y.z</version>
 </dependency>
 ```
+
+Note: prior to v8.0.0 the group ID was `com.helger`
 
 # News and noteworthy
 
@@ -42,6 +44,7 @@ v8.0.0 - work in progess
 * Requires Java 17 as the minimum version
 * Updated to ph-commons 12.0.0
 * Updated to MySQLConnector/J 9.4.0
+* Changed the Maven group ID from `com.helger` to `com.helger.db`
 
 v7.1.0 - 2025-04-11
 * Updated to Apache Commons Pool 2.12.1
