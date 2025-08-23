@@ -22,7 +22,7 @@ import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.db.api.CJDBC_MySQL;
-import com.helger.url.SimpleURL;
+import com.helger.url.URLBuilder;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -59,10 +59,10 @@ public final class MySQLHelper
                           "The JDBC URL '" + sJdbcURL + "' does not seem to be a MySQL connection string!");
 
     // Add the connection properties to the JDBC string
-    final SimpleURL aURL = new SimpleURL (sJdbcURL);
+    final URLBuilder aURL = URLBuilder.of (sJdbcURL);
     if (aConnectionProperties != null)
       for (final Map.Entry <EMySQLConnectionProperty, String> aEntry : aConnectionProperties.entrySet ())
-        aURL.add (aEntry.getKey ().getName (), aEntry.getValue ());
-    return aURL.getAsString ();
+        aURL.addParam (aEntry.getKey ().getName (), aEntry.getValue ());
+    return aURL.build ().getAsString ();
   }
 }
