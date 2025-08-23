@@ -22,7 +22,7 @@ import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.db.api.CJDBC_MySQL;
-import com.helger.http.url.SimpleURL;
+import com.helger.url.SimpleURL;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -63,6 +63,6 @@ public final class MySQLHelper
     if (aConnectionProperties != null)
       for (final Map.Entry <EMySQLConnectionProperty, String> aEntry : aConnectionProperties.entrySet ())
         aURL.add (aEntry.getKey ().getName (), aEntry.getValue ());
-    return aURL.getAsStringWithoutEncodedParameters ();
+    return aURL.getAsString ();
   }
 }
