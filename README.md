@@ -40,7 +40,7 @@ Note: prior to v8.0.0 the group ID was `com.helger`
 
 # News and noteworthy
 
-v8.0.0 - work in progess
+v8.0.0 - 2025-08-25
 * Requires Java 17 as the minimum version
 * Updated to ph-commons 12.0.0
 * Updated to MySQLConnector/J 9.4.0
