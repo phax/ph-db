@@ -30,7 +30,6 @@
   <description>Basic database API stuff that is useful for JDBC and JPA</description>
   <url>https://github.com/phax/ph-db/ph-db-api</url>
   <inceptionYear>2014</inceptionYear>
-  
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -38,12 +37,10 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-  
   <organization>
     <name>Philip Helger</name>
     <url>https://www.helger.com</url>
   </organization>
-  
   <developers>
     <developer>
       <id>philip</id>
@@ -66,11 +63,9 @@
       <groupId>com.helger.commons</groupId>
       <artifactId>ph-datetime</artifactId>
     </dependency>
-    <!-- currently only used for class MySQLHelper -->
     <dependency>
       <groupId>com.helger.commons</groupId>
-      <artifactId>ph-http</artifactId>
-      <optional>true</optional>
+      <artifactId>ph-url</artifactId>
     </dependency>
     
     <dependency>
@@ -94,19 +89,15 @@
         <configuration>
           <instructions>
             <Automatic-Module-Name>com.helger.db.api</Automatic-Module-Name>
-            <Export-Package>
-              com.helger.db.api,
+            <Export-Package>com.helger.db.api,
               com.helger.db.api.callback,
               com.helger.db.api.config,
               com.helger.db.api.flyway,
               com.helger.db.api.h2,
               com.helger.db.api.helper,
               com.helger.db.api.jdbc,
-              com.helger.db.api.mysql              
-            </Export-Package>
+              com.helger.db.api.mysql</Export-Package>
             <Import-Package>!jakarta.annotation.*,*</Import-Package>
-            <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"</Require-Capability>
-            <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.commons.thirdparty.IThirdPartyModuleProviderSPI</Provide-Capability>
           </instructions>
         </configuration>
       </plugin>
