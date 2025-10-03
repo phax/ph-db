@@ -37,7 +37,7 @@ public final class ThirdPartyModuleProvider_ph_db_jpa implements IThirdPartyModu
   private static final IThirdPartyModule ECLIPSE_LINK = new ThirdPartyModule ("EclipseLink",
                                                                               "Eclipse Foundation",
                                                                               ELicense.EPL10,
-                                                                              new Version (4, 0, 6),
+                                                                              new Version (4, 0, 7),
                                                                               "http://www.eclipse.org/eclipselink/");
 
   @Nullable
