@@ -16,11 +16,11 @@
  */
 package com.helger.db.jdbc.db2;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonempty;
 import com.helger.db.api.CJDBC_DB2;
 import com.helger.db.jdbc.AbstractDBConnector;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Abstract DB connector for DB2
@@ -33,7 +33,7 @@ public abstract class AbstractDB2Connector extends AbstractDBConnector
   {}
 
   @Override
-  @Nonnull
+  @NonNull
   @Nonempty
   protected String getJDBCDriverClassName ()
   {

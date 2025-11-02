@@ -21,14 +21,13 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.db.jdbc.executor.DBNoConnectionException;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Implementation of {@link IHasConnection} that creates a connection from an
@@ -47,13 +46,13 @@ public class ConnectionFromDataSource implements IHasConnection
   private boolean m_bValidityCheckEnabled = DEFAULT_VALIDITY_CHECK_ENABLED;
   private int m_nValidityCheckTimeoutSeconds = DEFAULT_VALIDITY_CHECK_TIMEOUT_SECONDS;
 
-  public ConnectionFromDataSource (@Nonnull final DataSource aDS)
+  public ConnectionFromDataSource (@NonNull final DataSource aDS)
   {
     ValueEnforcer.notNull (aDS, "DataSource");
     m_aDS = aDS;
   }
 
-  @Nonnull
+  @NonNull
   protected final DataSource getDataSource ()
   {
     return m_aDS;
@@ -64,7 +63,7 @@ public class ConnectionFromDataSource implements IHasConnection
     return m_bValidityCheckEnabled;
   }
 
-  @Nonnull
+  @NonNull
   public final ConnectionFromDataSource setValidityCheckEnabled (final boolean bValidityCheckEnabled)
   {
     m_bValidityCheckEnabled = bValidityCheckEnabled;
@@ -76,7 +75,7 @@ public class ConnectionFromDataSource implements IHasConnection
     return m_nValidityCheckTimeoutSeconds;
   }
 
-  @Nonnull
+  @NonNull
   public final ConnectionFromDataSource setValidityCheckTimeoutSeconds (final int nValidityCheckTimeoutSeconds)
   {
     // 0 means infinite waiting
@@ -84,7 +83,7 @@ public class ConnectionFromDataSource implements IHasConnection
     return this;
   }
 
-  @Nonnull
+  @NonNull
   public Connection getConnection () throws DBNoConnectionException
   {
     try
@@ -130,8 +129,8 @@ public class ConnectionFromDataSource implements IHasConnection
                                        .getToString ();
   }
 
-  @Nonnull
-  public static ConnectionFromDataSource create (@Nonnull final IHasDataSource aDSP)
+  @NonNull
+  public static ConnectionFromDataSource create (@NonNull final IHasDataSource aDSP)
   {
     ValueEnforcer.notNull (aDSP, "DataSourceProvider");
     return new ConnectionFromDataSource (aDSP.getDataSource ());

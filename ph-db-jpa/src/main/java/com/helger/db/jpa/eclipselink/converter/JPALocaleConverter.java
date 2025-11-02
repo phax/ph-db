@@ -23,14 +23,13 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.sessions.Session;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.lang.clazz.ClassHelper;
 import com.helger.text.locale.LocaleCache;
-
-import jakarta.annotation.Nullable;
 
 @Immutable
 public class JPALocaleConverter implements Converter

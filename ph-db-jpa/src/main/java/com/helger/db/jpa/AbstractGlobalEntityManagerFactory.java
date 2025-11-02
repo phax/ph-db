@@ -19,6 +19,8 @@ package com.helger.db.jpa;
 import java.util.Map;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +37,6 @@ import com.helger.db.jpa.utils.PersistenceXmlHelper;
 import com.helger.scope.IScope;
 import com.helger.scope.singleton.AbstractGlobalSingleton;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -83,12 +83,12 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
    *        to overwrite the settings specified as explicit parameters, so be careful. This map is
    *        applied after the special properties are set! May be <code>null</code>.
    */
-  protected AbstractGlobalEntityManagerFactory (@Nonnull @Nonempty final String sJdbcDriverClass,
-                                                @Nonnull @Nonempty final String sJdbcURL,
+  protected AbstractGlobalEntityManagerFactory (@NonNull @Nonempty final String sJdbcDriverClass,
+                                                @NonNull @Nonempty final String sJdbcURL,
                                                 @Nullable final String sUserName,
                                                 @Nullable final String sPassword,
-                                                @Nonnull @Nonempty final String sPlatformClass,
-                                                @Nonnull @Nonempty final String sPersistenceUnitName,
+                                                @NonNull @Nonempty final String sPlatformClass,
+                                                @NonNull @Nonempty final String sPersistenceUnitName,
                                                 @Nullable final Map <String, Object> aAdditionalFactoryProperties)
   {
     ValueEnforcer.notEmpty (sJdbcDriverClass, "JdbcDriverClass");
@@ -154,16 +154,16 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
    *        The original {@link EntityManagerFactory}. Never <code>null</code>.
    * @return The final {@link EntityManagerFactory} to use. May not be <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   @OverrideOnDemand
-  protected EntityManagerFactory customizeEntityManagerFactory (@Nonnull final EntityManagerFactory aEMF)
+  protected EntityManagerFactory customizeEntityManagerFactory (@NonNull final EntityManagerFactory aEMF)
   {
     return aEMF;
   }
 
   @Override
   @OverridingMethodsMustInvokeSuper
-  protected void onAfterInstantiation (@Nonnull final IScope aScope)
+  protected void onAfterInstantiation (@NonNull final IScope aScope)
   {
     // Create entity manager factory
     final EntityManagerFactory aFactory = Persistence.createEntityManagerFactory (m_sPersistenceUnitName,
@@ -207,7 +207,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
    */
   @Override
   @OverridingMethodsMustInvokeSuper
-  protected void onDestroy (@Nonnull final IScope aScopeInDestruction) throws Exception
+  protected void onDestroy (@NonNull final IScope aScopeInDestruction) throws Exception
   {
     // Destroy factory
     if (m_aFactory != null)
@@ -234,7 +234,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
   /**
    * @return The persistence unit name. Neither <code>null</code> nor empty.
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getPersistenceUnitName ()
   {
@@ -244,7 +244,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
   /**
    * @return The EntityManagerFactory creation properties. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public final ICommonsMap <String, Object> getAllFactoryProperties ()
   {
@@ -254,7 +254,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
   /**
    * @return The underlying {@link EntityManagerFactory}. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public final EntityManagerFactory getEntityManagerFactory ()
   {
     final EntityManagerFactory ret = m_aFactory;
@@ -268,7 +268,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
    *
    * @return The created {@link EntityManager} and never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public final EntityManager createEntityManager ()
   {
     return createEntityManager (null);
@@ -281,7 +281,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
    *        The custom properties to use. May be <code>null</code> for no properties.
    * @return The created {@link EntityManager} and never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public EntityManager createEntityManager (@SuppressWarnings ("rawtypes") final Map aMap)
   {
     // Create entity manager (factory may be null - e.g. after close)

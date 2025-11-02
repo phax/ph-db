@@ -16,9 +16,9 @@
  */
 package com.helger.db.api.config;
 
-import com.helger.base.CGlobal;
+import org.jspecify.annotations.Nullable;
 
-import jakarta.annotation.Nullable;
+import com.helger.base.CGlobal;
 
 /**
  * Default implementation of {@link IJdbcConfiguration}.

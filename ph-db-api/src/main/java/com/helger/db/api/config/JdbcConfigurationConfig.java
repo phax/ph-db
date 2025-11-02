@@ -16,12 +16,12 @@
  */
 package com.helger.db.api.config;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.config.IConfig;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * JDBC configuration accessor from configuration. It resolves the configuration properties on
@@ -56,7 +56,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
    *        The configuration common prefix to use. May not be <code>null</code> but maybe empty. If
    *        it is non-empty, it must end with a dot (".").
    */
-  public JdbcConfigurationConfig (@Nonnull final IConfig aConfig, @Nonnull final String sConfigPrefix)
+  public JdbcConfigurationConfig (@NonNull final IConfig aConfig, @NonNull final String sConfigPrefix)
   {
     ValueEnforcer.notNull (aConfig, "Config");
     ValueEnforcer.notNull (sConfigPrefix, "ConfigPrefix");
@@ -71,13 +71,13 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
   /**
    * @return The configuration prefix provided in the constructor. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public final String getConfigPrefix ()
   {
     return m_sConfigPrefix;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getConfigKeyDatabaseType ()
   {
@@ -90,7 +90,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
     return m_aConfig.getAsString (m_sConfigPrefix + SUFFIX_DATABASE_TYPE);
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getConfigKeyJdbcDriver ()
   {
@@ -103,7 +103,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
     return m_aConfig.getAsString (m_sConfigPrefix + SUFFIX_DRIVER);
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getConfigKeyJdbcUrl ()
   {
@@ -116,7 +116,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
     return m_aConfig.getAsString (m_sConfigPrefix + SUFFIX_URL);
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getConfigKeyJdbcUser ()
   {
@@ -129,7 +129,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
     return m_aConfig.getAsString (m_sConfigPrefix + SUFFIX_USER);
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getConfigKeyJdbcPassword ()
   {
@@ -142,7 +142,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
     return m_aConfig.getAsString (m_sConfigPrefix + SUFFIX_PASSWORD);
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getConfigKeyJdbcSchema ()
   {
@@ -155,7 +155,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
     return m_aConfig.getAsString (m_sConfigPrefix + SUFFIX_SCHEMA);
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getConfigKeyJdbcExecutionTimeWarningEnabled ()
   {
@@ -168,7 +168,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
                                    JdbcConfiguration.DEFAULT_EXECUTION_TIME_WARNING_ENABLED);
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getConfigKeyJdbcExecutionTimeWarningMilliseconds ()
   {
@@ -181,7 +181,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
                                 JdbcConfiguration.DEFAULT_EXECUTION_DURATION_WARN_MS);
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getConfigKeyJdbcDebugConnections ()
   {
@@ -194,7 +194,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
                                    JdbcConfiguration.DEFAULT_DEBUG_CONNECTIONS);
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getConfigKeyJdbcDebugTransactions ()
   {
@@ -207,7 +207,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
                                    JdbcConfiguration.DEFAULT_DEBUG_TRANSACTIONS);
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getConfigKeyJdbcDebugSQL ()
   {

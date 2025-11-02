@@ -16,7 +16,7 @@
  */
 package com.helger.db.api.config;
 
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Read-only interface for JDBC data source configuration options.

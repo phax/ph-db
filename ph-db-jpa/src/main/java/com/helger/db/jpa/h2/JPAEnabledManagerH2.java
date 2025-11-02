@@ -16,6 +16,7 @@
  */
 package com.helger.db.jpa.h2;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +26,6 @@ import com.helger.db.api.h2.EH2LockMode;
 import com.helger.db.api.h2.EH2Log;
 import com.helger.db.jpa.IHasEntityManager;
 import com.helger.db.jpa.JPAEnabledManager;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Special H2 version of {@link JPAEnabledManager}
@@ -38,19 +37,19 @@ public class JPAEnabledManagerH2 extends JPAEnabledManager
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (JPAEnabledManager.class);
 
-  public JPAEnabledManagerH2 (@Nonnull final IHasEntityManager aEntityManagerProvider)
+  public JPAEnabledManagerH2 (@NonNull final IHasEntityManager aEntityManagerProvider)
   {
     super (aEntityManagerProvider);
   }
 
-  public final boolean isTableExisting (@Nonnull final String sTableName)
+  public final boolean isTableExisting (@NonNull final String sTableName)
   {
     return getSelectCountResultObj (getEntityManager ().createQuery ("SELECT count(ID) FROM TABLES t WHERE t.TABLE_TYPE = 'TABLE' AND TABLE_NAME = :tablename",
                                                                      Integer.class)
                                                        .setParameter ("tablename", sTableName)).intValue () > 0;
   }
 
-  private void _executeH2Native (@Nonnull @Nonempty final String sNativeSQL)
+  private void _executeH2Native (@NonNull @Nonempty final String sNativeSQL)
   {
     doInTransaction ( () -> {
       LOGGER.info ("Running H2 native command: " + sNativeSQL);
@@ -63,12 +62,12 @@ public class JPAEnabledManagerH2 extends JPAEnabledManager
     _executeH2Native ("ANALYZE");
   }
 
-  public final void setH2LockMode (@Nonnull final EH2LockMode eLockMode)
+  public final void setH2LockMode (@NonNull final EH2LockMode eLockMode)
   {
     _executeH2Native ("SET LOCK_MODE=" + eLockMode.getID ());
   }
 
-  public final void setH2Log (@Nonnull final EH2Log eLog)
+  public final void setH2Log (@NonNull final EH2Log eLog)
   {
     _executeH2Native ("SET LOG=" + eLog.getID ());
   }

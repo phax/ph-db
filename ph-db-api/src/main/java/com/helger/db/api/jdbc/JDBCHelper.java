@@ -21,6 +21,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,9 +30,6 @@ import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.lang.clazz.ClassHelper;
 import com.helger.base.state.ESuccess;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Small class for safe SQL-as-usual methods.
@@ -45,7 +44,7 @@ public final class JDBCHelper
   private JDBCHelper ()
   {}
 
-  @Nonnull
+  @NonNull
   public static ESuccess commit (@Nullable final Connection aConnection)
   {
     if (aConnection != null)
@@ -76,7 +75,7 @@ public final class JDBCHelper
     return ESuccess.FAILURE;
   }
 
-  @Nonnull
+  @NonNull
   public static ESuccess rollback (@Nullable final Connection aConnection)
   {
     if (aConnection != null)
@@ -107,7 +106,7 @@ public final class JDBCHelper
     return ESuccess.FAILURE;
   }
 
-  @Nonnull
+  @NonNull
   public static ESuccess close (@Nullable final Connection aConnection)
   {
     if (aConnection != null)
@@ -136,7 +135,7 @@ public final class JDBCHelper
    * @return {@link Types#JAVA_OBJECT} if the type could not be determined.
    * @see "http://java.sun.com/j2se/1.4.2/docs/guide/jdbc/getstart/mapping.html"
    */
-  public static int getJDBCTypeFromClass (@Nonnull final Class <?> aClass)
+  public static int getJDBCTypeFromClass (@NonNull final Class <?> aClass)
   {
     ValueEnforcer.notNull (aClass, "Class");
 

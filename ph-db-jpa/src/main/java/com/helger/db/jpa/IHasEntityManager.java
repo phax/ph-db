@@ -18,7 +18,8 @@ package com.helger.db.jpa;
 
 import java.io.Serializable;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
+
 import jakarta.persistence.EntityManager;
 
 /**
@@ -32,6 +33,6 @@ public interface IHasEntityManager extends Serializable
   /**
    * @return The JPA entity manager to use. May not be <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   EntityManager getEntityManager ();
 }

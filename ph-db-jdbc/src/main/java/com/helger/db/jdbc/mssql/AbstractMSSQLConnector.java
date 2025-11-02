@@ -16,12 +16,12 @@
  */
 package com.helger.db.jdbc.mssql;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.db.api.CJDBC_SQLServer;
 import com.helger.db.jdbc.AbstractDBConnector;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Abstract DB connector for Microsoft SQL Server
@@ -35,7 +35,7 @@ public abstract class AbstractMSSQLConnector extends AbstractDBConnector
   {}
 
   @Override
-  @Nonnull
+  @NonNull
   @Nonempty
   protected String getJDBCDriverClassName ()
   {

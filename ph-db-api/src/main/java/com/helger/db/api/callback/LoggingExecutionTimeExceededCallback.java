@@ -16,13 +16,12 @@
  */
 package com.helger.db.api.callback;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.Nonnegative;
 import com.helger.base.tostring.ToStringGenerator;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * A logging implementation of {@link IExecutionTimeExceededCallback}.
@@ -45,14 +44,14 @@ public class LoggingExecutionTimeExceededCallback implements IExecutionTimeExcee
     return m_bEmitStackTrace;
   }
 
-  @Nonnull
+  @NonNull
   public final LoggingExecutionTimeExceededCallback setEmitStackTrace (final boolean bEmitStackTrace)
   {
     m_bEmitStackTrace = bEmitStackTrace;
     return this;
   }
 
-  public void onExecutionTimeExceeded (@Nonnull final String sMsg,
+  public void onExecutionTimeExceeded (@NonNull final String sMsg,
                                        @Nonnegative final long nExecutionMillis,
                                        @Nonnegative final long nLimitMillis)
   {

@@ -16,12 +16,12 @@
  */
 package com.helger.db.api.flyway;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonempty;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.config.IConfig;
 import com.helger.db.api.flyway.FlywayConfiguration.FlywayConfigurationBuilder;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * A specific {@link FlywayConfiguration} builder that takes values from configuration
@@ -53,7 +53,7 @@ public class FlywayConfigurationBuilderConfig extends FlywayConfigurationBuilder
    *        The configuration common prefix to use. May not be <code>null</code> but maybe empty. If
    *        it is non-empty, it must end with a dot (".").
    */
-  public FlywayConfigurationBuilderConfig (@Nonnull final IConfig aConfig, @Nonnull final String sConfigPrefix)
+  public FlywayConfigurationBuilderConfig (@NonNull final IConfig aConfig, @NonNull final String sConfigPrefix)
   {
     ValueEnforcer.notNull (aConfig, "Config");
     ValueEnforcer.notNull (sConfigPrefix, "ConfigPrefix");
@@ -76,48 +76,48 @@ public class FlywayConfigurationBuilderConfig extends FlywayConfigurationBuilder
   /**
    * @return The configuration prefix provided in the constructor. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public final String getConfigPrefix ()
   {
     return m_sConfigPrefix;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getConfigKeyEnabled ()
   {
     return m_sConfigPrefix + SUFFIX_ENABLED;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getConfigKeyJdbcUrl ()
   {
     return m_sConfigPrefix + SUFFIX_JDBC_URL;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getConfigKeyJdbcUser ()
   {
     return m_sConfigPrefix + SUFFIX_JDBC_USER;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getConfigKeyJdbcPassword ()
   {
     return m_sConfigPrefix + SUFFIX_JDBC_PASSWORD;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getConfigKeySchemaCreate ()
   {
     return m_sConfigPrefix + SUFFIX_JDBC_SCHEMA_CREATE;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getConfigKeyBaselineVersion ()
   {

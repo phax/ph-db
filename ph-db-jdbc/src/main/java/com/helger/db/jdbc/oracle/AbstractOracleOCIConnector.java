@@ -16,12 +16,12 @@
  */
 package com.helger.db.jdbc.oracle;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.db.api.CJDBC_Oracle;
 import com.helger.db.jdbc.AbstractDBConnector;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Abstract DB connector for Oracle
@@ -35,7 +35,7 @@ public abstract class AbstractOracleOCIConnector extends AbstractDBConnector
   {}
 
   @Override
-  @Nonnull
+  @NonNull
   @Nonempty
   protected String getJDBCDriverClassName ()
   {

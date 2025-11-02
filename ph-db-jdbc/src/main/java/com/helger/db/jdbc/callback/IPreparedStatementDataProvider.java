@@ -18,10 +18,10 @@ package com.helger.db.jdbc.callback;
 
 import java.io.Serializable;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonnegative;
 import com.helger.collection.commons.ICommonsList;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Interface for objects that deliver content to pass parameters to a prepared
@@ -42,6 +42,6 @@ public interface IPreparedStatementDataProvider extends Serializable
    *         the returned list must match the result of {@link #getValueCount()}
    *         .
    */
-  @Nonnull
+  @NonNull
   ICommonsList <Object> getObjectValues ();
 }

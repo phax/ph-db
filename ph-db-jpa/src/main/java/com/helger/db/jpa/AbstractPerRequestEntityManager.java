@@ -16,6 +16,7 @@
  */
 package com.helger.db.jpa;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +28,6 @@ import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.scope.IScope;
 import com.helger.scope.singleton.AbstractRequestSingleton;
 
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.EntityManager;
 
 /**
@@ -55,7 +55,7 @@ public abstract class AbstractPerRequestEntityManager extends AbstractRequestSin
    *
    * @return The created {@link EntityManager}. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   @IsLocked (ELockType.WRITE)
   protected abstract EntityManager createEntityManager ();
 
@@ -64,7 +64,7 @@ public abstract class AbstractPerRequestEntityManager extends AbstractRequestSin
    *         first request to an {@link EntityManager} in this request is
    *         created via createEntityManager(). Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public EntityManager getEntityManager ()
   {
     final EntityManager ret = m_aRWLock.readLockedGet ( () -> {
@@ -101,7 +101,7 @@ public abstract class AbstractPerRequestEntityManager extends AbstractRequestSin
 
   @Override
   @OverridingMethodsMustInvokeSuper
-  protected void onDestroy (@Nonnull final IScope aScopeInDestruction)
+  protected void onDestroy (@NonNull final IScope aScopeInDestruction)
   {
     m_aRWLock.writeLock ().lock ();
     try

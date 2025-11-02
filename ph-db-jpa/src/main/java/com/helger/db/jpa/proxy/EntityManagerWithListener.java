@@ -16,15 +16,16 @@
  */
 package com.helger.db.jpa.proxy;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import jakarta.persistence.EntityManager;
 
 public class EntityManagerWithListener extends EntityManagerProxy
 {
   private IEntityManagerListener m_aListener;
 
-  public EntityManagerWithListener (@Nonnull final EntityManager aEntityMgr)
+  public EntityManagerWithListener (@NonNull final EntityManager aEntityMgr)
   {
     super (aEntityMgr);
   }

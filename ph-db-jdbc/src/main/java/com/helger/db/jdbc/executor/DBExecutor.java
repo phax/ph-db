@@ -19,6 +19,7 @@ package com.helger.db.jdbc.executor;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,6 +32,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,9 +78,6 @@ import com.helger.db.jdbc.callback.IUpdatedRowCountCallback;
 import com.helger.db.jdbc.callback.UpdatedRowCountCallback;
 import com.helger.diagnostics.callback.exception.LoggingExceptionCallback;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-
 /**
  * Simple wrapper around common JDBC functionality.
  *
@@ -89,26 +89,26 @@ public class DBExecutor implements Serializable
   @FunctionalInterface
   private interface IWithConnectionCallback extends ICallback
   {
-    void run (@Nonnull Connection aConnection) throws SQLException;
+    void run (@NonNull Connection aConnection) throws SQLException;
   }
 
   @FunctionalInterface
   private interface IWithStatementCallback extends ICallback
   {
-    void run (@Nonnull Statement aStatement) throws SQLException;
+    void run (@NonNull Statement aStatement) throws SQLException;
   }
 
   @FunctionalInterface
   private interface IWithPreparedStatementCallback extends ICallback
   {
-    void run (@Nonnull PreparedStatement aPreparedStatement) throws SQLException;
+    void run (@NonNull PreparedStatement aPreparedStatement) throws SQLException;
   }
 
   @FunctionalInterface
   private interface IConnectionExecutor
   {
-    @Nonnull
-    ESuccess execute (@Nonnull IWithConnectionCallback aCB,
+    @NonNull
+    ESuccess execute (@NonNull IWithConnectionCallback aCB,
                       @Nullable IExceptionCallback <? super Exception> aExtraExCB);
   }
 
@@ -144,12 +144,12 @@ public class DBExecutor implements Serializable
   private boolean m_bDebugTransactions = JdbcConfiguration.DEFAULT_DEBUG_TRANSACTIONS;
   private boolean m_bDebugSQLStatements = JdbcConfiguration.DEFAULT_DEBUG_SQL_STATEMENTS;
 
-  public DBExecutor (@Nonnull final IHasDataSource aDataSourceProvider)
+  public DBExecutor (@NonNull final IHasDataSource aDataSourceProvider)
   {
     this (ConnectionFromDataSource.create (aDataSourceProvider));
   }
 
-  public DBExecutor (@Nonnull final IHasConnection aConnectionProvider)
+  public DBExecutor (@NonNull final IHasConnection aConnectionProvider)
   {
     ValueEnforcer.notNull (aConnectionProvider, "ConnectionProvider");
     m_aConnectionProvider = aConnectionProvider;
@@ -162,7 +162,7 @@ public class DBExecutor implements Serializable
    *         know what you are doing.
    * @since 6.7.2
    */
-  @Nonnull
+  @NonNull
   public final IHasConnection getConnectionProvider ()
   {
     return m_aConnectionProvider;
@@ -174,7 +174,7 @@ public class DBExecutor implements Serializable
    * @param sMessage
    *        The message to log. May not be <code>null</code>.
    */
-  protected static final void debugLog (@Nonnull final String sMessage)
+  protected static final void debugLog (@NonNull final String sMessage)
   {
     LOGGER.info (sMessage);
   }
@@ -203,7 +203,7 @@ public class DBExecutor implements Serializable
   /**
    * @return The current "connection established" state. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public static final ETriState getConnectionEstablished ()
   {
     return RW_LOCK.readLockedGet ( () -> s_eConnectionEstablished);
@@ -216,7 +216,7 @@ public class DBExecutor implements Serializable
    * @param eNewState
    *        The new state. May not be <code>null</code>.
    */
-  public static final void setConnectionEstablished (@Nonnull final ETriState eNewState)
+  public static final void setConnectionEstablished (@NonNull final ETriState eNewState)
   {
     ValueEnforcer.notNull (eNewState, "NewState");
     if (eNewState != getConnectionEstablished ())
@@ -280,7 +280,7 @@ public class DBExecutor implements Serializable
   /**
    * @return The mutable list of exception callbacks to be invoked in case of an Exception.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableObject
   public final CallbackList <IExceptionCallback <? super Exception>> exceptionCallbacks ()
   {
@@ -318,7 +318,7 @@ public class DBExecutor implements Serializable
    *        All values &gt; 0 enable the warning, all other values disable the warning.
    * @return this for chaining
    */
-  @Nonnull
+  @NonNull
   public final DBExecutor setExecutionDurationWarnMS (final long nExecutionDurationWarnMS)
   {
     m_nExecutionDurationWarnMS = nExecutionDurationWarnMS;
@@ -330,14 +330,14 @@ public class DBExecutor implements Serializable
    *
    * @return Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableObject
   public static final CallbackList <IExecutionTimeExceededCallback> executionTimeExceededHandlers ()
   {
     return EXECUTION_TIME_EXCEEDED_HANDLERS;
   }
 
-  public final void onExecutionTimeExceeded (@Nonnull final String sMsg, @Nonnegative final long nExecutionMillis)
+  public final void onExecutionTimeExceeded (@NonNull final String sMsg, @Nonnegative final long nExecutionMillis)
   {
     EXECUTION_TIME_EXCEEDED_HANDLERS.forEach (x -> x.onExecutionTimeExceeded (sMsg,
                                                                               nExecutionMillis,
@@ -362,7 +362,7 @@ public class DBExecutor implements Serializable
    * @return this for chaining
    * @see #isDebugConnections()
    */
-  @Nonnull
+  @NonNull
   public final DBExecutor setDebugConnections (final boolean bDebugConnections)
   {
     m_bDebugConnections = bDebugConnections;
@@ -387,7 +387,7 @@ public class DBExecutor implements Serializable
    * @return this for chaining
    * @see #isDebugTransactions()
    */
-  @Nonnull
+  @NonNull
   public final DBExecutor setDebugTransactions (final boolean bDebugTransactions)
   {
     m_bDebugTransactions = bDebugTransactions;
@@ -412,7 +412,7 @@ public class DBExecutor implements Serializable
    * @return this for chaining
    * @see #isDebugSQLStatements()
    */
-  @Nonnull
+  @NonNull
   public final DBExecutor setDebugSQLStatements (final boolean bDebugSQLStatements)
   {
     m_bDebugSQLStatements = bDebugSQLStatements;
@@ -420,8 +420,8 @@ public class DBExecutor implements Serializable
   }
 
   @CodingStyleguideUnaware ("Needs to be synchronized!")
-  @Nonnull
-  protected final ESuccess withNewConnectionDo (@Nonnull final IWithConnectionCallback aCB,
+  @NonNull
+  protected final ESuccess withNewConnectionDo (@NonNull final IWithConnectionCallback aCB,
                                                 @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final long nConnectionID = COUNTER_CONNECTION.incrementAndGet ();
@@ -507,9 +507,9 @@ public class DBExecutor implements Serializable
     }
   }
 
-  @Nonnull
-  protected final ESuccess withExistingConnectionDo (@Nonnull final Connection aConnection,
-                                                     @Nonnull final IWithConnectionCallback aCB,
+  @NonNull
+  protected final ESuccess withExistingConnectionDo (@NonNull final Connection aConnection,
+                                                     @NonNull final IWithConnectionCallback aCB,
                                                      @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     ValueEnforcer.notNull (aConnection, "Connection");
@@ -541,8 +541,8 @@ public class DBExecutor implements Serializable
     return eCommited;
   }
 
-  protected static void handleGeneratedKeys (@Nonnull final ResultSet aGeneratedKeysRS,
-                                             @Nonnull final IGeneratedKeysCallback aGeneratedKeysCB) throws SQLException
+  protected static void handleGeneratedKeys (@NonNull final ResultSet aGeneratedKeysRS,
+                                             @NonNull final IGeneratedKeysCallback aGeneratedKeysCB) throws SQLException
   {
     final int nColCount = aGeneratedKeysRS.getMetaData ().getColumnCount ();
     final ICommonsList <ICommonsList <Object>> aValues = new CommonsArrayList <> ();
@@ -556,14 +556,14 @@ public class DBExecutor implements Serializable
     aGeneratedKeysCB.onGeneratedKeys (aValues);
   }
 
-  @Nonnull
-  public final ESuccess performInTransaction (@Nonnull final IThrowingRunnable <Exception> aRunnable)
+  @NonNull
+  public final ESuccess performInTransaction (@NonNull final IThrowingRunnable <Exception> aRunnable)
   {
     return performInTransaction (aRunnable, null);
   }
 
-  @Nonnull
-  public final ESuccess performInTransaction (@Nonnull final IThrowingRunnable <Exception> aRunnable,
+  @NonNull
+  public final ESuccess performInTransaction (@NonNull final IThrowingRunnable <Exception> aRunnable,
                                               @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
@@ -659,8 +659,8 @@ public class DBExecutor implements Serializable
     return m_aConnectionExecutor.execute (aWithConnectionCB, aExtraExCB);
   }
 
-  @Nonnull
-  protected final ESuccess withStatementDo (@Nonnull final IWithStatementCallback aCB,
+  @NonNull
+  protected final ESuccess withStatementDo (@NonNull final IWithStatementCallback aCB,
                                             @Nullable final IGeneratedKeysCallback aGeneratedKeysCB,
                                             @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
@@ -682,8 +682,8 @@ public class DBExecutor implements Serializable
     return m_aConnectionExecutor.execute (aWithConnectionCB, aExtraExCB);
   }
 
-  protected final void withTimingDo (@Nonnull final String sDescription,
-                                     @Nonnull final IThrowingRunnable <SQLException> aRunnable) throws SQLException
+  protected final void withTimingDo (@NonNull final String sDescription,
+                                     @NonNull final IThrowingRunnable <SQLException> aRunnable) throws SQLException
   {
     final StopWatch aSW = StopWatch.createdStarted ();
     try
@@ -707,10 +707,10 @@ public class DBExecutor implements Serializable
     }
   }
 
-  @Nonnull
-  protected final ESuccess withPreparedStatementDo (@Nonnull final String sSQL,
-                                                    @Nonnull final IPreparedStatementDataProvider aPSDP,
-                                                    @Nonnull final IWithPreparedStatementCallback aPSCallback,
+  @NonNull
+  protected final ESuccess withPreparedStatementDo (@NonNull final String sSQL,
+                                                    @NonNull final IPreparedStatementDataProvider aPSDP,
+                                                    @NonNull final IWithPreparedStatementCallback aPSCallback,
                                                     @Nullable final IUpdatedRowCountCallback aUpdatedRowCountCB,
                                                     @Nullable final IGeneratedKeysCallback aGeneratedKeysCB,
                                                     @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
@@ -772,14 +772,14 @@ public class DBExecutor implements Serializable
     return m_aConnectionExecutor.execute (aWithConnectionCB, aExtraExCB);
   }
 
-  @Nonnull
-  public ESuccess executeStatement (@Nonnull final String sSQL)
+  @NonNull
+  public ESuccess executeStatement (@NonNull final String sSQL)
   {
     return executeStatement (sSQL, null, null);
   }
 
-  @Nonnull
-  public ESuccess executeStatement (@Nonnull final String sSQL,
+  @NonNull
+  public ESuccess executeStatement (@NonNull final String sSQL,
                                     @Nullable final IGeneratedKeysCallback aGeneratedKeysCB,
                                     @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
@@ -793,16 +793,16 @@ public class DBExecutor implements Serializable
     }, aGeneratedKeysCB, aExtraExCB);
   }
 
-  @Nonnull
-  public ESuccess executePreparedStatement (@Nonnull final String sSQL,
-                                            @Nonnull final IPreparedStatementDataProvider aPSDP)
+  @NonNull
+  public ESuccess executePreparedStatement (@NonNull final String sSQL,
+                                            @NonNull final IPreparedStatementDataProvider aPSDP)
   {
     return executePreparedStatement (sSQL, aPSDP, null, null, null);
   }
 
-  @Nonnull
-  public ESuccess executePreparedStatement (@Nonnull final String sSQL,
-                                            @Nonnull final IPreparedStatementDataProvider aPSDP,
+  @NonNull
+  public ESuccess executePreparedStatement (@NonNull final String sSQL,
+                                            @NonNull final IPreparedStatementDataProvider aPSDP,
                                             @Nullable final IUpdatedRowCountCallback aURWCC,
                                             @Nullable final IGeneratedKeysCallback aGeneratedKeysCB,
                                             @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
@@ -822,9 +822,9 @@ public class DBExecutor implements Serializable
    * @return <code>null</code> if the execution failed (see exception handler) and no key was
    *         created, or a non-<code>null</code> key.
    */
-  @Nonnull
-  public Object executePreparedStatementAndGetGeneratedKey (@Nonnull final String sSQL,
-                                                            @Nonnull final IPreparedStatementDataProvider aPSDP,
+  @NonNull
+  public Object executePreparedStatementAndGetGeneratedKey (@NonNull final String sSQL,
+                                                            @NonNull final IPreparedStatementDataProvider aPSDP,
                                                             @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final GetSingleGeneratedKeyCallback aCB = new GetSingleGeneratedKeyCallback ();
@@ -842,7 +842,7 @@ public class DBExecutor implements Serializable
    *        The prepared statement provider.
    * @return The number of modified/inserted rows.
    */
-  public long insertOrUpdateOrDelete (@Nonnull final String sSQL, @Nonnull final IPreparedStatementDataProvider aPSDP)
+  public long insertOrUpdateOrDelete (@NonNull final String sSQL, @NonNull final IPreparedStatementDataProvider aPSDP)
   {
     return insertOrUpdateOrDelete (sSQL, aPSDP, null, null);
   }
@@ -860,8 +860,8 @@ public class DBExecutor implements Serializable
    *        Per-call Exception callback. May be <code>null</code>.
    * @return The number of modified/inserted rows.
    */
-  public long insertOrUpdateOrDelete (@Nonnull final String sSQL,
-                                      @Nonnull final IPreparedStatementDataProvider aPSDP,
+  public long insertOrUpdateOrDelete (@NonNull final String sSQL,
+                                      @NonNull final IPreparedStatementDataProvider aPSDP,
                                       @Nullable final IGeneratedKeysCallback aGeneratedKeysCB,
                                       @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
@@ -906,9 +906,9 @@ public class DBExecutor implements Serializable
     }
   }
 
-  @Nonnull
-  public CountAndKey insertOrUpdateAndGetGeneratedKey (@Nonnull final String sSQL,
-                                                       @Nonnull final IPreparedStatementDataProvider aPSDP,
+  @NonNull
+  public CountAndKey insertOrUpdateAndGetGeneratedKey (@NonNull final String sSQL,
+                                                       @NonNull final IPreparedStatementDataProvider aPSDP,
                                                        @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
     final GetSingleGeneratedKeyCallback aCB = new GetSingleGeneratedKeyCallback ();
@@ -917,8 +917,8 @@ public class DBExecutor implements Serializable
                             nUpdateCount != IUpdatedRowCountCallback.NOT_INITIALIZED ? aCB.getGeneratedKey () : null);
   }
 
-  @Nonnull
-  private static String _clobToString (@Nullable final java.sql.Clob aClob) throws SQLException
+  @NonNull
+  private static String _clobToString (@Nullable final Clob aClob) throws SQLException
   {
     if (aClob == null)
       return "";
@@ -962,7 +962,7 @@ public class DBExecutor implements Serializable
    */
   @Nonnegative
   protected static final long iterateResultSet (@WillClose final ResultSet aRS,
-                                                @Nonnull final IResultSetRowCallback aCallback) throws SQLException
+                                                @NonNull final IResultSetRowCallback aCallback) throws SQLException
   {
     try
     {
@@ -1017,9 +1017,9 @@ public class DBExecutor implements Serializable
    *        The result item callback to be invoked. May not be <code>null</code>.
    * @return {@link ESuccess} and never <code>null</code>.
    */
-  @Nonnull
-  public ESuccess queryAll (@Nonnull @Nonempty final String sSQL,
-                            @Nonnull final IResultSetRowCallback aResultItemCallback)
+  @NonNull
+  public ESuccess queryAll (@NonNull @Nonempty final String sSQL,
+                            @NonNull final IResultSetRowCallback aResultItemCallback)
   {
     ValueEnforcer.notEmpty (sSQL, "SQL");
     ValueEnforcer.notNull (aResultItemCallback, "aResultItemCallbackSQL");
@@ -1058,10 +1058,10 @@ public class DBExecutor implements Serializable
    *        The result item callback to be invoked. May not be <code>null</code>.
    * @return {@link ESuccess} and never <code>null</code>.
    */
-  @Nonnull
-  public ESuccess queryAll (@Nonnull @Nonempty final String sSQL,
-                            @Nonnull final IPreparedStatementDataProvider aPSDP,
-                            @Nonnull final IResultSetRowCallback aResultItemCallback)
+  @NonNull
+  public ESuccess queryAll (@NonNull @Nonempty final String sSQL,
+                            @NonNull final IPreparedStatementDataProvider aPSDP,
+                            @NonNull final IResultSetRowCallback aResultItemCallback)
   {
     ValueEnforcer.notEmpty (sSQL, "SQL");
     ValueEnforcer.notNull (aPSDP, "PreparedStatementDataProvider");
@@ -1084,7 +1084,7 @@ public class DBExecutor implements Serializable
    *         non-<code>null</code> but maybe empty list if querying was successful.
    */
   @Nullable
-  public ICommonsList <DBResultRow> queryAll (@Nonnull @Nonempty final String sSQL)
+  public ICommonsList <DBResultRow> queryAll (@NonNull @Nonempty final String sSQL)
   {
     final ICommonsList <DBResultRow> aAllResultRows = new CommonsArrayList <> ();
     if (queryAll (sSQL, aCurrentObject -> {
@@ -1109,8 +1109,8 @@ public class DBExecutor implements Serializable
    *         non-<code>null</code> but maybe empty list if querying was successful.
    */
   @Nullable
-  public ICommonsList <DBResultRow> queryAll (@Nonnull @Nonempty final String sSQL,
-                                              @Nonnull final IPreparedStatementDataProvider aPSDP)
+  public ICommonsList <DBResultRow> queryAll (@NonNull @Nonempty final String sSQL,
+                                              @NonNull final IPreparedStatementDataProvider aPSDP)
   {
     final ICommonsList <DBResultRow> aAllResultRows = new CommonsArrayList <> ();
     if (queryAll (sSQL, aPSDP, aCurrentObject -> {
@@ -1135,9 +1135,9 @@ public class DBExecutor implements Serializable
    *        The consumer is only invoked if no exception occurred.
    * @return {@link ESuccess} and never <code>null</code>.
    */
-  @Nonnull
-  public ESuccess querySingle (@Nonnull @Nonempty final String sSQL,
-                               @Nonnull final Consumer <? super DBResultRow> aConsumer)
+  @NonNull
+  public ESuccess querySingle (@NonNull @Nonempty final String sSQL,
+                               @NonNull final Consumer <? super DBResultRow> aConsumer)
   {
     final ICommonsList <DBResultRow> aList = queryAll (sSQL);
     if (aList == null)
@@ -1163,10 +1163,10 @@ public class DBExecutor implements Serializable
    *        The consumer is only invoked if no exception occurred.
    * @return {@link ESuccess} and never <code>null</code>.
    */
-  @Nonnull
-  public ESuccess querySingle (@Nonnull @Nonempty final String sSQL,
-                               @Nonnull final IPreparedStatementDataProvider aPSDP,
-                               @Nonnull final Consumer <? super DBResultRow> aConsumer)
+  @NonNull
+  public ESuccess querySingle (@NonNull @Nonempty final String sSQL,
+                               @NonNull final IPreparedStatementDataProvider aPSDP,
+                               @NonNull final Consumer <? super DBResultRow> aConsumer)
   {
     final ICommonsList <DBResultRow> aList = queryAll (sSQL, aPSDP);
     if (aList == null)
@@ -1180,7 +1180,7 @@ public class DBExecutor implements Serializable
   }
 
   @CheckForSigned
-  public long queryCount (@Nonnull final String sSQL)
+  public long queryCount (@NonNull final String sSQL)
   {
     final Wrapper <DBResultRow> ret = new Wrapper <> ();
     querySingle (sSQL, ret::set);
@@ -1188,7 +1188,7 @@ public class DBExecutor implements Serializable
   }
 
   @CheckForSigned
-  public long queryCount (@Nonnull final String sSQL, @Nonnull final IPreparedStatementDataProvider aPSDP)
+  public long queryCount (@NonNull final String sSQL, @NonNull final IPreparedStatementDataProvider aPSDP)
   {
     final Wrapper <DBResultRow> ret = new Wrapper <> ();
     querySingle (sSQL, aPSDP, ret::set);

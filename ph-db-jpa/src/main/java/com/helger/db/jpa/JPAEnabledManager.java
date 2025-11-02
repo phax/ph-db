@@ -20,6 +20,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,6 @@ import com.helger.statistics.api.IMutableStatisticsHandlerCounter;
 import com.helger.statistics.api.IMutableStatisticsHandlerTimer;
 import com.helger.statistics.impl.StatisticsManager;
 
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
@@ -99,7 +99,7 @@ public class JPAEnabledManager
   private final AtomicBoolean m_aAllowNestedTransactions = new AtomicBoolean (DEFAULT_ALLOW_NESTED_TRANSACTIONS);
   private final AtomicBoolean m_aUseTransactionsForSelect = new AtomicBoolean (DEFAULT_USE_TRANSACTIONS_FOR_SELECT);
 
-  public JPAEnabledManager (@Nonnull final IHasEntityManager aEntityManagerProvider)
+  public JPAEnabledManager (@NonNull final IHasEntityManager aEntityManagerProvider)
   {
     ValueEnforcer.notNull (aEntityManagerProvider, "EntityManagerProvider");
     m_aEntityManagerProvider = aEntityManagerProvider;
@@ -117,7 +117,7 @@ public class JPAEnabledManager
    *        <code>true</code> to enable sync, <code>false</code> to disable sync
    * @return this for chaining
    */
-  @Nonnull
+  @NonNull
   public final JPAEnabledManager setSyncEntityMgr (final boolean bSyncEntityMgr)
   {
     m_aSyncEntityMgr.set (bSyncEntityMgr);
@@ -136,7 +136,7 @@ public class JPAEnabledManager
    *        <code>true</code> to enable nested transaction
    * @return this for chaining
    */
-  @Nonnull
+  @NonNull
   public final JPAEnabledManager setAllowNestedTransactions (final boolean bAllowNestedTransactions)
   {
     m_aAllowNestedTransactions.set (bAllowNestedTransactions);
@@ -160,7 +160,7 @@ public class JPAEnabledManager
    *        statements.
    * @return this for chaining
    */
-  @Nonnull
+  @NonNull
   public final JPAEnabledManager setUseTransactionsForSelect (final boolean bUseTransactionsForSelect)
   {
     m_aAllowNestedTransactions.set (bUseTransactionsForSelect);
@@ -170,7 +170,7 @@ public class JPAEnabledManager
   /**
    * @return Get the entity manager to be used. Must not be <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   protected final EntityManager getEntityManager ()
   {
     return m_aEntityManagerProvider.getEntityManager ();
@@ -181,7 +181,7 @@ public class JPAEnabledManager
    *
    * @return <code>null</code> if non is set
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableObject
   public static final CallbackList <IExceptionCallback <Throwable>> exceptionCallbacks ()
   {
@@ -194,7 +194,7 @@ public class JPAEnabledManager
    * @param ex
    *        The exception that occurred.
    */
-  private static void _invokeCustomExceptionCallback (@Nonnull final Throwable ex)
+  private static void _invokeCustomExceptionCallback (@NonNull final Throwable ex)
   {
     EXCEPTION_CALLBACKS.forEach (x -> x.onException (ex));
   }
@@ -257,23 +257,23 @@ public class JPAEnabledManager
    *
    * @return Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public static final CallbackList <IExecutionTimeExceededCallback> executionTimeExceededHandlers ()
   {
     return EXECUTION_TIME_EXCEEDED_HANDLERS;
   }
 
-  public static final void onExecutionTimeExceeded (@Nonnull final String sMsg,
+  public static final void onExecutionTimeExceeded (@NonNull final String sMsg,
                                                     @Nonnegative final long nExecutionMillis)
   {
     final long nLimitMS = getDefaultExecutionWarnTime ();
     EXECUTION_TIME_EXCEEDED_HANDLERS.forEach (x -> x.onExecutionTimeExceeded (sMsg, nExecutionMillis, nLimitMS));
   }
 
-  @Nonnull
-  public static final JPAExecutionResult <?> doInTransaction (@Nonnull @WillNotClose final EntityManager aEntityMgr,
+  @NonNull
+  public static final JPAExecutionResult <?> doInTransaction (@NonNull @WillNotClose final EntityManager aEntityMgr,
                                                               final boolean bAllowNestedTransactions,
-                                                              @Nonnull final Runnable aRunnable)
+                                                              @NonNull final Runnable aRunnable)
   {
     return doInTransaction (aEntityMgr, bAllowNestedTransactions, () -> {
       aRunnable.run ();
@@ -281,10 +281,10 @@ public class JPAEnabledManager
     });
   }
 
-  @Nonnull
-  public static final JPAExecutionResult <?> doInTransaction (@Nonnull @WillNotClose final EntityManager aEntityMgr,
+  @NonNull
+  public static final JPAExecutionResult <?> doInTransaction (@NonNull @WillNotClose final EntityManager aEntityMgr,
                                                               final boolean bAllowNestedTransactions,
-                                                              @Nonnull final IThrowingRunnable <Exception> aRunnable)
+                                                              @NonNull final IThrowingRunnable <Exception> aRunnable)
   {
     return doInTransaction (aEntityMgr, bAllowNestedTransactions, () -> {
       aRunnable.run ();
@@ -292,8 +292,8 @@ public class JPAEnabledManager
     });
   }
 
-  @Nonnull
-  public final JPAExecutionResult <?> doInTransaction (@Nonnull final IThrowingRunnable <Exception> aRunnable)
+  @NonNull
+  public final JPAExecutionResult <?> doInTransaction (@NonNull final IThrowingRunnable <Exception> aRunnable)
   {
     // Create entity manager
     final EntityManager aEntityMgr = getEntityManager ();
@@ -311,10 +311,10 @@ public class JPAEnabledManager
     }
   }
 
-  @Nonnull
-  public static final <T> JPAExecutionResult <T> doInTransaction (@Nonnull @WillNotClose final EntityManager aEntityMgr,
+  @NonNull
+  public static final <T> JPAExecutionResult <T> doInTransaction (@NonNull @WillNotClose final EntityManager aEntityMgr,
                                                                   final boolean bAllowNestedTransactions,
-                                                                  @Nonnull final Callable <T> aCallable)
+                                                                  @NonNull final Callable <T> aCallable)
   {
     final StopWatch aSW = StopWatch.createdStarted ();
     final EntityTransaction aTransaction = aEntityMgr.getTransaction ();
@@ -365,8 +365,8 @@ public class JPAEnabledManager
     }
   }
 
-  @Nonnull
-  public final <T> JPAExecutionResult <T> doInTransaction (@Nonnull final Callable <T> aCallable)
+  @NonNull
+  public final <T> JPAExecutionResult <T> doInTransaction (@NonNull final Callable <T> aCallable)
   {
     // Create entity manager
     final EntityManager aEntityMgr = getEntityManager ();
@@ -393,8 +393,8 @@ public class JPAEnabledManager
    * @param <T>
    *        The return type of the callable
    */
-  @Nonnull
-  public static final <T> JPAExecutionResult <T> doSelectStatic (@Nonnull final Callable <T> aCallable)
+  @NonNull
+  public static final <T> JPAExecutionResult <T> doSelectStatic (@NonNull final Callable <T> aCallable)
   {
     ValueEnforcer.notNull (aCallable, "Callable");
 
@@ -432,8 +432,8 @@ public class JPAEnabledManager
    * @param <T>
    *        Return type of the callable
    */
-  @Nonnull
-  public final <T> JPAExecutionResult <T> doSelect (@Nonnull final Callable <T> aCallable)
+  @NonNull
+  public final <T> JPAExecutionResult <T> doSelect (@NonNull final Callable <T> aCallable)
   {
     if (isUseTransactionsForSelect ())
     {
@@ -466,8 +466,8 @@ public class JPAEnabledManager
    *        The SELECT COUNT query
    * @return a non-negative row count
    */
-  @Nonnull
-  public static final Number getSelectCountResultObj (@Nonnull final Query aQuery)
+  @NonNull
+  public static final Number getSelectCountResultObj (@NonNull final Query aQuery)
   {
     final Number ret = (Number) aQuery.getSingleResult ();
     return ret != null ? ret : Integer.valueOf (0);
@@ -483,7 +483,7 @@ public class JPAEnabledManager
    * @return a non-negative row count
    */
   @Nonnegative
-  public static final long getSelectCountResult (@Nonnull final Query aQuery)
+  public static final long getSelectCountResult (@NonNull final Query aQuery)
   {
     return getSelectCountResultObj (aQuery).longValue ();
   }

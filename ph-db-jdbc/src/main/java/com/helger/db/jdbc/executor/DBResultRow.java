@@ -33,6 +33,9 @@ import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.util.Arrays;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.Nonnegative;
 import com.helger.annotation.concurrent.NotThreadSafe;
@@ -48,9 +51,6 @@ import com.helger.datetime.rt.OffsetDate;
 import com.helger.datetime.xml.XMLOffsetDate;
 import com.helger.datetime.xml.XMLOffsetDateTime;
 import com.helger.datetime.xml.XMLOffsetTime;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Represents a single DB query result row.
@@ -69,7 +69,7 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
    * @param aOther
    *        other DB row to use
    */
-  protected DBResultRow (@Nonnull final DBResultRow aOther)
+  protected DBResultRow (@NonNull final DBResultRow aOther)
   {
     m_aCols = ArrayHelper.getCopy (aOther.m_aCols);
     m_nIndex = aOther.m_nIndex;
@@ -105,7 +105,7 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
    *        The result field to add. May not be <code>null</code>.
    * @see #getUsedColumnIndex()
    */
-  protected void internalAdd (@Nonnull final DBResultField aResultField)
+  protected void internalAdd (@NonNull final DBResultField aResultField)
   {
     ValueEnforcer.notNull (aResultField, "ResultField");
 
@@ -189,7 +189,7 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
    * @throws NullPointerException
    *         if the column at the specified index contains a <code>null</code> value
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getColumnName (@Nonnegative final int nIndex)
   {
@@ -488,7 +488,7 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
   /**
    * @return A map that contains the mapping from column name to the respective index
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsMap <String, Integer> getColumnNameToIndexMap ()
   {
@@ -498,7 +498,7 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
     return ret;
   }
 
-  @Nonnull
+  @NonNull
   public DBResultRow getClone ()
   {
     return new DBResultRow (this);

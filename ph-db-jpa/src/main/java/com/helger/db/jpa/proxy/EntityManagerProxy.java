@@ -19,10 +19,11 @@ package com.helger.db.jpa.proxy;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.style.CodingStyleguideUnaware;
 import com.helger.base.enforce.ValueEnforcer;
 
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.CacheRetrieveMode;
 import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.ConnectionConsumer;
@@ -56,13 +57,13 @@ public class EntityManagerProxy implements EntityManager
 {
   private final EntityManager m_aEntityMgr;
 
-  public EntityManagerProxy (@Nonnull final EntityManager aEntityMgr)
+  public EntityManagerProxy (@NonNull final EntityManager aEntityMgr)
   {
     ValueEnforcer.notNull (aEntityMgr, "EntityMgr");
     m_aEntityMgr = aEntityMgr;
   }
 
-  @Nonnull
+  @NonNull
   public final EntityManager getWrappedEntityManager ()
   {
     return m_aEntityMgr;

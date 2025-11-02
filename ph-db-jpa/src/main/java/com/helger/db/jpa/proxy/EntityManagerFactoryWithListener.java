@@ -18,10 +18,11 @@ package com.helger.db.jpa.proxy;
 
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.OverridingMethodsMustInvokeSuper;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.SynchronizationType;
@@ -36,7 +37,7 @@ public class EntityManagerFactoryWithListener extends EntityManagerFactoryProxy 
 {
   private static final ThreadLocal <EntityManagerWithListener> TL = new ThreadLocal <> ();
 
-  public EntityManagerFactoryWithListener (@Nonnull final EntityManagerFactory aEntityMgrFactory)
+  public EntityManagerFactoryWithListener (@NonNull final EntityManagerFactory aEntityMgrFactory)
   {
     super (aEntityMgrFactory);
   }

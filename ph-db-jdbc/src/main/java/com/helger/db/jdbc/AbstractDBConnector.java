@@ -22,6 +22,8 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,9 +32,6 @@ import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.base.concurrent.SimpleLock;
 import com.helger.base.tostring.ToStringGenerator;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Abstract implementation of {@link IHasDataSource} based on
@@ -45,20 +44,20 @@ public abstract class AbstractDBConnector implements IHasDataSource, Closeable
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractDBConnector.class);
 
-  @Nonnull
+  @NonNull
   private final SimpleLock m_aLock = new SimpleLock ();
   protected BasicDataSource m_aDataSource;
 
   public AbstractDBConnector ()
   {}
 
-  @Nonnull
+  @NonNull
   protected final SimpleLock getLock ()
   {
     return m_aLock;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   protected abstract String getJDBCDriverClassName ();
 
@@ -66,7 +65,7 @@ public abstract class AbstractDBConnector implements IHasDataSource, Closeable
    * @return The final connection URL to be used for connecting. May not be
    *         <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public abstract String getConnectionUrl ();
 
   /**
@@ -93,7 +92,7 @@ public abstract class AbstractDBConnector implements IHasDataSource, Closeable
     return true;
   }
 
-  @Nonnull
+  @NonNull
   public final DataSource getDataSource ()
   {
     return m_aLock.lockedGet ( () -> {

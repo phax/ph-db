@@ -19,6 +19,7 @@ package com.helger.db.api.supplementary.tools;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.LoggerFactory;
 
 import com.helger.base.enforce.ValueEnforcer;
@@ -36,8 +37,6 @@ import com.helger.xml.microdom.IMicroNode;
 import com.helger.xml.microdom.serialize.MicroReader;
 import com.helger.xml.microdom.util.MicroVisitor;
 import com.helger.xml.serialize.read.SAXReaderSettings;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Helper tool that reads a local copy of
@@ -67,7 +66,7 @@ public final class MainMySQLPropertyExtractor
     MicroVisitor.visit (aDoc, new DefaultHierarchyVisitorCallback <IMicroNode> ()
     {
       @Override
-      @Nonnull
+      @NonNull
       public EHierarchyVisitorReturn onItemBeforeChildren (final IMicroNode aItem)
       {
         if (aItem.isElement ())

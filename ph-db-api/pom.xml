@@ -97,7 +97,7 @@
               com.helger.db.api.helper,
               com.helger.db.api.jdbc,
               com.helger.db.api.mysql</Export-Package>
-            <Import-Package>!jakarta.annotation.*,*</Import-Package>
+            <Import-Package>!org.jspecify.annotations.*,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>

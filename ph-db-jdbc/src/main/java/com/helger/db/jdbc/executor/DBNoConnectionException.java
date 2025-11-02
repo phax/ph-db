@@ -18,7 +18,7 @@ package com.helger.db.jdbc.executor;
 
 import java.sql.SQLException;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * A special exception that is thrown to indicate that no Connection could be
@@ -29,12 +29,12 @@ import jakarta.annotation.Nonnull;
  */
 public class DBNoConnectionException extends Exception
 {
-  public DBNoConnectionException (@Nonnull final String sMessage)
+  public DBNoConnectionException (@NonNull final String sMessage)
   {
     super (sMessage);
   }
 
-  public DBNoConnectionException (@Nonnull final String sMessage, @Nonnull final SQLException aCause)
+  public DBNoConnectionException (@NonNull final String sMessage, @NonNull final SQLException aCause)
   {
     super (sMessage, aCause);
   }

@@ -16,9 +16,9 @@
  */
 package com.helger.db.api.config;
 
-import com.helger.db.api.EDatabaseSystemType;
+import org.jspecify.annotations.Nullable;
 
-import jakarta.annotation.Nullable;
+import com.helger.db.api.EDatabaseSystemType;
 
 /**
  * Read-only interface for JDBC configuration options.

@@ -18,6 +18,7 @@ package com.helger.db.jpa.h2;
 
 import java.sql.Driver;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +26,6 @@ import com.helger.annotation.Nonempty;
 import com.helger.annotation.style.UsedViaReflection;
 import com.helger.scope.IScope;
 import com.helger.scope.singleton.AbstractGlobalSingleton;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * A wrapper around the H2 driver, that gets automatically deregistered, when the global scope is
@@ -51,19 +50,19 @@ public final class H2DriverSingleton extends AbstractGlobalSingleton
     org.h2.Driver.load ();
   }
 
-  @Nonnull
+  @NonNull
   public static H2DriverSingleton getInstance ()
   {
     return getGlobalSingleton (H2DriverSingleton.class);
   }
 
-  @Nonnull
+  @NonNull
   public Class <? extends Driver> getDriverClass ()
   {
     return org.h2.Driver.class;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getDriverClassName ()
   {
@@ -71,7 +70,7 @@ public final class H2DriverSingleton extends AbstractGlobalSingleton
   }
 
   @Override
-  protected void onDestroy (@Nonnull final IScope aScopeInDestruction) throws Exception
+  protected void onDestroy (@NonNull final IScope aScopeInDestruction) throws Exception
   {
     org.h2.Driver.unload ();
     LOGGER.info ("Unloaded org.h2.Driver");

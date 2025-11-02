@@ -16,10 +16,10 @@
  */
 package com.helger.db.jdbc.callback;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.base.callback.ICallback;
 import com.helger.base.state.ETriState;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Callback to be invoked if the connection status changes.
@@ -30,5 +30,5 @@ import jakarta.annotation.Nonnull;
 @FunctionalInterface
 public interface IConnectionStatusChangeCallback extends ICallback
 {
-  void onConnectionStatusChanged (@Nonnull ETriState eOld, @Nonnull ETriState eNew);
+  void onConnectionStatusChanged (@NonNull ETriState eOld, @NonNull ETriState eNew);
 }

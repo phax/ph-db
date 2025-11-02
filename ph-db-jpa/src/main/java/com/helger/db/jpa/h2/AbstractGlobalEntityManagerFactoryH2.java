@@ -19,6 +19,8 @@ package com.helger.db.jpa.h2;
 import java.util.Map;
 
 import org.eclipse.persistence.platform.database.H2Platform;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import com.helger.annotation.Nonempty;
 import com.helger.collection.commons.CommonsHashMap;
@@ -26,8 +28,6 @@ import com.helger.collection.commons.ICommonsMap;
 import com.helger.db.api.h2.H2Helper;
 import com.helger.db.jpa.AbstractGlobalEntityManagerFactory;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityManagerFactory;
 
 /**
@@ -39,9 +39,9 @@ public abstract class AbstractGlobalEntityManagerFactoryH2 extends AbstractGloba
 {
   private static final ICommonsMap <String, String> DEFAULT_CONNECTION_PROPS = new CommonsHashMap <> ();
 
-  @Nonnull
+  @NonNull
   @Nonempty
-  private static String _buildJDBCString (@Nonnull @Nonempty final String sJdbcURL,
+  private static String _buildJDBCString (@NonNull @Nonempty final String sJdbcURL,
                                           @Nullable final Map <String, String> aConnectionProperties)
   {
     // Build connection properties from default values and the optional ones
@@ -55,10 +55,10 @@ public abstract class AbstractGlobalEntityManagerFactoryH2 extends AbstractGloba
   /*
    * Constructor. Never initialize manually!
    */
-  protected AbstractGlobalEntityManagerFactoryH2 (@Nonnull @Nonempty final String sJdbcURL,
+  protected AbstractGlobalEntityManagerFactoryH2 (@NonNull @Nonempty final String sJdbcURL,
                                                   @Nullable final String sUserName,
                                                   @Nullable final String sPassword,
-                                                  @Nonnull @Nonempty final String sPersistenceUnitName)
+                                                  @NonNull @Nonempty final String sPersistenceUnitName)
   {
     this (sJdbcURL, null, sUserName, sPassword, sPersistenceUnitName, null);
   }
@@ -66,11 +66,11 @@ public abstract class AbstractGlobalEntityManagerFactoryH2 extends AbstractGloba
   /*
    * Constructor. Never initialize manually!
    */
-  protected AbstractGlobalEntityManagerFactoryH2 (@Nonnull @Nonempty final String sJdbcURL,
+  protected AbstractGlobalEntityManagerFactoryH2 (@NonNull @Nonempty final String sJdbcURL,
                                                   @Nullable final Map <String, String> aConnectionProperties,
                                                   @Nullable final String sUserName,
                                                   @Nullable final String sPassword,
-                                                  @Nonnull @Nonempty final String sPersistenceUnitName)
+                                                  @NonNull @Nonempty final String sPersistenceUnitName)
   {
     this (sJdbcURL, aConnectionProperties, sUserName, sPassword, sPersistenceUnitName, null);
   }
@@ -94,11 +94,11 @@ public abstract class AbstractGlobalEntityManagerFactoryH2 extends AbstractGloba
    *        explicit parameters, so be careful. This map is applied after the
    *        special properties are set! May be <code>null</code>.
    */
-  protected AbstractGlobalEntityManagerFactoryH2 (@Nonnull @Nonempty final String sJdbcURL,
+  protected AbstractGlobalEntityManagerFactoryH2 (@NonNull @Nonempty final String sJdbcURL,
                                                   @Nullable final Map <String, String> aConnectionProperties,
                                                   @Nullable final String sUserName,
                                                   @Nullable final String sPassword,
-                                                  @Nonnull @Nonempty final String sPersistenceUnitName,
+                                                  @NonNull @Nonempty final String sPersistenceUnitName,
                                                   @Nullable final Map <String, Object> aAdditionalFactoryProperties)
   {
     super (H2DriverSingleton.getInstance ().getDriverClassName (),

@@ -16,6 +16,9 @@
  */
 package com.helger.db.jpa;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.equals.EqualsHelper;
 import com.helger.base.hashcode.HashCodeGenerator;
@@ -24,9 +27,6 @@ import com.helger.base.state.ESuccess;
 import com.helger.base.state.ISuccessIndicator;
 import com.helger.base.state.SuccessWithValue;
 import com.helger.base.tostring.ToStringGenerator;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Represents the result of a single transaction/select within this module. It
@@ -46,7 +46,7 @@ public class JPAExecutionResult <DATATYPE> extends SuccessWithValue <DATATYPE>
 {
   private final Exception m_aException;
 
-  public JPAExecutionResult (@Nonnull final ISuccessIndicator aSuccessIndicator,
+  public JPAExecutionResult (@NonNull final ISuccessIndicator aSuccessIndicator,
                              @Nullable final DATATYPE aObj,
                              @Nullable final Exception aException)
   {
@@ -122,7 +122,7 @@ public class JPAExecutionResult <DATATYPE> extends SuccessWithValue <DATATYPE>
    * @param <T>
    *        Data type of provided parameter
    */
-  @Nonnull
+  @NonNull
   public static <T> JPAExecutionResult <T> createSuccess (@Nullable final T aObj)
   {
     return new JPAExecutionResult <> (ESuccess.SUCCESS, aObj, null);
@@ -137,7 +137,7 @@ public class JPAExecutionResult <DATATYPE> extends SuccessWithValue <DATATYPE>
    * @param <T>
    *        Data type - depends on callers requirements.
    */
-  @Nonnull
+  @NonNull
   public static <T> JPAExecutionResult <T> createFailure (@Nullable final Exception ex)
   {
     return new JPAExecutionResult <> (ESuccess.FAILURE, null, ex);

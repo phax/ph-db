@@ -20,10 +20,11 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.style.CodingStyleguideUnaware;
 import com.helger.base.enforce.ValueEnforcer;
 
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.Cache;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
@@ -46,13 +47,13 @@ public class EntityManagerFactoryProxy implements EntityManagerFactory
 {
   private final EntityManagerFactory m_aEntityMgrFactory;
 
-  protected EntityManagerFactoryProxy (@Nonnull final EntityManagerFactory aEntityMgrFactory)
+  protected EntityManagerFactoryProxy (@NonNull final EntityManagerFactory aEntityMgrFactory)
   {
     ValueEnforcer.notNull (aEntityMgrFactory, "EntityMgrFactory");
     m_aEntityMgrFactory = aEntityMgrFactory;
   }
 
-  @Nonnull
+  @NonNull
   public final EntityManagerFactory getWrappedEntityManagerFactory ()
   {
     return m_aEntityMgrFactory;

@@ -18,10 +18,10 @@ package com.helger.db.jdbc.mgr;
 
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.db.jdbc.executor.DBExecutor;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Base class for JDBC enabled managers.
@@ -40,7 +40,7 @@ public abstract class AbstractJDBCEnabledManager
    *        The supplier for {@link DBExecutor} objects. May not be
    *        <code>null</code>.
    */
-  protected AbstractJDBCEnabledManager (@Nonnull final Supplier <? extends DBExecutor> aDBExecSupplier)
+  protected AbstractJDBCEnabledManager (@NonNull final Supplier <? extends DBExecutor> aDBExecSupplier)
   {
     ValueEnforcer.notNull (aDBExecSupplier, "DBExecSupplier");
     m_aDBExecSupplier = aDBExecSupplier;
@@ -50,7 +50,7 @@ public abstract class AbstractJDBCEnabledManager
    * @return A new DB executor from the Supplier provided in the constructor.
    *         Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   protected final DBExecutor newExecutor ()
   {
     final DBExecutor ret = m_aDBExecSupplier.get ();

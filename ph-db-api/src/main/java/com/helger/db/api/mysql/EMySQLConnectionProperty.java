@@ -16,13 +16,13 @@
  */
 package com.helger.db.api.mysql;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.style.CodingStyleguideUnaware;
 import com.helger.base.name.IHasName;
 import com.helger.base.version.Version;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * List of MySQL connection properties. <a href=
@@ -1474,7 +1474,7 @@ public enum EMySQLConnectionProperty implements IHasName
   private final String m_sDefaultValue;
   private final Version m_aMinVersion;
 
-  EMySQLConnectionProperty (@Nonnull @Nonempty final String sName,
+  EMySQLConnectionProperty (@NonNull @Nonempty final String sName,
                             @Nullable final String sDefaultValue,
                             @Nullable final Version aMinVersion)
   {
@@ -1483,7 +1483,7 @@ public enum EMySQLConnectionProperty implements IHasName
     m_aMinVersion = aMinVersion;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getName ()
   {

@@ -19,6 +19,8 @@ package com.helger.db.jpa.mysql;
 import java.util.Map;
 
 import org.eclipse.persistence.platform.database.MySQLPlatform;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import com.helger.annotation.Nonempty;
 import com.helger.collection.commons.CommonsEnumMap;
@@ -26,9 +28,6 @@ import com.helger.collection.commons.ICommonsMap;
 import com.helger.db.api.mysql.EMySQLConnectionProperty;
 import com.helger.db.api.mysql.MySQLHelper;
 import com.helger.db.jpa.AbstractGlobalEntityManagerFactory;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * JPA Singleton specific for MySQL database.
@@ -39,9 +38,9 @@ public abstract class AbstractGlobalEntityManagerFactoryMySQL extends AbstractGl
 {
   private static final ICommonsMap <EMySQLConnectionProperty, String> DEFAULT_CONNECTION_PROPS = new CommonsEnumMap <> (EMySQLConnectionProperty.class);
 
-  @Nonnull
+  @NonNull
   @Nonempty
-  private static String _buildJDBCString (@Nonnull @Nonempty final String sJdbcURL,
+  private static String _buildJDBCString (@NonNull @Nonempty final String sJdbcURL,
                                           @Nullable final Map <EMySQLConnectionProperty, String> aConnectionProperties)
   {
     // Build connection properties from default values and the optional ones
@@ -54,10 +53,10 @@ public abstract class AbstractGlobalEntityManagerFactoryMySQL extends AbstractGl
   /*
    * Constructor. Never initialize manually!
    */
-  protected AbstractGlobalEntityManagerFactoryMySQL (@Nonnull @Nonempty final String sJdbcURL,
+  protected AbstractGlobalEntityManagerFactoryMySQL (@NonNull @Nonempty final String sJdbcURL,
                                                      @Nullable final String sUserName,
                                                      @Nullable final String sPassword,
-                                                     @Nonnull @Nonempty final String sPersistenceUnitName)
+                                                     @NonNull @Nonempty final String sPersistenceUnitName)
   {
     this (sJdbcURL, null, sUserName, sPassword, sPersistenceUnitName, null);
   }
@@ -65,11 +64,11 @@ public abstract class AbstractGlobalEntityManagerFactoryMySQL extends AbstractGl
   /*
    * Constructor. Never initialize manually!
    */
-  protected AbstractGlobalEntityManagerFactoryMySQL (@Nonnull @Nonempty final String sJdbcURL,
+  protected AbstractGlobalEntityManagerFactoryMySQL (@NonNull @Nonempty final String sJdbcURL,
                                                      @Nullable final Map <EMySQLConnectionProperty, String> aConnectionProperties,
                                                      @Nullable final String sUserName,
                                                      @Nullable final String sPassword,
-                                                     @Nonnull @Nonempty final String sPersistenceUnitName)
+                                                     @NonNull @Nonempty final String sPersistenceUnitName)
   {
     this (sJdbcURL, aConnectionProperties, sUserName, sPassword, sPersistenceUnitName, null);
   }
@@ -77,11 +76,11 @@ public abstract class AbstractGlobalEntityManagerFactoryMySQL extends AbstractGl
   /*
    * Constructor. Never initialize manually!
    */
-  protected AbstractGlobalEntityManagerFactoryMySQL (@Nonnull @Nonempty final String sJdbcURL,
+  protected AbstractGlobalEntityManagerFactoryMySQL (@NonNull @Nonempty final String sJdbcURL,
                                                      @Nullable final Map <EMySQLConnectionProperty, String> aConnectionProperties,
                                                      @Nullable final String sUserName,
                                                      @Nullable final String sPassword,
-                                                     @Nonnull @Nonempty final String sPersistenceUnitName,
+                                                     @NonNull @Nonempty final String sPersistenceUnitName,
                                                      @Nullable final Map <String, Object> aAdditionalFactoryProperties)
   {
     super (com.mysql.jdbc.Driver.class.getName (),

@@ -16,13 +16,13 @@
  */
 package com.helger.db.api.helper;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
 import com.helger.db.api.EDatabaseSystemType;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A common helper class that deals with database system specific functionality
@@ -45,8 +45,8 @@ public final class DBSystemHelper
    *        The JDBC schema name that should be used as a prefix. May be <code>null</code>.
    * @return A non-<code>null</code> prefix.
    */
-  @Nonnull
-  public static String getTableNamePrefix (@Nonnull final EDatabaseSystemType eDBType,
+  @NonNull
+  public static String getTableNamePrefix (@NonNull final EDatabaseSystemType eDBType,
                                            @Nullable final String sJdbcSchema)
   {
     ValueEnforcer.notNull (eDBType, "DBType");

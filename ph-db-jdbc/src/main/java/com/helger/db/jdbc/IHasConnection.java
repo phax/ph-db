@@ -18,9 +18,9 @@ package com.helger.db.jdbc;
 
 import java.sql.Connection;
 
-import com.helger.db.jdbc.executor.DBNoConnectionException;
+import org.jspecify.annotations.NonNull;
 
-import jakarta.annotation.Nonnull;
+import com.helger.db.jdbc.executor.DBNoConnectionException;
 
 /**
  * Simple {@link Connection} provider interface.
@@ -29,7 +29,7 @@ import jakarta.annotation.Nonnull;
  */
 public interface IHasConnection
 {
-  @Nonnull
+  @NonNull
   Connection getConnection () throws DBNoConnectionException;
 
   default boolean shouldCloseConnection ()

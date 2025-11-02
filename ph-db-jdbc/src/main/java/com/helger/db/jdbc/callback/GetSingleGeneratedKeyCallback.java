@@ -16,12 +16,12 @@
  */
 package com.helger.db.jdbc.callback;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.ICommonsList;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Special implementation of the {@link IGeneratedKeysCallback} especially for
@@ -37,7 +37,7 @@ public class GetSingleGeneratedKeyCallback implements IGeneratedKeysCallback
   public GetSingleGeneratedKeyCallback ()
   {}
 
-  public void onGeneratedKeys (@Nonnull final ICommonsList <ICommonsList <Object>> aGeneratedValues)
+  public void onGeneratedKeys (@NonNull final ICommonsList <ICommonsList <Object>> aGeneratedValues)
   {
     ValueEnforcer.notNull (aGeneratedValues, "GeneratedValues");
 
@@ -53,7 +53,7 @@ public class GetSingleGeneratedKeyCallback implements IGeneratedKeysCallback
     m_aGeneratedKey = aRow.getFirstOrNull ();
   }
 
-  @Nonnull
+  @NonNull
   public Object getGeneratedKey ()
   {
     if (m_aGeneratedKey == null)

@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,8 +37,6 @@ import com.helger.db.jdbc.AbstractDBConnector;
 import com.helger.db.jdbc.executor.DBExecutor;
 import com.helger.io.file.FileHelper;
 
-import jakarta.annotation.Nonnull;
-
 /**
  * Base DB connector for H2 databases
  *
@@ -52,15 +51,15 @@ public abstract class AbstractH2Connector extends AbstractDBConnector
   {}
 
   @Override
-  @Nonnull
+  @NonNull
   @Nonempty
   protected final String getJDBCDriverClassName ()
   {
     return CJDBC_H2.DEFAULT_JDBC_DRIVER_CLASS_NAME;
   }
 
-  @Nonnull
-  public final ESuccess dumpDatabase (@Nonnull final File aFile)
+  @NonNull
+  public final ESuccess dumpDatabase (@NonNull final File aFile)
   {
     return dumpDatabase (FileHelper.getOutputStream (aFile));
   }
@@ -75,8 +74,8 @@ public abstract class AbstractH2Connector extends AbstractDBConnector
    * @return <code>true</code> upon success, <code>false</code> if an error
    *         occurred.
    */
-  @Nonnull
-  public final ESuccess dumpDatabase (@Nonnull @WillClose final OutputStream aOS)
+  @NonNull
+  public final ESuccess dumpDatabase (@NonNull @WillClose final OutputStream aOS)
   {
     ValueEnforcer.notNull (aOS, "OutputStream");
 
@@ -112,8 +111,8 @@ public abstract class AbstractH2Connector extends AbstractDBConnector
    *        Destination filename. May not be <code>null</code>.
    * @return {@link ESuccess}
    */
-  @Nonnull
-  public final ESuccess createBackup (@Nonnull final File fDestFile)
+  @NonNull
+  public final ESuccess createBackup (@NonNull final File fDestFile)
   {
     ValueEnforcer.notNull (fDestFile, "DestFile");
 

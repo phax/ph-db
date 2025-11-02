@@ -18,13 +18,13 @@ package com.helger.db.api.h2;
 
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.db.api.CJDBC_H2;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * H2 helper methods
@@ -50,9 +50,9 @@ public final class H2Helper
    * @return The final JDBC connection string to be used. Never
    *         <code>null</code> or empty
    */
-  @Nonnull
+  @NonNull
   @Nonempty
-  public static String buildJDBCString (@Nonnull @Nonempty final String sJdbcURL,
+  public static String buildJDBCString (@NonNull @Nonempty final String sJdbcURL,
                                         @Nullable final Map <String, String> aConnectionProperties)
   {
     ValueEnforcer.notEmpty (sJdbcURL, "JDBC URL");

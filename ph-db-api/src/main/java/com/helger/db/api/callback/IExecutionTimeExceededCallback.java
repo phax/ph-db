@@ -16,10 +16,10 @@
  */
 package com.helger.db.api.callback;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonnegative;
 import com.helger.base.callback.ICallback;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Callback interface to be used to notify interested parties when a statement
@@ -41,5 +41,5 @@ public interface IExecutionTimeExceededCallback extends ICallback
    *        The milliseconds the execution should not exceed. So the maximum
    *        configured execution time. Always &gt; 0.
    */
-  void onExecutionTimeExceeded (@Nonnull String sMsg, @Nonnegative long nExecutionMillis, @Nonnegative long nLimitMillis);
+  void onExecutionTimeExceeded (@NonNull String sMsg, @Nonnegative long nExecutionMillis, @Nonnegative long nLimitMillis);
 }

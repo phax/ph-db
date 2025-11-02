@@ -16,11 +16,11 @@
  */
 package com.helger.db.jpa.mysql;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.db.jpa.IHasEntityManager;
 import com.helger.db.jpa.JPAEnabledManager;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Special MySQL version of {@link JPAEnabledManager}
@@ -30,7 +30,7 @@ import jakarta.annotation.Nonnull;
 @ThreadSafe
 public class JPAEnabledManagerMySQL extends JPAEnabledManager
 {
-  public JPAEnabledManagerMySQL (@Nonnull final IHasEntityManager aEntityManagerProvider)
+  public JPAEnabledManagerMySQL (@NonNull final IHasEntityManager aEntityManagerProvider)
   {
     super (aEntityManagerProvider);
   }

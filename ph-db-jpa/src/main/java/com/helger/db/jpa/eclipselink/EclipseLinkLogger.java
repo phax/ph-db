@@ -21,13 +21,12 @@ import java.util.List;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.base.string.StringHelper;
 import com.helger.base.system.ENewLineMode;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * A logging adapter that can be hooked into JPA and forwards all logging requests to SLF4J.
@@ -39,7 +38,7 @@ public class EclipseLinkLogger extends AbstractSessionLog
   private static final Logger LOGGER = LoggerFactory.getLogger (EclipseLinkLogger.class);
 
   @Override
-  public void log (@Nonnull final SessionLogEntry aSessionLogEntry)
+  public void log (@NonNull final SessionLogEntry aSessionLogEntry)
   {
     final int nLogLevel = aSessionLogEntry.getLevel ();
     if (!shouldLog (nLogLevel))

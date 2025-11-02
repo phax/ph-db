@@ -16,6 +16,9 @@
  */
 package com.helger.db.api.flyway;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonnegative;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.concurrent.NotThreadSafe;
@@ -24,9 +27,6 @@ import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.equals.EqualsHelper;
 import com.helger.base.hashcode.HashCodeGenerator;
 import com.helger.base.tostring.ToStringGenerator;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Default implementation of {@link IFlywayConfiguration}.
@@ -142,7 +142,7 @@ public class FlywayConfiguration implements IFlywayConfiguration
   /**
    * @return A new empty {@link FlywayConfigurationBuilder}. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public static FlywayConfigurationBuilder builder ()
   {
     return new FlywayConfigurationBuilder ();
@@ -156,8 +156,8 @@ public class FlywayConfiguration implements IFlywayConfiguration
    * @return A new {@link FlywayConfigurationBuilder} that contains the values of the existing
    *         object.
    */
-  @Nonnull
-  public static FlywayConfigurationBuilder builder (@Nonnull final IFlywayConfiguration aBase)
+  @NonNull
+  public static FlywayConfigurationBuilder builder (@NonNull final IFlywayConfiguration aBase)
   {
     return new FlywayConfigurationBuilder (aBase);
   }
@@ -180,7 +180,7 @@ public class FlywayConfiguration implements IFlywayConfiguration
     public FlywayConfigurationBuilder ()
     {}
 
-    public FlywayConfigurationBuilder (@Nonnull final IFlywayConfiguration aBase)
+    public FlywayConfigurationBuilder (@NonNull final IFlywayConfiguration aBase)
     {
       ValueEnforcer.notNull (aBase, "Base");
       enabled (aBase.isFlywayEnabled ()).jdbcUrl (aBase.getFlywayJdbcUrl ())
@@ -195,7 +195,7 @@ public class FlywayConfiguration implements IFlywayConfiguration
       return m_bEnabled;
     }
 
-    @Nonnull
+    @NonNull
     public FlywayConfigurationBuilder enabled (final boolean b)
     {
       m_bEnabled = b;
@@ -208,7 +208,7 @@ public class FlywayConfiguration implements IFlywayConfiguration
       return m_sJdbcUrl;
     }
 
-    @Nonnull
+    @NonNull
     public FlywayConfigurationBuilder jdbcUrl (@Nullable final String s)
     {
       m_sJdbcUrl = s;
@@ -221,7 +221,7 @@ public class FlywayConfiguration implements IFlywayConfiguration
       return m_sJdbcUser;
     }
 
-    @Nonnull
+    @NonNull
     public FlywayConfigurationBuilder jdbcUser (@Nullable final String s)
     {
       m_sJdbcUser = s;
@@ -234,7 +234,7 @@ public class FlywayConfiguration implements IFlywayConfiguration
       return m_sJdbcPassword;
     }
 
-    @Nonnull
+    @NonNull
     public FlywayConfigurationBuilder jdbcPassword (@Nullable final String s)
     {
       m_sJdbcPassword = s;
@@ -246,7 +246,7 @@ public class FlywayConfiguration implements IFlywayConfiguration
       return m_bSchemaCreate;
     }
 
-    @Nonnull
+    @NonNull
     public FlywayConfigurationBuilder schemaCreate (final boolean b)
     {
       m_bSchemaCreate = b;
@@ -258,7 +258,7 @@ public class FlywayConfiguration implements IFlywayConfiguration
       return m_nBaselineVersion;
     }
 
-    @Nonnull
+    @NonNull
     public FlywayConfigurationBuilder baselineVersion (@Nonnegative final int n)
     {
       ValueEnforcer.isGE0 (n, "BaselineVersion");
@@ -267,7 +267,7 @@ public class FlywayConfiguration implements IFlywayConfiguration
       return this;
     }
 
-    @Nonnull
+    @NonNull
     public FlywayConfiguration build ()
     {
       // Everything is optional - nothing to check

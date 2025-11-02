@@ -18,10 +18,10 @@ package com.helger.db.jdbc;
 
 import java.sql.Connection;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Implementation of {@link IHasConnection} that with a constant
@@ -35,14 +35,14 @@ public class ConstantConnection implements IHasConnection
   private final Connection m_aConnection;
   private final boolean m_bShouldCloseConnection;
 
-  public ConstantConnection (@Nonnull final Connection aConnection, final boolean bShouldCloseConnection)
+  public ConstantConnection (@NonNull final Connection aConnection, final boolean bShouldCloseConnection)
   {
     ValueEnforcer.notNull (aConnection, "Connection");
     m_aConnection = aConnection;
     m_bShouldCloseConnection = bShouldCloseConnection;
   }
 
-  @Nonnull
+  @NonNull
   public Connection getConnection ()
   {
     return m_aConnection;

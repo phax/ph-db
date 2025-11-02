@@ -18,7 +18,7 @@ package com.helger.db.jdbc;
 
 import javax.sql.DataSource;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * A simple provider interface for {@link DataSource} objects.
@@ -36,6 +36,6 @@ public interface IHasDataSource
    *
    * @return A non-<code>null</code> data source.
    */
-  @Nonnull
+  @NonNull
   DataSource getDataSource ();
 }

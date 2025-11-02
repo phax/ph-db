@@ -16,6 +16,9 @@
  */
 package com.helger.db.jdbc.callback;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.Nonnegative;
 import com.helger.annotation.style.ReturnsMutableCopy;
@@ -23,9 +26,6 @@ import com.helger.base.clone.ICloneable;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A simple implementation of the {@link IPreparedStatementDataProvider} that
@@ -44,17 +44,17 @@ public final class ConstantPreparedStatementDataProvider implements
     m_aValues = new CommonsArrayList <> ();
   }
 
-  public ConstantPreparedStatementDataProvider (@Nonnull final Iterable <?> aValues)
+  public ConstantPreparedStatementDataProvider (@NonNull final Iterable <?> aValues)
   {
     m_aValues = new CommonsArrayList <> (aValues);
   }
 
-  public ConstantPreparedStatementDataProvider (@Nonnull @Nonempty final Object... aValues)
+  public ConstantPreparedStatementDataProvider (@NonNull @Nonempty final Object... aValues)
   {
     m_aValues = new CommonsArrayList <> (aValues);
   }
 
-  @Nonnull
+  @NonNull
   public ConstantPreparedStatementDataProvider addValue (@Nullable final Object aValue)
   {
     m_aValues.add (aValue);
@@ -67,14 +67,14 @@ public final class ConstantPreparedStatementDataProvider implements
     return m_aValues.size ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <Object> getObjectValues ()
   {
     return m_aValues.getClone ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ConstantPreparedStatementDataProvider getClone ()
   {

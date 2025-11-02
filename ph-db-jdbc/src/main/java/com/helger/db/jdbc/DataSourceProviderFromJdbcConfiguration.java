@@ -21,13 +21,12 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.db.api.config.IJdbcConfiguration;
 import com.helger.db.api.config.IJdbcDataSourceConfiguration;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Data source provider from {@link IJdbcConfiguration}.
@@ -40,7 +39,7 @@ public class DataSourceProviderFromJdbcConfiguration implements IHasDataSource, 
   private static final Logger LOGGER = LoggerFactory.getLogger (DataSourceProviderFromJdbcConfiguration.class);
   private final BasicDataSource m_aDataSource;
 
-  public DataSourceProviderFromJdbcConfiguration (@Nonnull final IJdbcDataSourceConfiguration aJdbcConfig)
+  public DataSourceProviderFromJdbcConfiguration (@NonNull final IJdbcDataSourceConfiguration aJdbcConfig)
   {
     // build data source
     // This is usually only called once on startup and than the same
@@ -62,7 +61,7 @@ public class DataSourceProviderFromJdbcConfiguration implements IHasDataSource, 
     LOGGER.info ("Created new DataSource " + m_aDataSource);
   }
 
-  @Nonnull
+  @NonNull
   public BasicDataSource getDataSource ()
   {
     return m_aDataSource;

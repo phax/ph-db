@@ -18,15 +18,15 @@ package com.helger.db.jdbc.executor;
 
 import java.io.Serializable;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.db.api.jdbc.JDBCHelper;
 import com.helger.typeconvert.trait.IGetterDirectTrait;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Represents a single DB query result value within a result row.
@@ -40,7 +40,7 @@ public class DBResultField implements IGetterDirectTrait, Serializable
   private final int m_nColumnType;
   private final Object m_aValue;
 
-  public DBResultField (@Nonnull @Nonempty final String sColumnName, final int nColumnType, @Nullable final Object aValue)
+  public DBResultField (@NonNull @Nonempty final String sColumnName, final int nColumnType, @Nullable final Object aValue)
   {
     ValueEnforcer.notEmpty (sColumnName, "ColumnName");
     m_sColumnName = sColumnName;
@@ -51,7 +51,7 @@ public class DBResultField implements IGetterDirectTrait, Serializable
   /**
    * @return The name of the column. Neither <code>null</code> nor empty.
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getColumnName ()
   {
