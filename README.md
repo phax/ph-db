@@ -40,6 +40,10 @@ Note: prior to v8.0.0 the group ID was `com.helger`
 
 # News and noteworthy
 
+v8.1.0 - 2025-11-16
+* Updated to ph-commons 12.1.0
+* Using JSpecify annotations
+
 v8.0.1 - 2025-09-19
 * Added new class `DBSystemHelper`
 
