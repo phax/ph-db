@@ -423,6 +423,11 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
     return _getAsTime (nIndex);
   }
 
+  private static boolean _isOracleValue (@Nullable final Object o)
+  {
+    return o != null && o.getClass ().getPackageName ().equals ("oracle.sql");
+  }
+
   @Nullable
   public LocalTime getAsLocalTime (@Nonnegative final int nIndex)
   {
@@ -449,10 +454,12 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
   {
     final DBResultField aField = get (nIndex);
     final Object aValue = aField.getValue ();
-    if (aValue instanceof Timestamp)
-      return (Timestamp) aValue;
-    if (aValue instanceof LocalDateTime)
-      return Timestamp.valueOf ((LocalDateTime) aValue);
+    if (aValue instanceof final Timestamp aTimestamp)
+      return aTimestamp;
+    if (aValue instanceof final LocalDateTime aLDT)
+      return Timestamp.valueOf (aLDT);
+    if (_isOracleValue (aValue))
+      return DBOracleHelper.getInstance ().getAsTimestamp (aValue);
 
     return aField.getAsSqlTimestamp ();
   }
@@ -462,10 +469,15 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
   {
     final DBResultField aField = get (nIndex);
     final Object aValue = aField.getValue ();
-    if (aValue instanceof LocalDateTime)
-      return (LocalDateTime) aValue;
-    if (aValue instanceof Timestamp)
-      return ((Timestamp) aValue).toLocalDateTime ();
+    if (aValue == null)
+      return null;
+
+    if (aValue instanceof final LocalDateTime aLDT)
+      return aLDT;
+    if (aValue instanceof final Timestamp aTimestamp)
+      return aTimestamp.toLocalDateTime ();
+    if (_isOracleValue (aValue))
+      return DBOracleHelper.getInstance ().getAsLocalDateTime (aValue);
 
     final Timestamp ret = aField.getAsSqlTimestamp ();
     return ret == null ? null : ret.toLocalDateTime ();

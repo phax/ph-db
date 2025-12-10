@@ -66,6 +66,7 @@
     <eclipselink.version>4.0.8</eclipselink.version>
     <h2.version>2.4.240</h2.version>
     <mysql.version>9.5.0</mysql.version>
+    <oracle.version>23.26.0.0.0</oracle.version>
     <protobuf.version>4.33.2</protobuf.version>
   </properties>
   
