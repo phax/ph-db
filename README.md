@@ -41,8 +41,9 @@ Note: prior to v8.0.0 the group ID was `com.helger`
 # News and noteworthy
 
 v8.1.2 - work in progress
-* Updated to Apache Commons Pool 2.13.0
+* Updated to Apache Commons Pool 2.13.1
 * Updated to Apache Commons DBCP 2.14.0
+* Updated to EclipseLink 4.0.9
 
 v8.1.1 - 2025-12-10
 * Added specific support for Oracle Timestamp handling
