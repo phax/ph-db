@@ -37,8 +37,7 @@ public abstract class AbstractJDBCEnabledManager
    * Constructor
    *
    * @param aDBExecSupplier
-   *        The supplier for {@link DBExecutor} objects. May not be
-   *        <code>null</code>.
+   *        The supplier for {@link DBExecutor} objects. May not be <code>null</code>.
    */
   protected AbstractJDBCEnabledManager (@NonNull final Supplier <? extends DBExecutor> aDBExecSupplier)
   {
@@ -47,8 +46,11 @@ public abstract class AbstractJDBCEnabledManager
   }
 
   /**
-   * @return A new DB executor from the Supplier provided in the constructor.
-   *         Never <code>null</code>.
+   * Get a new DB Executor. When running code in a transaction, make sure that each SQL call inside
+   * the transaction is done with the same DBExecutor.
+   *
+   * @return A new DB executor from the Supplier provided in the constructor. Never
+   *         <code>null</code>.
    */
   @NonNull
   protected final DBExecutor newExecutor ()
