@@ -40,10 +40,11 @@ Note: prior to v8.0.0 the group ID was `com.helger`
 
 # News and noteworthy
 
-v8.1.2 - work in progress
+v8.1.2 - 2026-02-22
 * Updated to Apache Commons Pool 2.13.1
 * Updated to Apache Commons DBCP 2.14.0
 * Updated to EclipseLink 4.0.9
+* `DBResultField` constructor now takes an empty String as well
 
 v8.1.1 - 2025-12-10
 * Added specific support for Oracle Timestamp handling

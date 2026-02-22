@@ -21,7 +21,6 @@ import java.io.Serializable;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
@@ -40,9 +39,20 @@ public class DBResultField implements IGetterDirectTrait, Serializable
   private final int m_nColumnType;
   private final Object m_aValue;
 
-  public DBResultField (@NonNull @Nonempty final String sColumnName, final int nColumnType, @Nullable final Object aValue)
+  /**
+   * Constructor
+   *
+   * @param sColumnName
+   *        Column name. May not be <code>null</code>. Usually also not empty but MS SQL Server uses
+   *        an empty column name for e.g. "COUNT(*)" queries.
+   * @param nColumnType
+   *        JDBC column type
+   * @param aValue
+   *        The actual value read. Can be "anything".
+   */
+  public DBResultField (@NonNull final String sColumnName, final int nColumnType, @Nullable final Object aValue)
   {
-    ValueEnforcer.notEmpty (sColumnName, "ColumnName");
+    ValueEnforcer.notNull (sColumnName, "ColumnName");
     m_sColumnName = sColumnName;
     m_nColumnType = nColumnType;
     m_aValue = aValue;
@@ -52,7 +62,6 @@ public class DBResultField implements IGetterDirectTrait, Serializable
    * @return The name of the column. Neither <code>null</code> nor empty.
    */
   @NonNull
-  @Nonempty
   public String getColumnName ()
   {
     return m_sColumnName;
@@ -67,8 +76,7 @@ public class DBResultField implements IGetterDirectTrait, Serializable
   }
 
   /**
-   * @return The column type name based on the constants of
-   *         {@link java.sql.Types}.
+   * @return The column type name based on the constants of {@link java.sql.Types}.
    * @see JDBCHelper#getJDBCTypeName(int)
    */
   @Nullable
