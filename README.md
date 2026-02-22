@@ -45,6 +45,7 @@ v8.1.2 - 2026-02-22
 * Updated to Apache Commons DBCP 2.14.0
 * Updated to EclipseLink 4.0.9
 * `DBResultField` constructor now takes an empty String as well
+* Renamed `EDatabaseSystemType.MSSQL` to `SQLSERVER`
 
 v8.1.1 - 2025-12-10
 * Added specific support for Oracle Timestamp handling

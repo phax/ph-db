@@ -41,9 +41,9 @@ public class DBSystemHelperTest
 
     assertEquals ("\"abc\".", DBSystemHelper.getTableNamePrefix (EDatabaseSystemType.DB2, "abc"));
     assertEquals ("\"abc\".", DBSystemHelper.getTableNamePrefix (EDatabaseSystemType.H2, "abc"));
-    assertEquals ("\"abc\".", DBSystemHelper.getTableNamePrefix (EDatabaseSystemType.MSSQL, "abc"));
     assertEquals ("`abc`.", DBSystemHelper.getTableNamePrefix (EDatabaseSystemType.MYSQL, "abc"));
     assertEquals ("\"abc\".", DBSystemHelper.getTableNamePrefix (EDatabaseSystemType.ORACLE, "abc"));
     assertEquals ("\"abc\".", DBSystemHelper.getTableNamePrefix (EDatabaseSystemType.POSTGRESQL, "abc"));
+    assertEquals ("\"abc\".", DBSystemHelper.getTableNamePrefix (EDatabaseSystemType.SQLSERVER, "abc"));
   }
 }

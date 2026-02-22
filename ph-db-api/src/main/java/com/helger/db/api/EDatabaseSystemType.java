@@ -34,10 +34,11 @@ public enum EDatabaseSystemType implements IHasID <String>, IHasDisplayName
 {
   DB2 ("db2", "IBM DB2"),
   H2 ("h2", "H2"),
-  MSSQL ("mssql", "MS SQL Server"),
   MYSQL ("mysql", "MySQL"),
   ORACLE ("oracle", "Oracle"),
-  POSTGRESQL ("postgresql", "PostgreSQL");
+  POSTGRESQL ("postgresql", "PostgreSQL"),
+  // Since 8.1.2
+  SQLSERVER ("sqlserver", "MS SQL Server");
 
   private final String m_sID;
   private final String m_sDisplayName;
