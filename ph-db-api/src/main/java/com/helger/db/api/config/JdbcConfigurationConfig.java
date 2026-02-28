@@ -68,6 +68,12 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
     m_sConfigPrefix = sConfigPrefix;
   }
 
+  @NonNull
+  protected final IConfig getConfig ()
+  {
+    return m_aConfig;
+  }
+
   /**
    * @return The configuration prefix provided in the constructor. Never <code>null</code>.
    */
