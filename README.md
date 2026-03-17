@@ -1,7 +1,7 @@
 # ph-db
 
 <!-- ph-badge-start -->
-[![Maven Central](https://img.shields.io/maven-central/v/com.helger.db/ph-db-parent-pom)](https://img.shields.io/maven-central/v/com.helger.db/ph-db-parent-pom)
+[![Sonatype Central](https://maven-badges.sml.io/sonatype-central/com.helger.db/ph-db-parent-pom/badge.svg)](https://maven-badges.sml.io/sonatype-central/com.helger.db/ph-db-parent-pom/)
 [![javadoc](https://javadoc.io/badge2/com.helger.db/ph-db-api/javadoc.svg)](https://javadoc.io/doc/com.helger.db/ph-db-api)
 <!-- ph-badge-end -->
 
