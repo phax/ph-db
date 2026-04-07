@@ -18,6 +18,8 @@ package com.helger.db.api.config;
 
 import org.jspecify.annotations.Nullable;
 
+import com.helger.annotation.CheckForSigned;
+
 /**
  * Read-only interface for JDBC data source configuration options.
  *
@@ -37,4 +39,40 @@ public interface IJdbcDataSourceConfiguration
 
   @Nullable
   String getJdbcPassword ();
+
+  /**
+   * @return The maximum number of active connections in the pool.
+   * @since 8.1.3
+   */
+  @CheckForSigned
+  int getJdbcPoolingMaxConnections ();
+
+  /**
+   * @return The maximum time in milliseconds to wait for a connection from the pool before throwing
+   *         an exception.
+   * @since 8.1.3
+   */
+  @CheckForSigned
+  long getJdbcPoolingMaxWaitMillis ();
+
+  /**
+   * @return The time in milliseconds between runs of the idle connection evictor.
+   * @since 8.1.3
+   */
+  @CheckForSigned
+  long getJdbcPoolingBetweenEvictionRunsMillis ();
+
+  /**
+   * @return The minimum idle time in milliseconds before a connection is eligible for eviction.
+   * @since 8.1.3
+   */
+  @CheckForSigned
+  long getJdbcPoolingMinEvictableIdleMillis ();
+
+  /**
+   * @return The timeout in milliseconds before an abandoned connection can be removed.
+   * @since 8.1.3
+   */
+  @CheckForSigned
+  long getJdbcPoolingRemoveAbandonedTimeoutMillis ();
 }

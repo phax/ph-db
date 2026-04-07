@@ -80,40 +80,4 @@ public interface IJdbcConfiguration extends IJdbcDataSourceConfiguration
    * @return <code>true</code> if debug logging of executed SQL statements is enabled.
    */
   boolean isJdbcDebugSQL ();
-
-  /**
-   * @return The maximum number of active connections in the pool.
-   * @since 8.1.3
-   */
-  @CheckForSigned
-  int getJdbcPoolingMaxConnections ();
-
-  /**
-   * @return The maximum time in milliseconds to wait for a connection from the pool before throwing
-   *         an exception.
-   * @since 8.1.3
-   */
-  @CheckForSigned
-  long getJdbcPoolingMaxWaitMillis ();
-
-  /**
-   * @return The time in milliseconds between runs of the idle connection evictor.
-   * @since 8.1.3
-   */
-  @CheckForSigned
-  long getJdbcPoolingBetweenEvictionRunsMillis ();
-
-  /**
-   * @return The minimum idle time in milliseconds before a connection is eligible for eviction.
-   * @since 8.1.3
-   */
-  @CheckForSigned
-  long getJdbcPoolingMinEvictableIdleMillis ();
-
-  /**
-   * @return The timeout in milliseconds before an abandoned connection can be removed.
-   * @since 8.1.3
-   */
-  @CheckForSigned
-  long getJdbcPoolingRemoveAbandonedTimeoutMillis ();
 }
