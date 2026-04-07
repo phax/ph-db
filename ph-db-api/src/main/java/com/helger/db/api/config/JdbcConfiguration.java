@@ -18,6 +18,7 @@ package com.helger.db.api.config;
 
 import org.jspecify.annotations.Nullable;
 
+import com.helger.annotation.CheckForSigned;
 import com.helger.base.CGlobal;
 
 /**
@@ -30,9 +31,16 @@ public class JdbcConfiguration implements IJdbcConfiguration
 {
   public static final boolean DEFAULT_EXECUTION_TIME_WARNING_ENABLED = true;
   public static final long DEFAULT_EXECUTION_DURATION_WARN_MS = CGlobal.MILLISECONDS_PER_SECOND;
+
   public static final boolean DEFAULT_DEBUG_CONNECTIONS = false;
   public static final boolean DEFAULT_DEBUG_TRANSACTIONS = false;
   public static final boolean DEFAULT_DEBUG_SQL_STATEMENTS = false;
+
+  public static final int DEFAULT_POOLING_MAX_CONNECTIONS = 8;
+  public static final long DEFAULT_POOLING_MAX_WAIT_MILLIS = 10_000L;
+  public static final long DEFAULT_POOLING_BETWEEN_EVICTION_RUNS_MILLIS = 300_000L;
+  public static final long DEFAULT_POOLING_MIN_EVICTABLE_IDLE_MILLIS = 1_800_000L;
+  public static final long DEFAULT_POOLING_REMOVE_ABANDONED_TIMEOUT_MILLIS = 300_000L;
 
   private final String m_sDatabaseType;
   private final String m_sJdbcDriver;
@@ -40,11 +48,19 @@ public class JdbcConfiguration implements IJdbcConfiguration
   private final String m_sJdbcUser;
   private final String m_sJdbcPassword;
   private final String m_sJdbcSchema;
+
   private final boolean m_bExecutionTimeWarningEnabled;
   private final long m_nExecutionTimeWarningMilliseconds;
+
   private final boolean m_bDebugConnections;
   private final boolean m_bDebugTransactions;
   private final boolean m_bDebugSQL;
+
+  private final int m_nPoolingMaxConnections;
+  private final long m_nPoolingMaxWaitMillis;
+  private final long m_nPoolingBetweenEvictionRunsMillis;
+  private final long m_nPoolingMinEvictableIdleMillis;
+  private final long m_nPoolingRemoveAbandonedTimeoutMillis;
 
   public JdbcConfiguration (@Nullable final String sDatabaseType,
                             @Nullable final String sJdbcDriver,
@@ -56,7 +72,12 @@ public class JdbcConfiguration implements IJdbcConfiguration
                             final long nExecutionTimeWarningMilliseconds,
                             final boolean bDebugConnections,
                             final boolean bDebugTransactions,
-                            final boolean bDebugSQL)
+                            final boolean bDebugSQL,
+                            final int nPoolingMaxConnections,
+                            final long nPoolingMaxWaitMillis,
+                            final long nPoolingBetweenEvictionRunsMillis,
+                            final long nPoolingMinEvictableIdleMillis,
+                            final long nPoolingRemoveAbandonedTimeoutMillis)
   {
     m_sDatabaseType = sDatabaseType;
     m_sJdbcDriver = sJdbcDriver;
@@ -64,11 +85,19 @@ public class JdbcConfiguration implements IJdbcConfiguration
     m_sJdbcUser = sJdbcUser;
     m_sJdbcPassword = sJdbcPassword;
     m_sJdbcSchema = sJdbcSchema;
+
     m_bExecutionTimeWarningEnabled = bExecutionTimeWarningEnabled;
     m_nExecutionTimeWarningMilliseconds = nExecutionTimeWarningMilliseconds;
+
     m_bDebugConnections = bDebugConnections;
     m_bDebugTransactions = bDebugTransactions;
     m_bDebugSQL = bDebugSQL;
+
+    m_nPoolingMaxConnections = nPoolingMaxConnections;
+    m_nPoolingMaxWaitMillis = nPoolingMaxWaitMillis;
+    m_nPoolingBetweenEvictionRunsMillis = nPoolingBetweenEvictionRunsMillis;
+    m_nPoolingMinEvictableIdleMillis = nPoolingMinEvictableIdleMillis;
+    m_nPoolingRemoveAbandonedTimeoutMillis = nPoolingRemoveAbandonedTimeoutMillis;
   }
 
   @Nullable
@@ -112,6 +141,7 @@ public class JdbcConfiguration implements IJdbcConfiguration
     return m_bExecutionTimeWarningEnabled;
   }
 
+  @CheckForSigned
   public long getJdbcExecutionTimeWarningMilliseconds ()
   {
     return m_nExecutionTimeWarningMilliseconds;
@@ -130,5 +160,35 @@ public class JdbcConfiguration implements IJdbcConfiguration
   public boolean isJdbcDebugSQL ()
   {
     return m_bDebugSQL;
+  }
+
+  @CheckForSigned
+  public int getJdbcPoolingMaxConnections ()
+  {
+    return m_nPoolingMaxConnections;
+  }
+
+  @CheckForSigned
+  public long getJdbcPoolingMaxWaitMillis ()
+  {
+    return m_nPoolingMaxWaitMillis;
+  }
+
+  @CheckForSigned
+  public long getJdbcPoolingBetweenEvictionRunsMillis ()
+  {
+    return m_nPoolingBetweenEvictionRunsMillis;
+  }
+
+  @CheckForSigned
+  public long getJdbcPoolingMinEvictableIdleMillis ()
+  {
+    return m_nPoolingMinEvictableIdleMillis;
+  }
+
+  @CheckForSigned
+  public long getJdbcPoolingRemoveAbandonedTimeoutMillis ()
+  {
+    return m_nPoolingRemoveAbandonedTimeoutMillis;
   }
 }

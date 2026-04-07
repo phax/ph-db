@@ -18,6 +18,7 @@ package com.helger.db.api.config;
 
 import org.jspecify.annotations.Nullable;
 
+import com.helger.annotation.CheckForSigned;
 import com.helger.db.api.EDatabaseSystemType;
 
 /**
@@ -28,9 +29,16 @@ import com.helger.db.api.EDatabaseSystemType;
  */
 public interface IJdbcConfiguration extends IJdbcDataSourceConfiguration
 {
+  /**
+   * @return The database type identifier (e.g. "PostgreSQL", "MySQL"). May be <code>null</code>.
+   */
   @Nullable
   String getJdbcDatabaseType ();
 
+  /**
+   * @return The resolved {@link EDatabaseSystemType} from the database type string, or
+   *         <code>null</code> if the database type is not set or not recognized.
+   */
   @Nullable
   default EDatabaseSystemType getJdbcDatabaseSystemType ()
   {
@@ -39,16 +47,73 @@ public interface IJdbcConfiguration extends IJdbcDataSourceConfiguration
     return EDatabaseSystemType.getFromIDCaseInsensitiveOrNull (sID);
   }
 
+  /**
+   * @return The database schema to use. May be <code>null</code>.
+   */
   @Nullable
   String getJdbcSchema ();
 
+  /**
+   * @return <code>true</code> if logging of long-running JDBC executions is enabled.
+   */
   boolean isJdbcExecutionTimeWarningEnabled ();
 
+  /**
+   * @return The threshold in milliseconds above which a JDBC execution time warning is logged.
+   */
+  @CheckForSigned
   long getJdbcExecutionTimeWarningMilliseconds ();
 
+  /**
+   * @return <code>true</code> if debug logging of JDBC connection lifecycle (open/close) is
+   *         enabled.
+   */
   boolean isJdbcDebugConnections ();
 
+  /**
+   * @return <code>true</code> if debug logging of JDBC transactions (begin/commit/rollback) is
+   *         enabled.
+   */
   boolean isJdbcDebugTransactions ();
 
+  /**
+   * @return <code>true</code> if debug logging of executed SQL statements is enabled.
+   */
   boolean isJdbcDebugSQL ();
+
+  /**
+   * @return The maximum number of active connections in the pool.
+   * @since 8.1.3
+   */
+  @CheckForSigned
+  int getJdbcPoolingMaxConnections ();
+
+  /**
+   * @return The maximum time in milliseconds to wait for a connection from the pool before throwing
+   *         an exception.
+   * @since 8.1.3
+   */
+  @CheckForSigned
+  long getJdbcPoolingMaxWaitMillis ();
+
+  /**
+   * @return The time in milliseconds between runs of the idle connection evictor.
+   * @since 8.1.3
+   */
+  @CheckForSigned
+  long getJdbcPoolingBetweenEvictionRunsMillis ();
+
+  /**
+   * @return The minimum idle time in milliseconds before a connection is eligible for eviction.
+   * @since 8.1.3
+   */
+  @CheckForSigned
+  long getJdbcPoolingMinEvictableIdleMillis ();
+
+  /**
+   * @return The timeout in milliseconds before an abandoned connection can be removed.
+   * @since 8.1.3
+   */
+  @CheckForSigned
+  long getJdbcPoolingRemoveAbandonedTimeoutMillis ();
 }
