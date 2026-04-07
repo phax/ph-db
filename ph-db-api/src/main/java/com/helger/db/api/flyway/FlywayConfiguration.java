@@ -47,13 +47,15 @@ public class FlywayConfiguration implements IFlywayConfiguration
   private final String m_sJdbcPassword;
   private final boolean m_bSchemaCreate;
   private final int m_nBaselineVersion;
+  private final String m_sHistoryTable;
 
   public FlywayConfiguration (final boolean bEnabled,
                               @Nullable final String sJdbcUrl,
                               @Nullable final String sJdbcUser,
                               @Nullable final String sJdbcPassword,
                               final boolean bSchemaCreate,
-                              @Nonnegative final int nBaselineVersion)
+                              @Nonnegative final int nBaselineVersion,
+                              @Nullable final String sHistoryTable)
   {
     ValueEnforcer.isGE0 (nBaselineVersion, "BaselineVersion");
 
@@ -63,6 +65,7 @@ public class FlywayConfiguration implements IFlywayConfiguration
     m_sJdbcPassword = sJdbcPassword;
     m_bSchemaCreate = bSchemaCreate;
     m_nBaselineVersion = nBaselineVersion;
+    m_sHistoryTable = sHistoryTable;
   }
 
   public boolean isFlywayEnabled ()
@@ -99,6 +102,12 @@ public class FlywayConfiguration implements IFlywayConfiguration
     return m_nBaselineVersion;
   }
 
+  @Nullable
+  public String getFlywayHistoryTable ()
+  {
+    return m_sHistoryTable;
+  }
+
   @Override
   public boolean equals (final Object o)
   {
@@ -112,7 +121,8 @@ public class FlywayConfiguration implements IFlywayConfiguration
            EqualsHelper.equals (m_sJdbcUser, rhs.m_sJdbcUser) &&
            EqualsHelper.equals (m_sJdbcPassword, rhs.m_sJdbcPassword) &&
            m_bSchemaCreate == rhs.m_bSchemaCreate &&
-           m_nBaselineVersion == rhs.m_nBaselineVersion;
+           m_nBaselineVersion == rhs.m_nBaselineVersion &&
+           EqualsHelper.equals (m_sHistoryTable, rhs.m_sHistoryTable);
   }
 
   @Override
@@ -124,6 +134,7 @@ public class FlywayConfiguration implements IFlywayConfiguration
                                        .append (m_sJdbcPassword)
                                        .append (m_bSchemaCreate)
                                        .append (m_nBaselineVersion)
+                                       .append (m_sHistoryTable)
                                        .getHashCode ();
   }
 
@@ -136,6 +147,7 @@ public class FlywayConfiguration implements IFlywayConfiguration
                                        .appendPassword ("JdbcPassword")
                                        .append ("SchemaCreate", m_bSchemaCreate)
                                        .append ("BaselineVersion", m_nBaselineVersion)
+                                       .append ("HistoryTable", m_sHistoryTable)
                                        .getToString ();
   }
 
@@ -176,6 +188,7 @@ public class FlywayConfiguration implements IFlywayConfiguration
     private String m_sJdbcPassword;
     private boolean m_bSchemaCreate = DEFAULT_FLYWAY_JDBC_SCHEMA_CREATE;
     private int m_nBaselineVersion = DEFAULT_FLYWAY_BASELINE_VERSION;
+    private String m_sHistoryTable;
 
     public FlywayConfigurationBuilder ()
     {}
@@ -187,7 +200,8 @@ public class FlywayConfiguration implements IFlywayConfiguration
                                         .jdbcUser (aBase.getFlywayJdbcUser ())
                                         .jdbcPassword (aBase.getFlywayJdbcPassword ())
                                         .schemaCreate (aBase.isFlywaySchemaCreate ())
-                                        .baselineVersion (aBase.getFlywayBaselineVersion ());
+                                        .baselineVersion (aBase.getFlywayBaselineVersion ())
+                                        .historyTable (aBase.getFlywayHistoryTable ());
     }
 
     public final boolean enabled ()
@@ -267,6 +281,19 @@ public class FlywayConfiguration implements IFlywayConfiguration
       return this;
     }
 
+    @Nullable
+    public final String historyTable ()
+    {
+      return m_sHistoryTable;
+    }
+
+    @NonNull
+    public FlywayConfigurationBuilder historyTable (@Nullable final String s)
+    {
+      m_sHistoryTable = s;
+      return this;
+    }
+
     @NonNull
     public FlywayConfiguration build ()
     {
@@ -276,7 +303,8 @@ public class FlywayConfiguration implements IFlywayConfiguration
                                       m_sJdbcUser,
                                       m_sJdbcPassword,
                                       m_bSchemaCreate,
-                                      m_nBaselineVersion);
+                                      m_nBaselineVersion,
+                                      m_sHistoryTable);
     }
   }
 }

@@ -63,4 +63,12 @@ public interface IFlywayConfiguration
    */
   @Nonnegative
   int getFlywayBaselineVersion ();
+
+  /**
+   * @return The name of the Flyway history table. May be <code>null</code> to use the Flyway
+   *         default ({@code flyway_schema_history}).
+   * @since 8.1.3
+   */
+  @Nullable
+  String getFlywayHistoryTable ();
 }

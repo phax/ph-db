@@ -40,6 +40,7 @@ public class FlywayConfigurationBuilderConfig extends FlywayConfigurationBuilder
   public static final String SUFFIX_JDBC_PASSWORD = "jdbc.password";
   public static final String SUFFIX_JDBC_SCHEMA_CREATE = "jdbc.schema-create";
   public static final String SUFFIX_BASELINE_VERSION = "baseline.version";
+  public static final String SUFFIX_HISTORY_TABLE = "history-table";
 
   private final String m_sConfigPrefix;
 
@@ -71,6 +72,7 @@ public class FlywayConfigurationBuilderConfig extends FlywayConfigurationBuilder
                                         FlywayConfiguration.DEFAULT_FLYWAY_JDBC_SCHEMA_CREATE));
     baselineVersion (aConfig.getAsInt (sConfigPrefix + SUFFIX_BASELINE_VERSION,
                                        FlywayConfiguration.DEFAULT_FLYWAY_BASELINE_VERSION));
+    historyTable (aConfig.getAsString (sConfigPrefix + SUFFIX_HISTORY_TABLE));
   }
 
   /**
@@ -122,5 +124,12 @@ public class FlywayConfigurationBuilderConfig extends FlywayConfigurationBuilder
   public final String getConfigKeyBaselineVersion ()
   {
     return m_sConfigPrefix + SUFFIX_BASELINE_VERSION;
+  }
+
+  @NonNull
+  @Nonempty
+  public final String getConfigKeyHistoryTable ()
+  {
+    return m_sConfigPrefix + SUFFIX_HISTORY_TABLE;
   }
 }

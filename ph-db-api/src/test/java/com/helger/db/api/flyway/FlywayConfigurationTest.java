@@ -34,7 +34,7 @@ public class FlywayConfigurationTest
   @Test
   public void testBasic ()
   {
-    final FlywayConfiguration a = new FlywayConfiguration (false, "url", "usr", "pw", true, 0);
+    final FlywayConfiguration a = new FlywayConfiguration (false, "url", "usr", "pw", true, 0, null);
     assertFalse (a.isFlywayEnabled ());
     assertEquals ("url", a.getFlywayJdbcUrl ());
     assertEquals ("usr", a.getFlywayJdbcUser ());
@@ -48,49 +48,56 @@ public class FlywayConfigurationTest
                                                                                          "usr",
                                                                                          "pw",
                                                                                          true,
-                                                                                         0));
+                                                                                         0,
+                                                                                         null));
     TestHelper.testDefaultImplementationWithDifferentContentObject (a,
                                                                     new FlywayConfiguration (true,
                                                                                              "url",
                                                                                              "usr",
                                                                                              "pw",
                                                                                              true,
-                                                                                             0));
+                                                                                             0,
+                                                                                             null));
     TestHelper.testDefaultImplementationWithDifferentContentObject (a,
                                                                     new FlywayConfiguration (false,
                                                                                              "url2",
                                                                                              "usr",
                                                                                              "pw",
                                                                                              true,
-                                                                                             0));
+                                                                                             0,
+                                                                                             null));
     TestHelper.testDefaultImplementationWithDifferentContentObject (a,
                                                                     new FlywayConfiguration (false,
                                                                                              "url",
                                                                                              "usr2",
                                                                                              "pw",
                                                                                              true,
-                                                                                             0));
+                                                                                             0,
+                                                                                             null));
     TestHelper.testDefaultImplementationWithDifferentContentObject (a,
                                                                     new FlywayConfiguration (false,
                                                                                              "url",
                                                                                              "usr",
                                                                                              "pw2",
                                                                                              true,
-                                                                                             0));
+                                                                                             0,
+                                                                                             null));
     TestHelper.testDefaultImplementationWithDifferentContentObject (a,
                                                                     new FlywayConfiguration (false,
                                                                                              "url",
                                                                                              "usr",
                                                                                              "pw",
                                                                                              false,
-                                                                                             0));
+                                                                                             0,
+                                                                                             null));
     TestHelper.testDefaultImplementationWithDifferentContentObject (a,
                                                                     new FlywayConfiguration (false,
                                                                                              "url",
                                                                                              "usr",
                                                                                              "pw",
                                                                                              true,
-                                                                                             1));
+                                                                                             1,
+                                                                                             null));
   }
 
   @Test
@@ -104,6 +111,7 @@ public class FlywayConfigurationTest
                                                      .jdbcPassword ("pw")
                                                      .schemaCreate (false)
                                                      .baselineVersion (5)
+                                                     .historyTable ("flyway-history-1")
                                                      .build ();
     assertTrue (a.isFlywayEnabled ());
     assertEquals ("url", a.getFlywayJdbcUrl ());
@@ -111,6 +119,7 @@ public class FlywayConfigurationTest
     assertEquals ("pw", a.getFlywayJdbcPassword ());
     assertFalse (a.isFlywaySchemaCreate ());
     assertEquals (5, a.getFlywayBaselineVersion ());
+    assertEquals ("flyway-history-1", a.getFlywayHistoryTable ());
 
     // Create a copy via the builder
     final FlywayConfiguration a2 = FlywayConfiguration.builder (a).build ();
