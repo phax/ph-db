@@ -19,6 +19,7 @@ package com.helger.db.jdbc;
 import java.io.Closeable;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.Duration;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.jspecify.annotations.NonNull;
@@ -37,52 +38,85 @@ import com.helger.db.api.config.IJdbcDataSourceConfiguration;
 public class DataSourceProviderFromJdbcConfiguration implements IHasDataSource, Closeable
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (DataSourceProviderFromJdbcConfiguration.class);
-  private final BasicDataSource m_aDataSource;
 
+  private final BasicDataSource m_aDS;
+
+  /**
+   * Constructor creating a pooled data source from the provided JDBC configuration.
+   *
+   * @param aJdbcConfig
+   *        The JDBC configuration to use. May not be <code>null</code>.
+   */
   public DataSourceProviderFromJdbcConfiguration (@NonNull final IJdbcDataSourceConfiguration aJdbcConfig)
   {
     // build data source
     // This is usually only called once on startup and than the same
     // DataSource is reused during the entire lifetime
-    m_aDataSource = new BasicDataSource ();
-    m_aDataSource.setDriverClassName (aJdbcConfig.getJdbcDriver ());
+    m_aDS = new BasicDataSource ();
+    m_aDS.setDriverClassName (aJdbcConfig.getJdbcDriver ());
     final String sUserName = aJdbcConfig.getJdbcUser ();
     if (sUserName != null)
-      m_aDataSource.setUsername (sUserName);
+      m_aDS.setUsername (sUserName);
     final String sPassword = aJdbcConfig.getJdbcPassword ();
     if (sPassword != null)
-      m_aDataSource.setPassword (sPassword);
-    m_aDataSource.setUrl (aJdbcConfig.getJdbcUrl ());
+      m_aDS.setPassword (sPassword);
+    m_aDS.setUrl (aJdbcConfig.getJdbcUrl ());
 
     // settings
-    m_aDataSource.setDefaultAutoCommit (Boolean.FALSE);
-    m_aDataSource.setPoolPreparedStatements (true);
+    m_aDS.setDefaultAutoCommit (Boolean.FALSE);
+    m_aDS.setPoolPreparedStatements (true);
 
-    LOGGER.info ("Created new DataSource " + m_aDataSource);
+    // Pooling config
+    final int nMaxConnections = aJdbcConfig.getJdbcPoolingMaxConnections ();
+    m_aDS.setMaxTotal (nMaxConnections);
+    m_aDS.setMaxWait (Duration.ofMillis (aJdbcConfig.getJdbcPoolingMaxWaitMillis ()));
+    m_aDS.setInitialSize (Math.min (4, nMaxConnections));
+    m_aDS.setMinIdle (Math.min (4, nMaxConnections));
+    m_aDS.setMaxIdle (nMaxConnections);
+
+    final long nBetweenEvictionRunsMillis = aJdbcConfig.getJdbcPoolingBetweenEvictionRunsMillis ();
+    if (nBetweenEvictionRunsMillis > 0)
+    {
+      m_aDS.setDurationBetweenEvictionRuns (Duration.ofMillis (nBetweenEvictionRunsMillis));
+      m_aDS.setTestWhileIdle (true);
+    }
+    if (aJdbcConfig.getJdbcPoolingMinEvictableIdleMillis () > 0)
+      m_aDS.setMinEvictableIdle (Duration.ofMillis (aJdbcConfig.getJdbcPoolingMinEvictableIdleMillis ()));
+    if (aJdbcConfig.getJdbcPoolingRemoveAbandonedTimeoutMillis () > 0)
+    {
+      m_aDS.setRemoveAbandonedOnBorrow (true);
+      m_aDS.setRemoveAbandonedTimeout (Duration.ofMillis (aJdbcConfig.getJdbcPoolingRemoveAbandonedTimeoutMillis ()));
+    }
+
+    LOGGER.info ("DataSource created with max " +
+                 nMaxConnections +
+                 " connections to '" +
+                 aJdbcConfig.getJdbcUrl () +
+                 "'");
   }
 
   @NonNull
   public BasicDataSource getDataSource ()
   {
-    return m_aDataSource;
+    return m_aDS;
   }
 
   public void close () throws IOException
   {
-    try
+    if (m_aDS != null && !m_aDS.isClosed ())
     {
-      if (m_aDataSource != null && !m_aDataSource.isClosed ())
-      {
-        if (LOGGER.isDebugEnabled ())
-          LOGGER.debug ("Now closing DataSource");
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Now closing DataSource");
 
-        m_aDataSource.close ();
+      try
+      {
+        m_aDS.close ();
         LOGGER.info ("Successfully closed DataSource");
       }
-    }
-    catch (final SQLException ex)
-    {
-      throw new IllegalStateException ("Failed to close DataSource " + m_aDataSource, ex);
+      catch (final SQLException ex)
+      {
+        throw new IllegalStateException ("Failed to close DataSource " + m_aDS, ex);
+      }
     }
   }
 }
