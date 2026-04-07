@@ -41,6 +41,9 @@ Note: prior to v8.0.0 the group ID was `com.helger`
 
 # News and noteworthy
 
+v8.1.3 - work in progress
+* Extended `IJdbcConfiguration`, `JdbcConfiguration` and `JdbcConfigurationConfig` with connection pooling parameters: max connections, max wait, between eviction runs, min evictable idle, and remove abandoned timeout
+
 v8.1.2 - 2026-02-22
 * Updated to Apache Commons Pool 2.13.1
 * Updated to Apache Commons DBCP 2.14.0
