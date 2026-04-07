@@ -29,9 +29,18 @@ import com.helger.db.jdbc.executor.DBNoConnectionException;
  */
 public interface IHasConnection
 {
+  /**
+   * @return The SQL {@link Connection} object to use. Never <code>null</code>.
+   * @throws DBNoConnectionException
+   *         In case there is no connection available.
+   */
   @NonNull
   Connection getConnection () throws DBNoConnectionException;
 
+  /**
+   * @return <code>true</code> if the caller of {@link #getConnection()} should close the connection
+   *         retrieved, <code>false</code> if the connection should remain as-is.
+   */
   default boolean shouldCloseConnection ()
   {
     return true;
