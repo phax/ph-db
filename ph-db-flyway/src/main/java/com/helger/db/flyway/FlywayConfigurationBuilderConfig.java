@@ -14,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.db.api.flyway;
+package com.helger.db.flyway;
 
 import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.Nonempty;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.config.IConfig;
-import com.helger.db.api.flyway.FlywayConfiguration.FlywayConfigurationBuilder;
+import com.helger.db.flyway.FlywayConfiguration.FlywayConfigurationBuilder;
 
 /**
  * A specific {@link FlywayConfiguration} builder that takes values from configuration

@@ -26,7 +26,7 @@
   </parent>
   <groupId>com.helger.db</groupId>
   <artifactId>ph-db-parent-pom</artifactId>
-  <version>8.1.4-SNAPSHOT</version>
+  <version>8.2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>ph-db-parent-pom</name>
   <description>Base POM to build the ph-db projects</description>
@@ -64,6 +64,7 @@
 
   <properties>
     <eclipselink.version>4.0.9</eclipselink.version>
+    <flyway.version>12.3.0</flyway.version>
     <h2.version>2.4.240</h2.version>
     <mysql.version>9.6.0</mysql.version>
     <oracle.version>23.26.1.0.0</oracle.version>
@@ -95,6 +96,16 @@
         <artifactId>ph-db-jpa</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.helger.db</groupId>
+        <artifactId>ph-db-flyway</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-core</artifactId>
+        <version>${flyway.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -125,5 +136,6 @@
     <module>ph-db-api</module>
     <module>ph-db-jdbc</module>
     <module>ph-db-jpa</module>
+    <module>ph-db-flyway</module>
   </modules>
 </project>
