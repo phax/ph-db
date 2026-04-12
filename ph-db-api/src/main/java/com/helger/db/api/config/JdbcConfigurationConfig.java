@@ -33,25 +33,26 @@ import com.helger.config.IConfig;
  */
 public class JdbcConfigurationConfig implements IJdbcConfiguration
 {
-  public final String SUFFIX_DATABASE_TYPE = "database-type";
-  public final String SUFFIX_DRIVER = "driver";
-  public final String SUFFIX_URL = "url";
-  public final String SUFFIX_USER = "user";
-  public final String SUFFIX_PASSWORD = "password";
-  public final String SUFFIX_SCHEMA = "schema";
+  public static final String SUFFIX_DATABASE_TYPE = "database-type";
+  public static final String SUFFIX_DRIVER = "driver";
+  public static final String SUFFIX_URL = "url";
+  public static final String SUFFIX_USER = "user";
+  public static final String SUFFIX_PASSWORD = "password";
+  public static final String SUFFIX_SCHEMA = "schema";
 
-  public final String SUFFIX_EXECUTION_TIME_WARNING_ENABLED = "execution-time-warning.enabled";
-  public final String SUFFIX_EXECUTION_TIME_WARNING_MS = "execution-time-warning.ms";
+  public static final String SUFFIX_EXECUTION_TIME_WARNING_ENABLED = "execution-time-warning.enabled";
+  public static final String SUFFIX_EXECUTION_TIME_WARNING_MS = "execution-time-warning.ms";
 
-  public final String SUFFIX_DEBUG_CONNECTIONS = "debug.connections";
-  public final String SUFFIX_DEBUG_TRANSACTIONS = "debug.transactions";
-  public final String SUFFIX_DEBUG_SQL = "debug.sql";
+  public static final String SUFFIX_DEBUG_CONNECTIONS = "debug.connections";
+  public static final String SUFFIX_DEBUG_TRANSACTIONS = "debug.transactions";
+  public static final String SUFFIX_DEBUG_SQL = "debug.sql";
 
-  public final String SUFFIX_POOLING_MAX_CONNECTIONS = "pooling.max-connections";
-  public final String SUFFIX_POOLING_MAX_WAIT_MILLIS = "pooling.max-wait.millis";
-  public final String SUFFIX_POOLING_BETWEEN_EVICTION_RUNS_MILLIS = "pooling.between-evictions-runs.millis";
-  public final String SUFFIX_POOLING_MIN_EVICTABLE_IDLE_MILLIS = "pooling.min-evictable-idle.millis";
-  public final String SUFFIX_POOLING_REMOVE_ABANDONED_TIMEOUT_MILLIS = "pooling.remove-abandoned-timeout.millis";
+  public static final String SUFFIX_POOLING_MAX_CONNECTIONS = "pooling.max-connections";
+  public static final String SUFFIX_POOLING_MAX_WAIT_MILLIS = "pooling.max-wait.millis";
+  public static final String SUFFIX_POOLING_BETWEEN_EVICTION_RUNS_MILLIS = "pooling.between-evictions-runs.millis";
+  public static final String SUFFIX_POOLING_MIN_EVICTABLE_IDLE_MILLIS = "pooling.min-evictable-idle.millis";
+  public static final String SUFFIX_POOLING_REMOVE_ABANDONED_TIMEOUT_MILLIS = "pooling.remove-abandoned-timeout.millis";
+  public static final String SUFFIX_POOLING_TEST_ON_BORROW = "pooling.test-on-borrow";
 
   private final IConfig m_aConfig;
   private final String m_sConfigPrefix;
@@ -102,7 +103,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
   @Nullable
   public String getJdbcDatabaseType ()
   {
-    return m_aConfig.getAsString (m_sConfigPrefix + SUFFIX_DATABASE_TYPE);
+    return m_aConfig.getAsString (getConfigKeyDatabaseType ());
   }
 
   @NonNull
@@ -115,7 +116,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
   @Nullable
   public String getJdbcDriver ()
   {
-    return m_aConfig.getAsString (m_sConfigPrefix + SUFFIX_DRIVER);
+    return m_aConfig.getAsString (getConfigKeyJdbcDriver ());
   }
 
   @NonNull
@@ -128,7 +129,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
   @Nullable
   public String getJdbcUrl ()
   {
-    return m_aConfig.getAsString (m_sConfigPrefix + SUFFIX_URL);
+    return m_aConfig.getAsString (getConfigKeyJdbcUrl ());
   }
 
   @NonNull
@@ -141,7 +142,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
   @Nullable
   public String getJdbcUser ()
   {
-    return m_aConfig.getAsString (m_sConfigPrefix + SUFFIX_USER);
+    return m_aConfig.getAsString (getConfigKeyJdbcUser ());
   }
 
   @NonNull
@@ -154,7 +155,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
   @Nullable
   public String getJdbcPassword ()
   {
-    return m_aConfig.getAsString (m_sConfigPrefix + SUFFIX_PASSWORD);
+    return m_aConfig.getAsString (getConfigKeyJdbcPassword ());
   }
 
   @NonNull
@@ -167,7 +168,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
   @Nullable
   public String getJdbcSchema ()
   {
-    return m_aConfig.getAsString (m_sConfigPrefix + SUFFIX_SCHEMA);
+    return m_aConfig.getAsString (getConfigKeyJdbcSchema ());
   }
 
   @NonNull
@@ -179,7 +180,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
 
   public boolean isJdbcExecutionTimeWarningEnabled ()
   {
-    return m_aConfig.getAsBoolean (m_sConfigPrefix + SUFFIX_EXECUTION_TIME_WARNING_ENABLED,
+    return m_aConfig.getAsBoolean (getConfigKeyJdbcExecutionTimeWarningEnabled (),
                                    JdbcConfiguration.DEFAULT_EXECUTION_TIME_WARNING_ENABLED);
   }
 
@@ -193,7 +194,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
   @CheckForSigned
   public long getJdbcExecutionTimeWarningMilliseconds ()
   {
-    return m_aConfig.getAsLong (m_sConfigPrefix + SUFFIX_EXECUTION_TIME_WARNING_MS,
+    return m_aConfig.getAsLong (getConfigKeyJdbcExecutionTimeWarningMilliseconds (),
                                 JdbcConfiguration.DEFAULT_EXECUTION_DURATION_WARN_MS);
   }
 
@@ -206,8 +207,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
 
   public boolean isJdbcDebugConnections ()
   {
-    return m_aConfig.getAsBoolean (m_sConfigPrefix + SUFFIX_DEBUG_CONNECTIONS,
-                                   JdbcConfiguration.DEFAULT_DEBUG_CONNECTIONS);
+    return m_aConfig.getAsBoolean (getConfigKeyJdbcDebugConnections (), JdbcConfiguration.DEFAULT_DEBUG_CONNECTIONS);
   }
 
   @NonNull
@@ -219,8 +219,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
 
   public boolean isJdbcDebugTransactions ()
   {
-    return m_aConfig.getAsBoolean (m_sConfigPrefix + SUFFIX_DEBUG_TRANSACTIONS,
-                                   JdbcConfiguration.DEFAULT_DEBUG_TRANSACTIONS);
+    return m_aConfig.getAsBoolean (getConfigKeyJdbcDebugTransactions (), JdbcConfiguration.DEFAULT_DEBUG_TRANSACTIONS);
   }
 
   @NonNull
@@ -246,7 +245,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
   @CheckForSigned
   public int getJdbcPoolingMaxConnections ()
   {
-    return m_aConfig.getAsInt (m_sConfigPrefix + SUFFIX_POOLING_MAX_CONNECTIONS,
+    return m_aConfig.getAsInt (getConfigKeyJdbcPoolingMaxConnections (),
                                JdbcConfiguration.DEFAULT_POOLING_MAX_CONNECTIONS);
   }
 
@@ -260,7 +259,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
   @CheckForSigned
   public long getJdbcPoolingMaxWaitMillis ()
   {
-    return m_aConfig.getAsLong (m_sConfigPrefix + SUFFIX_POOLING_MAX_WAIT_MILLIS,
+    return m_aConfig.getAsLong (getConfigKeyJdbcPoolingMaxWaitMillis (),
                                 JdbcConfiguration.DEFAULT_POOLING_MAX_WAIT_MILLIS);
   }
 
@@ -274,7 +273,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
   @CheckForSigned
   public long getJdbcPoolingBetweenEvictionRunsMillis ()
   {
-    return m_aConfig.getAsLong (m_sConfigPrefix + SUFFIX_POOLING_BETWEEN_EVICTION_RUNS_MILLIS,
+    return m_aConfig.getAsLong (getConfigKeyJdbcPoolingBetweenEvictionRunsMillis (),
                                 JdbcConfiguration.DEFAULT_POOLING_BETWEEN_EVICTION_RUNS_MILLIS);
   }
 
@@ -288,7 +287,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
   @CheckForSigned
   public long getJdbcPoolingMinEvictableIdleMillis ()
   {
-    return m_aConfig.getAsLong (m_sConfigPrefix + SUFFIX_POOLING_MIN_EVICTABLE_IDLE_MILLIS,
+    return m_aConfig.getAsLong (getConfigKeyJdbcPoolingMinEvictableIdleMillis (),
                                 JdbcConfiguration.DEFAULT_POOLING_MIN_EVICTABLE_IDLE_MILLIS);
   }
 
@@ -302,7 +301,20 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
   @CheckForSigned
   public long getJdbcPoolingRemoveAbandonedTimeoutMillis ()
   {
-    return m_aConfig.getAsLong (m_sConfigPrefix + SUFFIX_POOLING_REMOVE_ABANDONED_TIMEOUT_MILLIS,
+    return m_aConfig.getAsLong (getConfigKeyJdbcPoolingRemoveAbandonedTimeoutMillis (),
                                 JdbcConfiguration.DEFAULT_POOLING_REMOVE_ABANDONED_TIMEOUT_MILLIS);
+  }
+
+  @NonNull
+  @Nonempty
+  public final String getConfigKeyJdbcPoolingTestOnBorrow ()
+  {
+    return m_sConfigPrefix + SUFFIX_POOLING_TEST_ON_BORROW;
+  }
+
+  public boolean isJdbcPoolingTestOnBorrow ()
+  {
+    return m_aConfig.getAsBoolean (getConfigKeyJdbcPoolingTestOnBorrow (),
+                                   JdbcConfiguration.DEFAULT_JDBC_POOLING_TEST_ON_BORROW);
   }
 }

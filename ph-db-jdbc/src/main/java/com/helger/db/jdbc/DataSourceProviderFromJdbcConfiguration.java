@@ -74,6 +74,9 @@ public class DataSourceProviderFromJdbcConfiguration implements IHasDataSource, 
     m_aDS.setMinIdle (Math.min (4, nMaxConnections));
     m_aDS.setMaxIdle (nMaxConnections);
 
+    final boolean bTestOnBorrow = aJdbcConfig.isJdbcPoolingTestOnBorrow ();
+    m_aDS.setTestOnBorrow (bTestOnBorrow);
+
     final long nBetweenEvictionRunsMillis = aJdbcConfig.getJdbcPoolingBetweenEvictionRunsMillis ();
     if (nBetweenEvictionRunsMillis > 0)
     {

@@ -41,6 +41,7 @@ public class JdbcConfiguration implements IJdbcConfiguration
   public static final long DEFAULT_POOLING_BETWEEN_EVICTION_RUNS_MILLIS = 300_000L;
   public static final long DEFAULT_POOLING_MIN_EVICTABLE_IDLE_MILLIS = 1_800_000L;
   public static final long DEFAULT_POOLING_REMOVE_ABANDONED_TIMEOUT_MILLIS = 300_000L;
+  public static final boolean DEFAULT_JDBC_POOLING_TEST_ON_BORROW = false;
 
   private final String m_sDatabaseType;
   private final String m_sJdbcDriver;
@@ -61,6 +62,7 @@ public class JdbcConfiguration implements IJdbcConfiguration
   private final long m_nPoolingBetweenEvictionRunsMillis;
   private final long m_nPoolingMinEvictableIdleMillis;
   private final long m_nPoolingRemoveAbandonedTimeoutMillis;
+  private final boolean m_bPoolingTestOnBorrow;
 
   public JdbcConfiguration (@Nullable final String sDatabaseType,
                             @Nullable final String sJdbcDriver,
@@ -77,7 +79,8 @@ public class JdbcConfiguration implements IJdbcConfiguration
                             final long nPoolingMaxWaitMillis,
                             final long nPoolingBetweenEvictionRunsMillis,
                             final long nPoolingMinEvictableIdleMillis,
-                            final long nPoolingRemoveAbandonedTimeoutMillis)
+                            final long nPoolingRemoveAbandonedTimeoutMillis,
+                            final boolean bPoolingTestOnBorrow)
   {
     m_sDatabaseType = sDatabaseType;
     m_sJdbcDriver = sJdbcDriver;
@@ -98,6 +101,7 @@ public class JdbcConfiguration implements IJdbcConfiguration
     m_nPoolingBetweenEvictionRunsMillis = nPoolingBetweenEvictionRunsMillis;
     m_nPoolingMinEvictableIdleMillis = nPoolingMinEvictableIdleMillis;
     m_nPoolingRemoveAbandonedTimeoutMillis = nPoolingRemoveAbandonedTimeoutMillis;
+    m_bPoolingTestOnBorrow = bPoolingTestOnBorrow;
   }
 
   @Nullable
@@ -190,5 +194,10 @@ public class JdbcConfiguration implements IJdbcConfiguration
   public long getJdbcPoolingRemoveAbandonedTimeoutMillis ()
   {
     return m_nPoolingRemoveAbandonedTimeoutMillis;
+  }
+
+  public boolean isJdbcPoolingTestOnBorrow ()
+  {
+    return m_bPoolingTestOnBorrow;
   }
 }

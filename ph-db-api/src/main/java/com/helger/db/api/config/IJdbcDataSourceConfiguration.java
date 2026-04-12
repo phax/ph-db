@@ -75,4 +75,10 @@ public interface IJdbcDataSourceConfiguration
    */
   @CheckForSigned
   long getJdbcPoolingRemoveAbandonedTimeoutMillis ();
+
+  /**
+   * @return Whether or not the pool will validate objects before they are borrowed from the pool.
+   * @since 8.2.1
+   */
+  boolean isJdbcPoolingTestOnBorrow ();
 }
