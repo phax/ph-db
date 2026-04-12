@@ -80,6 +80,37 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-core</artifactId>
+        <version>${flyway.version}</version>
+      </dependency>
+      <!-- The superset of all libs I am using -->
+      <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-database-db2</artifactId>
+        <version>${flyway.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-mysql</artifactId>
+        <version>${flyway.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-database-oracle</artifactId>
+        <version>${flyway.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-database-postgresql</artifactId>
+        <version>${flyway.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-sqlserver</artifactId>
+        <version>${flyway.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>com.helger.db</groupId>
@@ -100,11 +131,6 @@
         <groupId>com.helger.db</groupId>
         <artifactId>ph-db-flyway</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.flywaydb</groupId>
-        <artifactId>flyway-core</artifactId>
-        <version>${flyway.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

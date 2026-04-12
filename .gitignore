@@ -1,7 +1,10 @@
-target/
-.pmd
-*.iml
-.classpath 
-.project 
+.claude/
 .settings/ 
+target/
+
+.classpath 
+.pmd
+.project 
 zz
+
+*.iml
