@@ -99,8 +99,8 @@ public final class FlywayMigrationRunner
   public static void runFlyway (@NonNull final IJdbcConfiguration aJdbcConfig,
                                 @NonNull final IFlywayConfiguration aFlywayConfig,
                                 @NonNull final String sLocation,
-                                @Nullable final JavaMigration [] aJavaMigrations,
-                                @Nullable final Callback [] aCallbacks)
+                                @Nullable final JavaMigration @NonNull [] aJavaMigrations,
+                                @Nullable final Callback @NonNull [] aCallbacks)
   {
     ValueEnforcer.notNull (aJdbcConfig, "JdbcConfig");
     ValueEnforcer.notNull (aFlywayConfig, "FlywayConfig");
