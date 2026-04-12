@@ -20,6 +20,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.helger.annotation.CheckForSigned;
 import com.helger.base.CGlobal;
+import com.helger.base.tostring.ToStringGenerator;
 
 /**
  * Default implementation of {@link IJdbcConfiguration}.
@@ -199,5 +200,28 @@ public class JdbcConfiguration implements IJdbcConfiguration
   public boolean isJdbcPoolingTestOnBorrow ()
   {
     return m_bPoolingTestOnBorrow;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("DatabaseType", m_sDatabaseType)
+                                       .append ("JdbcDriver", m_sJdbcDriver)
+                                       .append ("JdbcUrl", m_sJdbcUrl)
+                                       .append ("JdbcUser", m_sJdbcUser)
+                                       .appendPassword ("JdbcPassword")
+                                       .append ("JdbcSchema", m_sJdbcSchema)
+                                       .append ("ExecutionTimeWarningEnabled", m_bExecutionTimeWarningEnabled)
+                                       .append ("ExecutionTimeWarningMilliseconds", m_nExecutionTimeWarningMilliseconds)
+                                       .append ("DebugConnections", m_bDebugConnections)
+                                       .append ("DebugTransactions", m_bDebugTransactions)
+                                       .append ("DebugSQL", m_bDebugSQL)
+                                       .append ("PoolingMaxConnections", m_nPoolingMaxConnections)
+                                       .append ("PoolingMaxWaitMillis", m_nPoolingMaxWaitMillis)
+                                       .append ("PoolingBetweenEvictionRunsMillis", m_nPoolingBetweenEvictionRunsMillis)
+                                       .append ("PoolingMinEvictableIdleMillis", m_nPoolingMinEvictableIdleMillis)
+                                       .append ("PoolingRemoveAbandonedTimeoutMillis", m_nPoolingRemoveAbandonedTimeoutMillis)
+                                       .append ("PoolingTestOnBorrow", m_bPoolingTestOnBorrow)
+                                       .getToString ();
   }
 }

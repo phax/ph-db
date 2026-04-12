@@ -22,6 +22,7 @@ import org.jspecify.annotations.Nullable;
 import com.helger.annotation.CheckForSigned;
 import com.helger.annotation.Nonempty;
 import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.tostring.ToStringGenerator;
 import com.helger.config.IConfig;
 
 /**
@@ -316,5 +317,13 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
   {
     return m_aConfig.getAsBoolean (getConfigKeyJdbcPoolingTestOnBorrow (),
                                    JdbcConfiguration.DEFAULT_JDBC_POOLING_TEST_ON_BORROW);
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("Config", m_aConfig)
+                                       .append ("ConfigPrefix", m_sConfigPrefix)
+                                       .getToString ();
   }
 }
