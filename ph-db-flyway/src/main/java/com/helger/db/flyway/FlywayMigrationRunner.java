@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.base.array.ArrayHelper;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
-import com.helger.db.api.config.IJdbcDataSourceConfiguration;
+import com.helger.db.api.config.IJdbcConfiguration;
 
 /**
  * Shared utility for running Flyway database migrations. This class encapsulates the common Flyway
@@ -81,33 +81,24 @@ public final class FlywayMigrationRunner
    * Run Flyway database migration.
    *
    * @param aJdbcConfig
-   *        The JDBC data source configuration providing the JDBC driver. May not be
+   *        The JDBC configuration providing the JDBC driver and the schema name. May not be
    *        <code>null</code>.
    * @param aFlywayConfig
    *        The Flyway configuration. May not be <code>null</code>.
    * @param sLocation
    *        The Flyway migration scripts location (e.g. {@code "db/migrate-postgresql"}). May
    *        neither be <code>null</code> nor empty.
-   * @param sBaselineDescription
-   *        The baseline description. May be <code>null</code>.
    * @param aJavaMigrations
    *        Optional Java migration instances. May be <code>null</code> or empty.
    * @param aCallbacks
    *        Optional Flyway callbacks. May be <code>null</code> or empty. If <code>null</code> or
    *        empty, {@link #CALLBACK_LOGGING} is used as the default.
-   * @param sSchema
-   *        The database schema name. May be <code>null</code>.
-   * @param bSchemaCreate
-   *        <code>true</code> to let Flyway create the schema if it does not exist.
    */
-  public static void runFlyway (@NonNull final IJdbcDataSourceConfiguration aJdbcConfig,
+  public static void runFlyway (@NonNull final IJdbcConfiguration aJdbcConfig,
                                 @NonNull final IFlywayConfiguration aFlywayConfig,
                                 @NonNull final String sLocation,
-                                @Nullable final String sBaselineDescription,
                                 @Nullable final JavaMigration [] aJavaMigrations,
-                                @Nullable final Callback [] aCallbacks,
-                                @Nullable final String sSchema,
-                                final boolean bSchemaCreate)
+                                @Nullable final Callback [] aCallbacks)
   {
     ValueEnforcer.notNull (aJdbcConfig, "JdbcConfig");
     ValueEnforcer.notNull (aFlywayConfig, "FlywayConfig");
@@ -130,8 +121,7 @@ public final class FlywayMigrationRunner
 
     // Baseline version
     aActualFlywayConfig.baselineVersion (Integer.toString (aFlywayConfig.getFlywayBaselineVersion ()));
-    if (StringHelper.isNotEmpty (sBaselineDescription))
-      aActualFlywayConfig.baselineDescription (sBaselineDescription);
+    aActualFlywayConfig.baselineDescription ("Flyway baseline");
 
     // Migration script location
     aActualFlywayConfig.locations (sLocation);
@@ -146,11 +136,16 @@ public final class FlywayMigrationRunner
     else
       aActualFlywayConfig.callbacks (CALLBACK_LOGGING);
 
-    // Schema
+    // Flyway to handle the DB schema?
+    final String sSchema = aJdbcConfig.getJdbcSchema ();
     if (StringHelper.isNotEmpty (sSchema))
+    {
+      // Use the schema only, if it is explicitly configured
+      // The default schema name is ["$user", public] and as such unusable
       aActualFlywayConfig.schemas (sSchema);
-
-    aActualFlywayConfig.createSchemas (bSchemaCreate);
+    }
+    // If no schema is specified, schema create should also be disabled
+    aActualFlywayConfig.createSchemas (aFlywayConfig.isFlywaySchemaCreate ());
 
     // Custom history table name
     final String sHistoryTable = aFlywayConfig.getFlywayHistoryTable ();
