@@ -56,6 +56,15 @@ public final class FlywayMigrationRunner
     @SuppressWarnings ("hiding")
     private static final Logger LOGGER = LoggerFactory.getLogger (FlywayMigrationRunner.class.getName () + "$Logging");
 
+    @Override
+    public boolean supports (@NonNull final Event aEvent, @Nullable final Context aContext)
+    {
+      // Deprecated by Flyway itself - just to avoid warnings
+      if (aEvent == Event.CREATE_SCHEMA)
+        return false;
+      return super.supports (aEvent, aContext);
+    }
+
     public void handle (@NonNull final Event aEvent, @Nullable final Context aContext)
     {
       if (LOGGER.isDebugEnabled ())
