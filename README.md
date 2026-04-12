@@ -49,6 +49,9 @@ Note: prior to v8.0.0 the group ID was `com.helger`
 
 # News and noteworthy
 
+v8.2.1 - work in progress
+* Extended `IJdbcDataSourceConfiguration`, `JdbcConfiguration` and `JdbcConfigurationConfig` with the `testOnBorrow` pooling parameter
+
 v8.2.0 - 2026-04-12
 * Added new submodule `ph-db-flyway` with `FlywayMigrationRunner` utility class for shared Flyway database migration setup
 * Moved Flyway configuration classes (`FlywayConfiguration`, `FlywayConfigurationBuilderConfig`, `IFlywayConfiguration`) from `ph-db-api` (`com.helger.db.api.flyway`) to `ph-db-flyway` (`com.helger.db.flyway`) — **breaking package change**
