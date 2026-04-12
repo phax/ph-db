@@ -80,9 +80,16 @@ public class DataSourceProviderFromJdbcConfiguration implements IHasDataSource, 
     final long nBetweenEvictionRunsMillis = aJdbcConfig.getJdbcPoolingBetweenEvictionRunsMillis ();
     if (nBetweenEvictionRunsMillis > 0)
     {
-      m_aDS.setDurationBetweenEvictionRuns (Duration.ofMillis (nBetweenEvictionRunsMillis));
+      // Makes no sense otherwise
       m_aDS.setTestWhileIdle (true);
+      m_aDS.setDurationBetweenEvictionRuns (Duration.ofMillis (nBetweenEvictionRunsMillis));
     }
+    else
+    {
+      if (!bTestOnBorrow)
+        LOGGER.warn ("Both 'test on borrow' and 'test while idle' are disabled. This could lead to connection issues.");
+    }
+
     if (aJdbcConfig.getJdbcPoolingMinEvictableIdleMillis () > 0)
       m_aDS.setMinEvictableIdle (Duration.ofMillis (aJdbcConfig.getJdbcPoolingMinEvictableIdleMillis ()));
     if (aJdbcConfig.getJdbcPoolingRemoveAbandonedTimeoutMillis () > 0)
