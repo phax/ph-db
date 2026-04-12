@@ -23,6 +23,8 @@ import org.flywaydb.core.api.callback.Callback;
 import org.flywaydb.core.api.callback.Context;
 import org.flywaydb.core.api.callback.Event;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
+import org.flywaydb.core.api.logging.LogFactory;
+import org.flywaydb.core.api.logging.LogLevel;
 import org.flywaydb.core.api.migration.JavaMigration;
 import org.flywaydb.core.api.resolver.ResolvedMigration;
 import org.flywaydb.core.internal.info.MigrationInfoImpl;
@@ -42,7 +44,7 @@ import com.helger.db.api.config.IJdbcConfiguration;
  * setup that is duplicated across multiple projects.
  *
  * @author Philip Helger
- * @since 8.1.4
+ * @since 8.2.0
  */
 public final class FlywayMigrationRunner
 {
@@ -113,6 +115,8 @@ public final class FlywayMigrationRunner
                                                                                              aFlywayConfig.getFlywayJdbcUser (),
                                                                                              aFlywayConfig.getFlywayJdbcPassword ()));
 
+    aActualFlywayConfig.loggers ("slf4j");
+
     // Required for creating DB tables
     aActualFlywayConfig.baselineOnMigrate (true);
 
@@ -152,7 +156,23 @@ public final class FlywayMigrationRunner
     if (StringHelper.isNotEmpty (sHistoryTable))
       aActualFlywayConfig.table (sHistoryTable);
 
+    // Debug mode
+    if (aFlywayConfig.isFlywayDebugMode ())
+    {
+      LOGGER.info ("Flyway debug mode is enabled");
+      LogFactory.setLogLevel (LogLevel.DEBUG);
+    }
+
     final Flyway aFlyway = aActualFlywayConfig.load ();
+
+    // Repair mode - run repair before migrate
+    if (aFlywayConfig.isFlywayRepairMode ())
+    {
+      aFlyway.info ();
+      LOGGER.info ("Flyway repair mode is enabled - running repair before migrate");
+      aFlyway.repair ();
+    }
+
     aFlyway.migrate ();
 
     LOGGER.info ("Finished running Flyway");

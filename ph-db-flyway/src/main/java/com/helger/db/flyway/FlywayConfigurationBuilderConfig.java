@@ -41,6 +41,8 @@ public class FlywayConfigurationBuilderConfig extends FlywayConfigurationBuilder
   public static final String SUFFIX_JDBC_SCHEMA_CREATE = "jdbc.schema-create";
   public static final String SUFFIX_BASELINE_VERSION = "baseline.version";
   public static final String SUFFIX_HISTORY_TABLE = "history-table";
+  public static final String SUFFIX_DEBUG_MODE = "debug-mode";
+  public static final String SUFFIX_REPAIR_MODE = "repair-mode";
 
   private final String m_sConfigPrefix;
 
@@ -64,15 +66,17 @@ public class FlywayConfigurationBuilderConfig extends FlywayConfigurationBuilder
 
     m_sConfigPrefix = sConfigPrefix;
 
-    enabled (aConfig.getAsBoolean (sConfigPrefix + SUFFIX_ENABLED, FlywayConfiguration.DEFAULT_FLYWAY_ENABLED));
-    jdbcUrl (aConfig.getAsString (sConfigPrefix + SUFFIX_JDBC_URL));
-    jdbcUser (aConfig.getAsString (sConfigPrefix + SUFFIX_JDBC_USER));
-    jdbcPassword (aConfig.getAsString (sConfigPrefix + SUFFIX_JDBC_PASSWORD));
-    schemaCreate (aConfig.getAsBoolean (sConfigPrefix + SUFFIX_JDBC_SCHEMA_CREATE,
+    enabled (aConfig.getAsBoolean (getConfigKeyEnabled (), FlywayConfiguration.DEFAULT_FLYWAY_ENABLED));
+    jdbcUrl (aConfig.getAsString (getConfigKeyJdbcUrl ()));
+    jdbcUser (aConfig.getAsString (getConfigKeyJdbcUser ()));
+    jdbcPassword (aConfig.getAsString (getConfigKeyJdbcPassword ()));
+    schemaCreate (aConfig.getAsBoolean (getConfigKeySchemaCreate (),
                                         FlywayConfiguration.DEFAULT_FLYWAY_JDBC_SCHEMA_CREATE));
-    baselineVersion (aConfig.getAsInt (sConfigPrefix + SUFFIX_BASELINE_VERSION,
+    baselineVersion (aConfig.getAsInt (getConfigKeyBaselineVersion (),
                                        FlywayConfiguration.DEFAULT_FLYWAY_BASELINE_VERSION));
-    historyTable (aConfig.getAsString (sConfigPrefix + SUFFIX_HISTORY_TABLE));
+    historyTable (aConfig.getAsString (getConfigKeyHistoryTable ()));
+    debugMode (aConfig.getAsBoolean (getConfigKeyDebugMode (), FlywayConfiguration.DEFAULT_FLYWAY_DEBUG_MODE));
+    repairMode (aConfig.getAsBoolean (getConfigKeyRepairMode (), FlywayConfiguration.DEFAULT_FLYWAY_REPAIR_MODE));
   }
 
   /**
@@ -131,5 +135,19 @@ public class FlywayConfigurationBuilderConfig extends FlywayConfigurationBuilder
   public final String getConfigKeyHistoryTable ()
   {
     return m_sConfigPrefix + SUFFIX_HISTORY_TABLE;
+  }
+
+  @NonNull
+  @Nonempty
+  public final String getConfigKeyDebugMode ()
+  {
+    return m_sConfigPrefix + SUFFIX_DEBUG_MODE;
+  }
+
+  @NonNull
+  @Nonempty
+  public final String getConfigKeyRepairMode ()
+  {
+    return m_sConfigPrefix + SUFFIX_REPAIR_MODE;
   }
 }

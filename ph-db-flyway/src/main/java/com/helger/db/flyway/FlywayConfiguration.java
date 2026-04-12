@@ -40,6 +40,8 @@ public class FlywayConfiguration implements IFlywayConfiguration
   public static final boolean DEFAULT_FLYWAY_ENABLED = true;
   public static final boolean DEFAULT_FLYWAY_JDBC_SCHEMA_CREATE = false;
   public static final int DEFAULT_FLYWAY_BASELINE_VERSION = 0;
+  public static final boolean DEFAULT_FLYWAY_DEBUG_MODE = false;
+  public static final boolean DEFAULT_FLYWAY_REPAIR_MODE = false;
 
   private final boolean m_bEnabled;
   private final String m_sJdbcUrl;
@@ -48,6 +50,8 @@ public class FlywayConfiguration implements IFlywayConfiguration
   private final boolean m_bSchemaCreate;
   private final int m_nBaselineVersion;
   private final String m_sHistoryTable;
+  private final boolean m_bDebugMode;
+  private final boolean m_bRepairMode;
 
   public FlywayConfiguration (final boolean bEnabled,
                               @Nullable final String sJdbcUrl,
@@ -55,7 +59,9 @@ public class FlywayConfiguration implements IFlywayConfiguration
                               @Nullable final String sJdbcPassword,
                               final boolean bSchemaCreate,
                               @Nonnegative final int nBaselineVersion,
-                              @Nullable final String sHistoryTable)
+                              @Nullable final String sHistoryTable,
+                              final boolean bDebugMode,
+                              final boolean bRepairMode)
   {
     ValueEnforcer.isGE0 (nBaselineVersion, "BaselineVersion");
 
@@ -66,6 +72,8 @@ public class FlywayConfiguration implements IFlywayConfiguration
     m_bSchemaCreate = bSchemaCreate;
     m_nBaselineVersion = nBaselineVersion;
     m_sHistoryTable = sHistoryTable;
+    m_bDebugMode = bDebugMode;
+    m_bRepairMode = bRepairMode;
   }
 
   public boolean isFlywayEnabled ()
@@ -108,6 +116,16 @@ public class FlywayConfiguration implements IFlywayConfiguration
     return m_sHistoryTable;
   }
 
+  public boolean isFlywayDebugMode ()
+  {
+    return m_bDebugMode;
+  }
+
+  public boolean isFlywayRepairMode ()
+  {
+    return m_bRepairMode;
+  }
+
   @Override
   public boolean equals (final Object o)
   {
@@ -122,7 +140,9 @@ public class FlywayConfiguration implements IFlywayConfiguration
            EqualsHelper.equals (m_sJdbcPassword, rhs.m_sJdbcPassword) &&
            m_bSchemaCreate == rhs.m_bSchemaCreate &&
            m_nBaselineVersion == rhs.m_nBaselineVersion &&
-           EqualsHelper.equals (m_sHistoryTable, rhs.m_sHistoryTable);
+           EqualsHelper.equals (m_sHistoryTable, rhs.m_sHistoryTable) &&
+           m_bDebugMode == rhs.m_bDebugMode &&
+           m_bRepairMode == rhs.m_bRepairMode;
   }
 
   @Override
@@ -135,6 +155,8 @@ public class FlywayConfiguration implements IFlywayConfiguration
                                        .append (m_bSchemaCreate)
                                        .append (m_nBaselineVersion)
                                        .append (m_sHistoryTable)
+                                       .append (m_bDebugMode)
+                                       .append (m_bRepairMode)
                                        .getHashCode ();
   }
 
@@ -148,6 +170,8 @@ public class FlywayConfiguration implements IFlywayConfiguration
                                        .append ("SchemaCreate", m_bSchemaCreate)
                                        .append ("BaselineVersion", m_nBaselineVersion)
                                        .append ("HistoryTable", m_sHistoryTable)
+                                       .append ("DebugMode", m_bDebugMode)
+                                       .append ("RepairMode", m_bRepairMode)
                                        .getToString ();
   }
 
@@ -189,6 +213,8 @@ public class FlywayConfiguration implements IFlywayConfiguration
     private boolean m_bSchemaCreate = DEFAULT_FLYWAY_JDBC_SCHEMA_CREATE;
     private int m_nBaselineVersion = DEFAULT_FLYWAY_BASELINE_VERSION;
     private String m_sHistoryTable;
+    private boolean m_bDebugMode = DEFAULT_FLYWAY_DEBUG_MODE;
+    private boolean m_bRepairMode = DEFAULT_FLYWAY_REPAIR_MODE;
 
     public FlywayConfigurationBuilder ()
     {}
@@ -201,7 +227,9 @@ public class FlywayConfiguration implements IFlywayConfiguration
                                         .jdbcPassword (aBase.getFlywayJdbcPassword ())
                                         .schemaCreate (aBase.isFlywaySchemaCreate ())
                                         .baselineVersion (aBase.getFlywayBaselineVersion ())
-                                        .historyTable (aBase.getFlywayHistoryTable ());
+                                        .historyTable (aBase.getFlywayHistoryTable ())
+                                        .debugMode (aBase.isFlywayDebugMode ())
+                                        .repairMode (aBase.isFlywayRepairMode ());
     }
 
     public final boolean enabled ()
@@ -294,6 +322,30 @@ public class FlywayConfiguration implements IFlywayConfiguration
       return this;
     }
 
+    public final boolean debugMode ()
+    {
+      return m_bDebugMode;
+    }
+
+    @NonNull
+    public FlywayConfigurationBuilder debugMode (final boolean b)
+    {
+      m_bDebugMode = b;
+      return this;
+    }
+
+    public final boolean repairMode ()
+    {
+      return m_bRepairMode;
+    }
+
+    @NonNull
+    public FlywayConfigurationBuilder repairMode (final boolean b)
+    {
+      m_bRepairMode = b;
+      return this;
+    }
+
     @NonNull
     public FlywayConfiguration build ()
     {
@@ -304,7 +356,9 @@ public class FlywayConfiguration implements IFlywayConfiguration
                                       m_sJdbcPassword,
                                       m_bSchemaCreate,
                                       m_nBaselineVersion,
-                                      m_sHistoryTable);
+                                      m_sHistoryTable,
+                                      m_bDebugMode,
+                                      m_bRepairMode);
     }
   }
 }

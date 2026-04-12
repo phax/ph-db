@@ -71,4 +71,16 @@ public interface IFlywayConfiguration
    */
   @Nullable
   String getFlywayHistoryTable ();
+
+  /**
+   * @return <code>true</code> if Flyway debug mode is enabled, <code>false</code> if not.
+   * @since 8.2.0
+   */
+  boolean isFlywayDebugMode ();
+
+  /**
+   * @return <code>true</code> if Flyway repair mode is enabled, <code>false</code> if not.
+   * @since 8.2.0
+   */
+  boolean isFlywayRepairMode ();
 }
