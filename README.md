@@ -51,9 +51,8 @@ Note: prior to v8.0.0 the group ID was `com.helger`
 
 v8.2.0 - 2026-04-12
 * Added new submodule `ph-db-flyway` with `FlywayMigrationRunner` utility class for shared Flyway database migration setup
-* Moved Flyway configuration classes (`FlywayConfiguration`, `FlywayConfigurationBuilderConfig`, `IFlywayConfiguration`) from `ph-db-api` to `ph-db-flyway`
+* Moved Flyway configuration classes (`FlywayConfiguration`, `FlywayConfigurationBuilderConfig`, `IFlywayConfiguration`) from `ph-db-api` (`com.helger.db.api.flyway`) to `ph-db-flyway` (`com.helger.db.flyway`) — **breaking package change**
 * Extended `IFlywayConfiguration` with `debugMode` and `repairMode` flags
-* Added new central `FlywayMigrationRunner` class to simplify the usage
 
 v8.1.3 - 2026-04-07
 * Extended `IJdbcConfiguration`, `JdbcConfiguration` and `JdbcConfigurationConfig` with connection pooling parameters: max connections, max wait, between eviction runs, min evictable idle, and remove abandoned timeout
