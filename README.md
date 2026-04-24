@@ -49,6 +49,9 @@ Note: prior to v8.0.0 the group ID was `com.helger`
 
 # News and noteworthy
 
+v8.2.2 - work in progress
+* Removed OSGI bundling
+
 v8.2.1 - 2026-04-12
 * Extended `IJdbcDataSourceConfiguration`, `JdbcConfiguration` and `JdbcConfigurationConfig` with the `testOnBorrow` pooling parameter
 

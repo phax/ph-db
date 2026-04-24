@@ -25,7 +25,7 @@
     <version>8.2.2-SNAPSHOT</version>
   </parent>
   <artifactId>ph-db-api</artifactId>
-  <packaging>bundle</packaging>
+  <packaging>jar</packaging>
   <name>ph-db-api</name>
   <description>Basic database API stuff that is useful for JDBC and JPA</description>
   <url>https://github.com/phax/ph-db/ph-db-api</url>
@@ -49,7 +49,6 @@
       <url>https://www.helger.com</url>
     </developer>
   </developers>
-  
   <dependencies>
     <dependency>
       <groupId>com.helger.commons</groupId>
@@ -67,7 +66,6 @@
       <groupId>com.helger.commons</groupId>
       <artifactId>ph-url</artifactId>
     </dependency>
-    
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
@@ -79,28 +77,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <instructions>
-            <Automatic-Module-Name>com.helger.db.api</Automatic-Module-Name>
-            <Export-Package>com.helger.db.api,
-              com.helger.db.api.callback,
-              com.helger.db.api.config,
-              com.helger.db.api.flyway,
-              com.helger.db.api.h2,
-              com.helger.db.api.helper,
-              com.helger.db.api.jdbc,
-              com.helger.db.api.mysql</Export-Package>
-            <Import-Package>!org.jspecify.annotations.*,*</Import-Package>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
