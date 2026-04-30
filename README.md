@@ -49,8 +49,13 @@ Note: prior to v8.0.0 the group ID was `com.helger`
 
 # News and noteworthy
 
-v8.2.2 - work in progress
+v8.3.0 - work in progress
 * Removed OSGI bundling
+* `JdbcConfigurationConfig` now accepts the duration grammar from ph-commons 12.2.5 (`ConfigDurationParser`) on five new configuration keys: `execution-time-warning`, `pooling.max-wait`, `pooling.between-evictions-runs`, `pooling.min-evictable-idle`, `pooling.remove-abandoned-timeout`. Values like `5s`, `2m`, `1h 30m` are parsed to `java.time.Duration`. The legacy `*.millis`/`*.ms` keys remain supported for backward compatibility; the duration key wins when both are set, and a parse failure on the duration key falls back to the legacy key.
+* Added five `java.time.Duration`-typed accessors on `IJdbcDataSourceConfiguration` / `IJdbcConfiguration`: `getJdbcPoolingMaxWait()`, `getJdbcPoolingBetweenEvictionRuns()`, `getJdbcPoolingMinEvictableIdle()`, `getJdbcPoolingRemoveAbandonedTimeout()`, `getJdbcExecutionTimeWarning()`. The Duration getters are now the primary API; the existing `getJdbc*Millis()` long-millis getters are retained as `@Deprecated` thin wrappers.
+* `JdbcConfiguration` (POJO) now stores its five duration values as `Duration` internally. A new primary constructor accepts `Duration` parameters; the existing long-millis constructor is `@Deprecated` and delegates to it. Added matching `DEFAULT_*` `Duration` constants alongside the existing `DEFAULT_*_MILLIS` longs.
+* `DataSourceProviderFromJdbcConfiguration` now consumes the new `Duration` accessors directly, removing the `Duration.ofMillis(...)` wrappers around millis getters.
+* The legacy `*.millis`/`*.ms` configuration keys, the corresponding `SUFFIX_*_MILLIS`/`SUFFIX_*_MS` constants, the `getConfigKey*Millis*()` accessors, and the `getJdbc*Millis()` getters on `IJdbcDataSourceConfiguration` / `IJdbcConfiguration` / `JdbcConfiguration` / `JdbcConfigurationConfig` are now `@Deprecated`. A WARN-level log message is emitted at runtime when a legacy `*.millis`/`*.ms` configuration key is read, pointing at the new duration-grammar key.
 
 v8.2.1 - 2026-04-12
 * Extended `IJdbcDataSourceConfiguration`, `JdbcConfiguration` and `JdbcConfigurationConfig` with the `testOnBorrow` pooling parameter

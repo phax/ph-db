@@ -16,6 +16,9 @@
  */
 package com.helger.db.api.config;
 
+import java.time.Duration;
+
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import com.helger.annotation.CheckForSigned;
@@ -59,9 +62,22 @@ public interface IJdbcConfiguration extends IJdbcDataSourceConfiguration
   boolean isJdbcExecutionTimeWarningEnabled ();
 
   /**
+   * @return The threshold above which a JDBC execution time warning is logged. Never
+   *         <code>null</code>.
+   * @since 8.3.0
+   */
+  @NonNull
+  default Duration getJdbcExecutionTimeWarning ()
+  {
+    return Duration.ofMillis (getJdbcExecutionTimeWarningMilliseconds ());
+  }
+
+  /**
    * @return The threshold in milliseconds above which a JDBC execution time warning is logged.
+   * @deprecated Since 8.3.0; use {@link #getJdbcExecutionTimeWarning()} instead.
    */
   @CheckForSigned
+  @Deprecated (forRemoval = true, since = "8.3.0")
   long getJdbcExecutionTimeWarningMilliseconds ();
 
   /**

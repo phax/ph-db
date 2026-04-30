@@ -131,7 +131,7 @@ public class DBExecutor implements Serializable
   private final CallbackList <IExceptionCallback <? super Exception>> m_aExceptionCallbacks = new CallbackList <> ();
   private IConnectionExecutor m_aConnectionExecutor;
 
-  private long m_nExecutionDurationWarnMS = JdbcConfiguration.DEFAULT_EXECUTION_DURATION_WARN_MS;
+  private long m_nExecutionDurationWarnMS = JdbcConfiguration.DEFAULT_EXECUTION_TIME_WARNING_DURATION.toMillis ();
   private static final CallbackList <IExecutionTimeExceededCallback> EXECUTION_TIME_EXCEEDED_HANDLERS = new CallbackList <> ();
 
   static

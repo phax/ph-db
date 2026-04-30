@@ -16,8 +16,12 @@
  */
 package com.helger.db.api.config;
 
+import java.time.Duration;
+
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.CheckForSigned;
 import com.helger.annotation.Nonempty;
@@ -42,6 +46,12 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
   public static final String SUFFIX_SCHEMA = "schema";
 
   public static final String SUFFIX_EXECUTION_TIME_WARNING_ENABLED = "execution-time-warning.enabled";
+  public static final String SUFFIX_EXECUTION_TIME_WARNING = "execution-time-warning";
+  /**
+   * @deprecated Since 8.3.0; use {@link #SUFFIX_EXECUTION_TIME_WARNING} with the duration grammar
+   *             (e.g. <code>5s</code>, <code>1m 30s</code>) instead.
+   */
+  @Deprecated (forRemoval = true, since = "8.3.0")
   public static final String SUFFIX_EXECUTION_TIME_WARNING_MS = "execution-time-warning.ms";
 
   public static final String SUFFIX_DEBUG_CONNECTIONS = "debug.connections";
@@ -49,11 +59,41 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
   public static final String SUFFIX_DEBUG_SQL = "debug.sql";
 
   public static final String SUFFIX_POOLING_MAX_CONNECTIONS = "pooling.max-connections";
+  public static final String SUFFIX_POOLING_MAX_WAIT = "pooling.max-wait";
+  /**
+   * @deprecated Since 8.3.0; use {@link #SUFFIX_POOLING_MAX_WAIT} with the duration grammar (e.g.
+   *             <code>5s</code>, <code>1m 30s</code>) instead.
+   */
+  @Deprecated (forRemoval = true, since = "8.3.0")
   public static final String SUFFIX_POOLING_MAX_WAIT_MILLIS = "pooling.max-wait.millis";
+
+  public static final String SUFFIX_POOLING_BETWEEN_EVICTION_RUNS = "pooling.between-evictions-runs";
+  /**
+   * @deprecated Since 8.3.0; use {@link #SUFFIX_POOLING_BETWEEN_EVICTION_RUNS} with the duration
+   *             grammar (e.g. <code>5s</code>, <code>1m 30s</code>) instead.
+   */
+  @Deprecated (forRemoval = true, since = "8.3.0")
   public static final String SUFFIX_POOLING_BETWEEN_EVICTION_RUNS_MILLIS = "pooling.between-evictions-runs.millis";
+
+  public static final String SUFFIX_POOLING_MIN_EVICTABLE_IDLE = "pooling.min-evictable-idle";
+  /**
+   * @deprecated Since 8.3.0; use {@link #SUFFIX_POOLING_MIN_EVICTABLE_IDLE} with the duration
+   *             grammar (e.g. <code>5s</code>, <code>1m 30s</code>) instead.
+   */
+  @Deprecated (forRemoval = true, since = "8.3.0")
   public static final String SUFFIX_POOLING_MIN_EVICTABLE_IDLE_MILLIS = "pooling.min-evictable-idle.millis";
+
+  public static final String SUFFIX_POOLING_REMOVE_ABANDONED_TIMEOUT = "pooling.remove-abandoned-timeout";
+  /**
+   * @deprecated Since 8.3.0; use {@link #SUFFIX_POOLING_REMOVE_ABANDONED_TIMEOUT} with the duration
+   *             grammar (e.g. <code>5s</code>, <code>1m 30s</code>) instead.
+   */
+  @Deprecated (forRemoval = true, since = "8.3.0")
   public static final String SUFFIX_POOLING_REMOVE_ABANDONED_TIMEOUT_MILLIS = "pooling.remove-abandoned-timeout.millis";
+
   public static final String SUFFIX_POOLING_TEST_ON_BORROW = "pooling.test-on-borrow";
+
+  private static final Logger LOGGER = LoggerFactory.getLogger (JdbcConfigurationConfig.class);
 
   private final IConfig m_aConfig;
   private final String m_sConfigPrefix;
@@ -92,6 +132,49 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
   public final String getConfigPrefix ()
   {
     return m_sConfigPrefix;
+  }
+
+  /**
+   * Resolve a duration-typed configuration value, preferring the duration-grammar key over the
+   * legacy millisecond-typed key. The duration-grammar key accepts compound expressions like
+   * <code>10s</code>, <code>5m</code>, <code>2d 5h 30m</code> via
+   * {@link IConfig#getAsConfigDuration(String, java.util.function.Consumer)}. If the value is
+   * missing, blank, or fails to parse, the legacy <code>.millis</code>/<code>.ms</code> key is read
+   * as a <code>long</code>; if it too is absent the supplied default is returned.
+   *
+   * @param sDurationKey
+   *        The duration-grammar configuration key (e.g. <code>"pooling.max-wait"</code>).
+   * @param sLegacyMillisKey
+   *        The legacy millisecond-typed configuration key (e.g.
+   *        <code>"pooling.max-wait.millis"</code>).
+   * @param aDefault
+   *        The default value if neither key is configured.
+   * @return The resolved duration. Never <code>null</code>.
+   */
+  @NonNull
+  private Duration _getDurationOrLegacy (@NonNull final String sDurationKey,
+                                         @NonNull final String sLegacyMillisKey,
+                                         @NonNull final Duration aDefault)
+  {
+    final Duration aDuration = m_aConfig.getAsConfigDuration (sDurationKey,
+                                                              sMsg -> LOGGER.warn ("Failed to parse configuration key '" +
+                                                                                   sDurationKey +
+                                                                                   "' as duration: " +
+                                                                                   sMsg));
+    if (aDuration != null)
+      return aDuration;
+
+    if (m_aConfig.containsConfiguredValue (sLegacyMillisKey))
+    {
+      LOGGER.warn ("Configuration key '" +
+                   sLegacyMillisKey +
+                   "' is deprecated; please use '" +
+                   sDurationKey +
+                   "' with the duration grammar (e.g. '5s', '1m 30s') instead.");
+      return Duration.ofMillis (m_aConfig.getAsLong (sLegacyMillisKey, aDefault.toMillis ()));
+    }
+
+    return aDefault;
   }
 
   @NonNull
@@ -187,16 +270,39 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
 
   @NonNull
   @Nonempty
+  public final String getConfigKeyJdbcExecutionTimeWarning ()
+  {
+    return m_sConfigPrefix + SUFFIX_EXECUTION_TIME_WARNING;
+  }
+
+  /**
+   * @return The legacy millisecond-typed configuration key for the execution time warning
+   *         threshold. May not be <code>null</code>.
+   * @deprecated Since 8.3.0; use {@link #getConfigKeyJdbcExecutionTimeWarning()} with the duration
+   *             grammar instead.
+   */
+  @NonNull
+  @Nonempty
+  @Deprecated (forRemoval = true, since = "8.3.0")
   public final String getConfigKeyJdbcExecutionTimeWarningMilliseconds ()
   {
     return m_sConfigPrefix + SUFFIX_EXECUTION_TIME_WARNING_MS;
   }
 
+  @Override
+  @NonNull
+  public Duration getJdbcExecutionTimeWarning ()
+  {
+    return _getDurationOrLegacy (getConfigKeyJdbcExecutionTimeWarning (),
+                                 getConfigKeyJdbcExecutionTimeWarningMilliseconds (),
+                                 JdbcConfiguration.DEFAULT_EXECUTION_TIME_WARNING_DURATION);
+  }
+
   @CheckForSigned
+  @Deprecated (forRemoval = true, since = "8.3.0")
   public long getJdbcExecutionTimeWarningMilliseconds ()
   {
-    return m_aConfig.getAsLong (getConfigKeyJdbcExecutionTimeWarningMilliseconds (),
-                                JdbcConfiguration.DEFAULT_EXECUTION_DURATION_WARN_MS);
+    return getJdbcExecutionTimeWarning ().toMillis ();
   }
 
   @NonNull
@@ -252,58 +358,150 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
 
   @NonNull
   @Nonempty
+  public final String getConfigKeyJdbcPoolingMaxWait ()
+  {
+    return m_sConfigPrefix + SUFFIX_POOLING_MAX_WAIT;
+  }
+
+  /**
+   * @return The legacy millisecond-typed configuration key for the pooling max wait timeout. May
+   *         not be <code>null</code>.
+   * @deprecated Since 8.3.0; use {@link #getConfigKeyJdbcPoolingMaxWait()} with the duration
+   *             grammar instead.
+   */
+  @NonNull
+  @Nonempty
+  @Deprecated (forRemoval = true, since = "8.3.0")
   public final String getConfigKeyJdbcPoolingMaxWaitMillis ()
   {
     return m_sConfigPrefix + SUFFIX_POOLING_MAX_WAIT_MILLIS;
   }
 
+  @Override
+  @NonNull
+  public Duration getJdbcPoolingMaxWait ()
+  {
+    return _getDurationOrLegacy (getConfigKeyJdbcPoolingMaxWait (),
+                                 getConfigKeyJdbcPoolingMaxWaitMillis (),
+                                 JdbcConfiguration.DEFAULT_POOLING_MAX_WAIT_DURATION);
+  }
+
   @CheckForSigned
+  @Deprecated (forRemoval = true, since = "8.3.0")
   public long getJdbcPoolingMaxWaitMillis ()
   {
-    return m_aConfig.getAsLong (getConfigKeyJdbcPoolingMaxWaitMillis (),
-                                JdbcConfiguration.DEFAULT_POOLING_MAX_WAIT_MILLIS);
+    return getJdbcPoolingMaxWait ().toMillis ();
   }
 
   @NonNull
   @Nonempty
+  public final String getConfigKeyJdbcPoolingBetweenEvictionRuns ()
+  {
+    return m_sConfigPrefix + SUFFIX_POOLING_BETWEEN_EVICTION_RUNS;
+  }
+
+  /**
+   * @return The legacy millisecond-typed configuration key for the pooling between-eviction-runs
+   *         interval. May not be <code>null</code>.
+   * @deprecated Since 8.3.0; use {@link #getConfigKeyJdbcPoolingBetweenEvictionRuns()} with the
+   *             duration grammar instead.
+   */
+  @NonNull
+  @Nonempty
+  @Deprecated (forRemoval = true, since = "8.3.0")
   public final String getConfigKeyJdbcPoolingBetweenEvictionRunsMillis ()
   {
     return m_sConfigPrefix + SUFFIX_POOLING_BETWEEN_EVICTION_RUNS_MILLIS;
   }
 
+  @Override
+  @NonNull
+  public Duration getJdbcPoolingBetweenEvictionRuns ()
+  {
+    return _getDurationOrLegacy (getConfigKeyJdbcPoolingBetweenEvictionRuns (),
+                                 getConfigKeyJdbcPoolingBetweenEvictionRunsMillis (),
+                                 JdbcConfiguration.DEFAULT_POOLING_BETWEEN_EVICTION_RUNS_DURATION);
+  }
+
   @CheckForSigned
+  @Deprecated (forRemoval = true, since = "8.3.0")
   public long getJdbcPoolingBetweenEvictionRunsMillis ()
   {
-    return m_aConfig.getAsLong (getConfigKeyJdbcPoolingBetweenEvictionRunsMillis (),
-                                JdbcConfiguration.DEFAULT_POOLING_BETWEEN_EVICTION_RUNS_MILLIS);
+    return getJdbcPoolingBetweenEvictionRuns ().toMillis ();
   }
 
   @NonNull
   @Nonempty
+  public final String getConfigKeyJdbcPoolingMinEvictableIdle ()
+  {
+    return m_sConfigPrefix + SUFFIX_POOLING_MIN_EVICTABLE_IDLE;
+  }
+
+  /**
+   * @return The legacy millisecond-typed configuration key for the pooling min-evictable-idle
+   *         duration. May not be <code>null</code>.
+   * @deprecated Since 8.3.0; use {@link #getConfigKeyJdbcPoolingMinEvictableIdle()} with the
+   *             duration grammar instead.
+   */
+  @NonNull
+  @Nonempty
+  @Deprecated (forRemoval = true, since = "8.3.0")
   public final String getConfigKeyJdbcPoolingMinEvictableIdleMillis ()
   {
     return m_sConfigPrefix + SUFFIX_POOLING_MIN_EVICTABLE_IDLE_MILLIS;
   }
 
+  @Override
+  @NonNull
+  public Duration getJdbcPoolingMinEvictableIdle ()
+  {
+    return _getDurationOrLegacy (getConfigKeyJdbcPoolingMinEvictableIdle (),
+                                 getConfigKeyJdbcPoolingMinEvictableIdleMillis (),
+                                 JdbcConfiguration.DEFAULT_POOLING_MIN_EVICTABLE_IDLE_DURATION);
+  }
+
   @CheckForSigned
+  @Deprecated (forRemoval = true, since = "8.3.0")
   public long getJdbcPoolingMinEvictableIdleMillis ()
   {
-    return m_aConfig.getAsLong (getConfigKeyJdbcPoolingMinEvictableIdleMillis (),
-                                JdbcConfiguration.DEFAULT_POOLING_MIN_EVICTABLE_IDLE_MILLIS);
+    return getJdbcPoolingMinEvictableIdle ().toMillis ();
   }
 
   @NonNull
   @Nonempty
+  public final String getConfigKeyJdbcPoolingRemoveAbandonedTimeout ()
+  {
+    return m_sConfigPrefix + SUFFIX_POOLING_REMOVE_ABANDONED_TIMEOUT;
+  }
+
+  /**
+   * @return The legacy millisecond-typed configuration key for the pooling remove-abandoned
+   *         timeout. May not be <code>null</code>.
+   * @deprecated Since 8.3.0; use {@link #getConfigKeyJdbcPoolingRemoveAbandonedTimeout()} with the
+   *             duration grammar instead.
+   */
+  @NonNull
+  @Nonempty
+  @Deprecated (forRemoval = true, since = "8.3.0")
   public final String getConfigKeyJdbcPoolingRemoveAbandonedTimeoutMillis ()
   {
     return m_sConfigPrefix + SUFFIX_POOLING_REMOVE_ABANDONED_TIMEOUT_MILLIS;
   }
 
+  @Override
+  @NonNull
+  public Duration getJdbcPoolingRemoveAbandonedTimeout ()
+  {
+    return _getDurationOrLegacy (getConfigKeyJdbcPoolingRemoveAbandonedTimeout (),
+                                 getConfigKeyJdbcPoolingRemoveAbandonedTimeoutMillis (),
+                                 JdbcConfiguration.DEFAULT_POOLING_REMOVE_ABANDONED_DURATION);
+  }
+
   @CheckForSigned
+  @Deprecated (forRemoval = true, since = "8.3.0")
   public long getJdbcPoolingRemoveAbandonedTimeoutMillis ()
   {
-    return m_aConfig.getAsLong (getConfigKeyJdbcPoolingRemoveAbandonedTimeoutMillis (),
-                                JdbcConfiguration.DEFAULT_POOLING_REMOVE_ABANDONED_TIMEOUT_MILLIS);
+    return getJdbcPoolingRemoveAbandonedTimeout ().toMillis ();
   }
 
   @NonNull

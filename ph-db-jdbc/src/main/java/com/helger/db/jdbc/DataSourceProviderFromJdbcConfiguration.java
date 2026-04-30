@@ -69,7 +69,7 @@ public class DataSourceProviderFromJdbcConfiguration implements IHasDataSource, 
     // Pooling config
     final int nMaxConnections = aJdbcConfig.getJdbcPoolingMaxConnections ();
     m_aDS.setMaxTotal (nMaxConnections);
-    m_aDS.setMaxWait (Duration.ofMillis (aJdbcConfig.getJdbcPoolingMaxWaitMillis ()));
+    m_aDS.setMaxWait (aJdbcConfig.getJdbcPoolingMaxWait ());
     m_aDS.setInitialSize (Math.min (4, nMaxConnections));
     m_aDS.setMinIdle (Math.min (4, nMaxConnections));
     m_aDS.setMaxIdle (nMaxConnections);
@@ -77,12 +77,12 @@ public class DataSourceProviderFromJdbcConfiguration implements IHasDataSource, 
     final boolean bTestOnBorrow = aJdbcConfig.isJdbcPoolingTestOnBorrow ();
     m_aDS.setTestOnBorrow (bTestOnBorrow);
 
-    final long nBetweenEvictionRunsMillis = aJdbcConfig.getJdbcPoolingBetweenEvictionRunsMillis ();
-    if (nBetweenEvictionRunsMillis > 0)
+    final Duration aBetweenEvictionRuns = aJdbcConfig.getJdbcPoolingBetweenEvictionRuns ();
+    if (!aBetweenEvictionRuns.isZero () && !aBetweenEvictionRuns.isNegative ())
     {
       // Makes no sense otherwise
       m_aDS.setTestWhileIdle (true);
-      m_aDS.setDurationBetweenEvictionRuns (Duration.ofMillis (nBetweenEvictionRunsMillis));
+      m_aDS.setDurationBetweenEvictionRuns (aBetweenEvictionRuns);
     }
     else
     {
@@ -90,12 +90,14 @@ public class DataSourceProviderFromJdbcConfiguration implements IHasDataSource, 
         LOGGER.warn ("Both 'test on borrow' and 'test while idle' are disabled. This could lead to connection issues.");
     }
 
-    if (aJdbcConfig.getJdbcPoolingMinEvictableIdleMillis () > 0)
-      m_aDS.setMinEvictableIdle (Duration.ofMillis (aJdbcConfig.getJdbcPoolingMinEvictableIdleMillis ()));
-    if (aJdbcConfig.getJdbcPoolingRemoveAbandonedTimeoutMillis () > 0)
+    final Duration aMinEvictableIdle = aJdbcConfig.getJdbcPoolingMinEvictableIdle ();
+    if (!aMinEvictableIdle.isZero () && !aMinEvictableIdle.isNegative ())
+      m_aDS.setMinEvictableIdle (aMinEvictableIdle);
+    final Duration aRemoveAbandonedTimeout = aJdbcConfig.getJdbcPoolingRemoveAbandonedTimeout ();
+    if (!aRemoveAbandonedTimeout.isZero () && !aRemoveAbandonedTimeout.isNegative ())
     {
       m_aDS.setRemoveAbandonedOnBorrow (true);
-      m_aDS.setRemoveAbandonedTimeout (Duration.ofMillis (aJdbcConfig.getJdbcPoolingRemoveAbandonedTimeoutMillis ()));
+      m_aDS.setRemoveAbandonedTimeout (aRemoveAbandonedTimeout);
     }
 
     LOGGER.info ("DataSource created with max " +
