@@ -132,7 +132,7 @@ public class DBExecutor implements Serializable
   private final CallbackList <IExceptionCallback <? super Exception>> m_aExceptionCallbacks = new CallbackList <> ();
   private IConnectionExecutor m_aConnectionExecutor;
 
-  private Duration m_aExecutionDurationWarn = JdbcConfiguration.DEFAULT_EXECUTION_TIME_WARNING_DURATION;
+  private Duration m_aExecutionWarnDuration = JdbcConfiguration.DEFAULT_EXECUTION_TIME_WARNING_DURATION;
   private static final CallbackList <IExecutionTimeExceededCallback> EXECUTION_TIME_EXCEEDED_HANDLERS = new CallbackList <> ();
 
   static
@@ -293,9 +293,22 @@ public class DBExecutor implements Serializable
    *         indicate that the value is not relevant.
    */
   @CheckForSigned
+  @Deprecated (forRemoval = true, since = "8.4.0")
   public final long getExecutionDurationWarnMS ()
   {
-    return m_aExecutionDurationWarn.toMillis ();
+    return m_aExecutionWarnDuration.toMillis ();
+  }
+
+  /**
+   * @return The duration after which a warning is emitted. Use a negative value to indicate that
+   *         the value is not relevant.
+   * @deprecated Use {@link #getExecutionWarnDuration()} instead
+   */
+  @NonNull
+  @Deprecated (forRemoval = true, since = "8.4.0")
+  public final Duration getExecutionDuration ()
+  {
+    return getExecutionWarnDuration ();
   }
 
   /**
@@ -303,9 +316,9 @@ public class DBExecutor implements Serializable
    *         the value is not relevant.
    */
   @NonNull
-  public final Duration getExecutionDuration ()
+  public final Duration getExecutionWarnDuration ()
   {
-    return m_aExecutionDurationWarn;
+    return m_aExecutionWarnDuration;
   }
 
   /**
@@ -315,27 +328,43 @@ public class DBExecutor implements Serializable
    * @return <code>true</code> if the execution duration warning is enabled, <code>false</code> if
    *         not.
    * @see #getExecutionDurationWarnMS()
-   * @see #setExecutionDurationWarn(Duration)
+   * @see #setExecutionWarnDuration(Duration)
+   * @deprecated Use {@link #isExecutionWarnDurationEnabled()} instead
    */
+  @Deprecated (forRemoval = true, since = "8.4.0")
   public final boolean isExecutionDurationWarnEnabled ()
   {
-    return m_aExecutionDurationWarn.compareTo (Duration.ZERO) >= 0;
+    return isExecutionWarnDurationEnabled ();
+  }
+
+  /**
+   * Check if the execution duration warning is enabled or not. This uses the defined execution
+   * duration.
+   *
+   * @return <code>true</code> if the execution duration warning is enabled, <code>false</code> if
+   *         not.
+   * @see #getExecutionDurationWarnMS()
+   * @see #setExecutionWarnDuration(Duration)
+   */
+  public final boolean isExecutionWarnDurationEnabled ()
+  {
+    return m_aExecutionWarnDuration.compareTo (Duration.ZERO) > 0;
   }
 
   /**
    * Set the execution duration warning.
    *
-   * @param aExecutionDurationWarn
+   * @param aExecutionWarnDuration
    *        All positive durations enable the warning, all other values disable the warning. May not
    *        be <code>null</code>.
    * @return this for chaining
-   * @since 8.3.1
+   * @since 8.4.0
    */
   @NonNull
-  public final DBExecutor setExecutionDurationWarn (@NonNull final Duration aExecutionDurationWarn)
+  public final DBExecutor setExecutionWarnDuration (@NonNull final Duration aExecutionWarnDuration)
   {
-    ValueEnforcer.notNull (aExecutionDurationWarn, "ExecutionDurationWarn");
-    m_aExecutionDurationWarn = aExecutionDurationWarn;
+    ValueEnforcer.notNull (aExecutionWarnDuration, "ExecutionWarnDuration");
+    m_aExecutionWarnDuration = aExecutionWarnDuration;
     return this;
   }
 
@@ -345,13 +374,13 @@ public class DBExecutor implements Serializable
    * @param nExecutionDurationWarnMS
    *        All values &gt; 0 enable the warning, all other values disable the warning.
    * @return this for chaining
-   * @deprecated Since 8.3.1; use {@link #setExecutionDurationWarn(Duration)} instead.
+   * @deprecated Since 8.4.0; use {@link #setExecutionWarnDuration(Duration)} instead.
    */
   @NonNull
-  @Deprecated (forRemoval = true, since = "8.3.1")
+  @Deprecated (forRemoval = true, since = "8.4.0")
   public final DBExecutor setExecutionDurationWarnMS (final long nExecutionDurationWarnMS)
   {
-    return setExecutionDurationWarn (Duration.ofMillis (nExecutionDurationWarnMS));
+    return setExecutionWarnDuration (Duration.ofMillis (nExecutionDurationWarnMS));
   }
 
   /**
@@ -366,11 +395,11 @@ public class DBExecutor implements Serializable
     return EXECUTION_TIME_EXCEEDED_HANDLERS;
   }
 
-  public final void onExecutionTimeExceeded (@NonNull final String sMsg, @Nonnegative final long nExecutionMillis)
+  public final void onExecutionTimeExceeded (@NonNull final String sMsg, @Nonnegative final Duration aExecutionDuration)
   {
     EXECUTION_TIME_EXCEEDED_HANDLERS.forEach (x -> x.onExecutionTimeExceeded (sMsg,
-                                                                              nExecutionMillis,
-                                                                              m_aExecutionDurationWarn.toMillis ()));
+                                                                              aExecutionDuration,
+                                                                              m_aExecutionWarnDuration));
   }
 
   /**
@@ -721,12 +750,11 @@ public class DBExecutor implements Serializable
     }
     finally
     {
-      aSW.stop ();
-      final Duration aDuration = aSW.getDuration ();
-      if (isExecutionDurationWarnEnabled ())
+      final Duration aDuration = aSW.stopAndGetDuration ();
+      if (isExecutionWarnDurationEnabled ())
       {
-        if (aDuration.compareTo (m_aExecutionDurationWarn) > 0)
-          onExecutionTimeExceeded ("DB execution " + sDescription, aDuration.toMillis ());
+        if (aDuration.compareTo (m_aExecutionWarnDuration) > 0)
+          onExecutionTimeExceeded ("DB execution " + sDescription, aDuration);
       }
       else
       {
@@ -1230,7 +1258,7 @@ public class DBExecutor implements Serializable
     return new ToStringGenerator (this).append ("ConnectionProvider", m_aConnectionProvider)
                                        .append ("ExceptionCalbacks", m_aExceptionCallbacks)
                                        .append ("ConnectionExecutor", m_aConnectionExecutor)
-                                       .append ("ExecutionDurationWarn", m_aExecutionDurationWarn)
+                                       .append ("ExecutionDurationWarn", m_aExecutionWarnDuration)
                                        .append ("TransactionLevel", m_aTransactionLevel)
                                        .append ("DebugConnections", m_bDebugConnections)
                                        .append ("DebugTransactions", m_bDebugTransactions)

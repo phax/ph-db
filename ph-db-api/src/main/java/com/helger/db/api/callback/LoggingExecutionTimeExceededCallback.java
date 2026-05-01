@@ -16,11 +16,12 @@
  */
 package com.helger.db.api.callback;
 
+import java.time.Duration;
+
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.annotation.Nonnegative;
 import com.helger.base.tostring.ToStringGenerator;
 
 /**
@@ -52,10 +53,16 @@ public class LoggingExecutionTimeExceededCallback implements IExecutionTimeExcee
   }
 
   public void onExecutionTimeExceeded (@NonNull final String sMsg,
-                                       @Nonnegative final long nExecutionMillis,
-                                       @Nonnegative final long nLimitMillis)
+                                       @NonNull final Duration aExecutionDuration,
+                                       @NonNull final Duration aLimitDuration)
   {
-    LOGGER.warn (sMsg + " took " + nExecutionMillis + "ms (limit is " + nLimitMillis + " ms)", m_bEmitStackTrace ? new Exception () : null);
+    LOGGER.warn (sMsg +
+                 " took " +
+                 aExecutionDuration.toMillis () +
+                 "ms (limit is " +
+                 aLimitDuration.toMillis () +
+                 " ms)",
+                 m_bEmitStackTrace ? new Exception () : null);
   }
 
   @Override

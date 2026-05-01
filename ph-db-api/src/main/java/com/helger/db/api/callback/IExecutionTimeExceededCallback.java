@@ -16,14 +16,14 @@
  */
 package com.helger.db.api.callback;
 
+import java.time.Duration;
+
 import org.jspecify.annotations.NonNull;
 
-import com.helger.annotation.Nonnegative;
 import com.helger.base.callback.ICallback;
 
 /**
- * Callback interface to be used to notify interested parties when a statement
- * takes too long.
+ * Callback interface to be used to notify interested parties when a statement takes too long.
  *
  * @author Philip Helger
  */
@@ -35,11 +35,13 @@ public interface IExecutionTimeExceededCallback extends ICallback
    *
    * @param sMsg
    *        The message to locate the source. May not be <code>null</code>.
-   * @param nExecutionMillis
-   *        The milliseconds the execution took. Always &gt; 0.
-   * @param nLimitMillis
-   *        The milliseconds the execution should not exceed. So the maximum
-   *        configured execution time. Always &gt; 0.
+   * @param aExecutionDuration
+   *        The duration the execution took.
+   * @param aLimitDuration
+   *        The duration the execution should not exceed. So the maximum configured execution
+   *        duration. Never <code>null</code>.
    */
-  void onExecutionTimeExceeded (@NonNull String sMsg, @Nonnegative long nExecutionMillis, @Nonnegative long nLimitMillis);
+  void onExecutionTimeExceeded (@NonNull String sMsg,
+                                @NonNull Duration aExecutionDuration,
+                                @NonNull Duration aLimitDuration);
 }

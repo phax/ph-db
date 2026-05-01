@@ -49,8 +49,12 @@ Note: prior to v8.0.0 the group ID was `com.helger`
 
 # News and noteworthy
 
-v8.3.1 - work in progress
+v8.4.0- 2026-05-01
+* Updated to Flyway 12.5.0
 * `DBExecutor` now stores the execution duration warning threshold as `java.time.Duration` internally. Added new primary setter `setExecutionDurationWarn(Duration)`; the existing `setExecutionDurationWarnMS(long)` is retained as `@Deprecated` and delegates to the new setter.
+* `IExecutionTimeExceededCallback.onExecutionTimeExceeded` now takes `Duration` parameters (`aExecutionDuration`, `aLimitDuration`) instead of `long` milliseconds — **breaking signature change**. `LoggingExecutionTimeExceededCallback` was updated accordingly.
+* `DBExecutor.onExecutionTimeExceeded(String, long)` was changed to `onExecutionTimeExceeded(String, Duration)` to match the new callback signature. `DBExecutor.getExecutionDurationWarnMS()` is now `@Deprecated(forRemoval = true)`.
+* `JPAEnabledManager.onExecutionTimeExceeded(String, long)` was changed to `onExecutionTimeExceeded(String, Duration)`. Added new `getDefaultExecutionWarnDuration()`; the existing `getDefaultExecutionWarnTime()` is now `@Deprecated(forRemoval = true)`.
 
 v8.3.0 - 2026-05-01
 * Removed OSGI bundling

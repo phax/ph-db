@@ -16,9 +16,9 @@
  */
 package com.helger.db.jpa;
 
+import java.time.Duration;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.Nonnegative;
 import com.helger.annotation.WillNotClose;
+import com.helger.annotation.concurrent.GuardedBy;
 import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.base.callback.CallbackList;
@@ -45,10 +46,9 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
 
 /**
- * JPA enabled manager with transaction handling etc. The
- * {@link IHasEntityManager} required in the constructor should be a request
- * singleton that ensures one {@link EntityManager} per thread. The main
- * {@link EntityManager} objects are usually create from a subclass of
+ * JPA enabled manager with transaction handling etc. The {@link IHasEntityManager} required in the
+ * constructor should be a request singleton that ensures one {@link EntityManager} per thread. The
+ * main {@link EntityManager} objects are usually create from a subclass of
  * {@link AbstractGlobalEntityManagerFactory}.
  *
  * @author Philip Helger
@@ -65,7 +65,9 @@ public class JPAEnabledManager
   /** By default execution time warnings are enabled */
   public static final boolean DEFAULT_EXECUTION_WARN_ENABLED = true;
   /** The default execution time after which a warning is emitted */
+  @Deprecated (forRemoval = true, since = "8.4.0")
   public static final int DEFAULT_EXECUTION_WARN_TIME_MS = 1000;
+  public static final Duration DEFAULT_EXECUTION_WARN_DURATION = Duration.ofMillis (DEFAULT_EXECUTION_WARN_TIME_MS);
 
   private static final Logger LOGGER = LoggerFactory.getLogger (JPAEnabledManager.class);
   private static final IMutableStatisticsHandlerCounter STATS_COUNTER_TRANSACTIONS = StatisticsManager.getCounterHandler (JPAEnabledManager.class.getName () +
@@ -84,7 +86,8 @@ public class JPAEnabledManager
   protected static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
   private static final CallbackList <IExceptionCallback <Throwable>> EXCEPTION_CALLBACKS = new CallbackList <> ();
   private static final AtomicBoolean EXECUTION_WARN_ENABLED = new AtomicBoolean (DEFAULT_EXECUTION_WARN_ENABLED);
-  private static final AtomicInteger EXECUTION_WARN_DURATION_MS = new AtomicInteger (DEFAULT_EXECUTION_WARN_TIME_MS);
+  @GuardedBy ("RW_LOCK")
+  private static Duration EXECUTION_WARN_DURATION = DEFAULT_EXECUTION_WARN_DURATION;
   private static final CallbackList <IExecutionTimeExceededCallback> EXECUTION_TIME_EXCEEDED_HANDLERS = new CallbackList <> ();
 
   static
@@ -144,8 +147,8 @@ public class JPAEnabledManager
   }
 
   /**
-   * @return <code>true</code> if transactions should be used for selecting,
-   *         <code>false</code> if this can be done without transactions
+   * @return <code>true</code> if transactions should be used for selecting, <code>false</code> if
+   *         this can be done without transactions
    */
   public final boolean isUseTransactionsForSelect ()
   {
@@ -156,8 +159,7 @@ public class JPAEnabledManager
    * Use transactions for select statements?
    *
    * @param bUseTransactionsForSelect
-   *        <code>true</code> to enable the usage of transactions for select
-   *        statements.
+   *        <code>true</code> to enable the usage of transactions for select statements.
    * @return this for chaining
    */
   @NonNull
@@ -200,9 +202,8 @@ public class JPAEnabledManager
   }
 
   /**
-   * @return <code>true</code> if long running execution warnings via callback
-   *         are enabled, <code>false</code> if not. Default is
-   *         <code>true</code>.
+   * @return <code>true</code> if long running execution warnings via callback are enabled,
+   *         <code>false</code> if not. Default is <code>true</code>.
    * @see #getDefaultExecutionWarnTime()
    * @see #executionTimeExceededHandlers()
    * @since 6.1.0
@@ -213,8 +214,8 @@ public class JPAEnabledManager
   }
 
   /**
-   * Enable or disable the warning if execution time exceeds a certain limit.
-   * Default is <code>true</code>.
+   * Enable or disable the warning if execution time exceeds a certain limit. Default is
+   * <code>true</code>.
    *
    * @param bEnabled
    *        <code>true</code> to enable it, <code>false</code> to disable it.
@@ -228,28 +229,56 @@ public class JPAEnabledManager
   }
 
   /**
-   * @return The milliseconds after which a warning is emitted, if an SQL
-   *         statement takes longer to execute.
+   * @return The milliseconds after which a warning is emitted, if an SQL statement takes longer to
+   *         execute.
    * @see #isDefaultExecutionWarnTimeEnabled()
    */
   @Nonnegative
+  @Deprecated (forRemoval = true, since = "8.4.0")
   public static final int getDefaultExecutionWarnTime ()
   {
-    return EXECUTION_WARN_DURATION_MS.get ();
+    return (int) getDefaultExecutionWarnDuration ().toMillis ();
   }
 
   /**
-   * Set the milliseconds duration on which a warning should be emitted, if a
-   * single SQL execution too at least that long.
+   * @return The duration after which a warning is emitted, if an SQL statement takes longer to
+   *         execute.
+   * @see #isDefaultExecutionWarnTimeEnabled()
+   * @since 8.4.0
+   */
+  @NonNull
+  public static final Duration getDefaultExecutionWarnDuration ()
+  {
+    return RW_LOCK.readLockedGet ( () -> EXECUTION_WARN_DURATION);
+  }
+
+  /**
+   * Set the milliseconds duration on which a warning should be emitted, if a single SQL execution
+   * too at least that long.
    *
    * @param nMillis
    *        The number of milliseconds. Must be &ge; 0.
    * @see #setDefaultExecutionWarnTimeEnabled(boolean)
    */
-  public static final void setDefaultExecutionWarnTime (final int nMillis)
+  @Deprecated (forRemoval = true, since = "8.4.0")
+  public static final void setDefaultExecutionWarnTime (@Nonnegative final int nMillis)
   {
     ValueEnforcer.isGE0 (nMillis, "Milliseconds");
-    EXECUTION_WARN_DURATION_MS.set (nMillis);
+    setDefaultExecutionDuration (Duration.ofMillis (nMillis));
+  }
+
+  /**
+   * Set the duration on which a warning should be emitted, if a single SQL execution too at least
+   * that long.
+   *
+   * @param aDuration
+   *        The duration. Must not be <code>null</code>.
+   * @see #setDefaultExecutionWarnTimeEnabled(boolean)
+   */
+  public static final void setDefaultExecutionDuration (@NonNull final Duration aDuration)
+  {
+    ValueEnforcer.notNull (aDuration, "Duration");
+    RW_LOCK.writeLocked ( () -> EXECUTION_WARN_DURATION = aDuration);
   }
 
   /**
@@ -264,10 +293,12 @@ public class JPAEnabledManager
   }
 
   public static final void onExecutionTimeExceeded (@NonNull final String sMsg,
-                                                    @Nonnegative final long nExecutionMillis)
+                                                    @NonNull final Duration aExecutionDuration)
   {
-    final long nLimitMS = getDefaultExecutionWarnTime ();
-    EXECUTION_TIME_EXCEEDED_HANDLERS.forEach (x -> x.onExecutionTimeExceeded (sMsg, nExecutionMillis, nLimitMS));
+    final Duration aLimitDuration = getDefaultExecutionWarnDuration ();
+    EXECUTION_TIME_EXCEEDED_HANDLERS.forEach (x -> x.onExecutionTimeExceeded (sMsg,
+                                                                              aExecutionDuration,
+                                                                              aLimitDuration));
   }
 
   @NonNull
@@ -332,13 +363,15 @@ public class JPAEnabledManager
       if (bTransactionRequired)
         aTransaction.commit ();
       STATS_COUNTER_SUCCESS.increment ();
-      STATS_TIMER_EXECUTION_SUCCESS.addTime (aSW.stopAndGetMillis ());
+      aSW.stop ();
+      STATS_TIMER_EXECUTION_SUCCESS.addTime (aSW.getMillis ());
       return JPAExecutionResult.createSuccess (ret);
     }
     catch (final Exception ex)
     {
       STATS_COUNTER_ERROR.increment ();
-      STATS_TIMER_EXECUTION_ERROR.addTime (aSW.stopAndGetMillis ());
+      aSW.stop ();
+      STATS_TIMER_EXECUTION_ERROR.addTime (aSW.getMillis ());
       _invokeCustomExceptionCallback (ex);
       return JPAExecutionResult.createFailure (ex);
     }
@@ -354,14 +387,14 @@ public class JPAEnabledManager
         }
 
       if (isDefaultExecutionWarnTimeEnabled ())
-        if (aSW.getMillis () > getDefaultExecutionWarnTime ())
+        if (aSW.getDuration ().compareTo (getDefaultExecutionWarnDuration ()) > 0)
           onExecutionTimeExceeded ("Callback: " +
                                    aSW.getMillis () +
                                    " ms; transaction: " +
                                    bTransactionRequired +
                                    "; Execution of callable in transaction took too long: " +
                                    aCallable.toString (),
-                                   aSW.getMillis ());
+                                   aSW.getDuration ());
     }
   }
 
@@ -404,27 +437,29 @@ public class JPAEnabledManager
       // Call callback
       final T ret = aCallable.call ();
       STATS_COUNTER_SUCCESS.increment ();
-      STATS_TIMER_EXECUTION_SUCCESS.addTime (aSW.stopAndGetMillis ());
+      aSW.stop ();
+      STATS_TIMER_EXECUTION_SUCCESS.addTime (aSW.getMillis ());
       return JPAExecutionResult.createSuccess (ret);
     }
     catch (final Exception ex)
     {
       STATS_COUNTER_ERROR.increment ();
-      STATS_TIMER_EXECUTION_ERROR.addTime (aSW.stopAndGetMillis ());
+      aSW.stop ();
+      STATS_TIMER_EXECUTION_ERROR.addTime (aSW.getMillis ());
       _invokeCustomExceptionCallback (ex);
       return JPAExecutionResult.<T> createFailure (ex);
     }
     finally
     {
       if (isDefaultExecutionWarnTimeEnabled ())
-        if (aSW.getMillis () > getDefaultExecutionWarnTime ())
-          onExecutionTimeExceeded ("Execution of select took too long: " + aCallable.toString (), aSW.getMillis ());
+        if (aSW.getDuration ().compareTo (getDefaultExecutionWarnDuration ()) > 0)
+          onExecutionTimeExceeded ("Execution of select took too long: " + aCallable.toString (), aSW.getDuration ());
     }
   }
 
   /**
-   * Run a read-only query. By default no transaction is used, and the entity
-   * manager is synchronized.
+   * Run a read-only query. By default no transaction is used, and the entity manager is
+   * synchronized.
    *
    * @param aCallable
    *        The callable to execute.
@@ -458,9 +493,8 @@ public class JPAEnabledManager
   }
 
   /**
-   * Helper method to handle the execution of "SELECT COUNT(...) ..." SQL
-   * statements. To be invoked inside a {@link #doSelect(Callable)} or
-   * {@link #doSelectStatic(Callable)} method.
+   * Helper method to handle the execution of "SELECT COUNT(...) ..." SQL statements. To be invoked
+   * inside a {@link #doSelect(Callable)} or {@link #doSelectStatic(Callable)} method.
    *
    * @param aQuery
    *        The SELECT COUNT query
@@ -474,9 +508,8 @@ public class JPAEnabledManager
   }
 
   /**
-   * Helper method to handle the execution of "SELECT COUNT(...) ..." SQL
-   * statements. To be invoked inside a {@link #doSelect(Callable)} or
-   * {@link #doSelectStatic(Callable)} method.
+   * Helper method to handle the execution of "SELECT COUNT(...) ..." SQL statements. To be invoked
+   * inside a {@link #doSelect(Callable)} or {@link #doSelectStatic(Callable)} method.
    *
    * @param aQuery
    *        The SELECT COUNT query
