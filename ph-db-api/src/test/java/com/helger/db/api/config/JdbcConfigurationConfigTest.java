@@ -32,7 +32,6 @@ import com.helger.config.source.appl.ConfigurationSourceFunction;
  *
  * @author Philip Helger
  */
-@SuppressWarnings ("deprecation")
 public final class JdbcConfigurationConfigTest
 {
   private static JdbcConfigurationConfig _build (final ICommonsMap <String, String> aMap)
@@ -131,8 +130,10 @@ public final class JdbcConfigurationConfigTest
     final JdbcConfigurationConfig aCfg = _build (new CommonsHashMap <> ());
     assertEquals (JdbcConfiguration.DEFAULT_EXECUTION_TIME_WARNING_DURATION, aCfg.getJdbcExecutionTimeWarning ());
     assertEquals (JdbcConfiguration.DEFAULT_POOLING_MAX_WAIT_DURATION, aCfg.getJdbcPoolingMaxWait ());
-    assertEquals (JdbcConfiguration.DEFAULT_POOLING_BETWEEN_EVICTION_RUNS_DURATION, aCfg.getJdbcPoolingBetweenEvictionRuns ());
-    assertEquals (JdbcConfiguration.DEFAULT_POOLING_MIN_EVICTABLE_IDLE_DURATION, aCfg.getJdbcPoolingMinEvictableIdle ());
+    assertEquals (JdbcConfiguration.DEFAULT_POOLING_BETWEEN_EVICTION_RUNS_DURATION,
+                  aCfg.getJdbcPoolingBetweenEvictionRuns ());
+    assertEquals (JdbcConfiguration.DEFAULT_POOLING_MIN_EVICTABLE_IDLE_DURATION,
+                  aCfg.getJdbcPoolingMinEvictableIdle ());
     assertEquals (JdbcConfiguration.DEFAULT_POOLING_REMOVE_ABANDONED_DURATION,
                   aCfg.getJdbcPoolingRemoveAbandonedTimeout ());
   }
@@ -154,6 +155,7 @@ public final class JdbcConfigurationConfigTest
     assertEquals (Duration.ofSeconds (30), aCfg.getJdbcPoolingRemoveAbandonedTimeout ());
   }
 
+  @SuppressWarnings ("removal")
   @Test
   public void testJdbcConfigurationPojoDurationConstructor ()
   {

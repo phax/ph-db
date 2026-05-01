@@ -49,7 +49,7 @@ Note: prior to v8.0.0 the group ID was `com.helger`
 
 # News and noteworthy
 
-v8.3.0 - work in progress
+v8.3.0 - 2026-05-01
 * Removed OSGI bundling
 * `JdbcConfigurationConfig` now accepts the duration grammar from ph-commons 12.2.5 (`ConfigDurationParser`) on five new configuration keys: `execution-time-warning`, `pooling.max-wait`, `pooling.between-evictions-runs`, `pooling.min-evictable-idle`, `pooling.remove-abandoned-timeout`. Values like `5s`, `2m`, `1h 30m` are parsed to `java.time.Duration`. The legacy `*.millis`/`*.ms` keys remain supported for backward compatibility; the duration key wins when both are set, and a parse failure on the duration key falls back to the legacy key.
 * Added five `java.time.Duration`-typed accessors on `IJdbcDataSourceConfiguration` / `IJdbcConfiguration`: `getJdbcPoolingMaxWait()`, `getJdbcPoolingBetweenEvictionRuns()`, `getJdbcPoolingMinEvictableIdle()`, `getJdbcPoolingRemoveAbandonedTimeout()`, `getJdbcExecutionTimeWarning()`. The Duration getters are now the primary API; the existing `getJdbc*Millis()` long-millis getters are retained as `@Deprecated` thin wrappers.
