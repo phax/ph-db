@@ -67,10 +67,7 @@ public interface IJdbcConfiguration extends IJdbcDataSourceConfiguration
    * @since 8.3.0
    */
   @NonNull
-  default Duration getJdbcExecutionTimeWarning ()
-  {
-    return Duration.ofMillis (getJdbcExecutionTimeWarningMilliseconds ());
-  }
+  Duration getJdbcExecutionTimeWarning ();
 
   /**
    * @return The threshold in milliseconds above which a JDBC execution time warning is logged.
@@ -78,7 +75,10 @@ public interface IJdbcConfiguration extends IJdbcDataSourceConfiguration
    */
   @CheckForSigned
   @Deprecated (forRemoval = true, since = "8.3.0")
-  long getJdbcExecutionTimeWarningMilliseconds ();
+  default long getJdbcExecutionTimeWarningMilliseconds ()
+  {
+    return getJdbcExecutionTimeWarning ().toMillis ();
+  }
 
   /**
    * @return <code>true</code> if debug logging of JDBC connection lifecycle (open/close) is

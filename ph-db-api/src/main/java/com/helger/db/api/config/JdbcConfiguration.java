@@ -212,18 +212,10 @@ public class JdbcConfiguration implements IJdbcConfiguration
     return m_bExecutionTimeWarningEnabled;
   }
 
-  @Override
   @NonNull
   public Duration getJdbcExecutionTimeWarning ()
   {
     return m_aExecutionTimeWarning;
-  }
-
-  @CheckForSigned
-  @Deprecated (forRemoval = false, since = "8.3.0")
-  public long getJdbcExecutionTimeWarningMilliseconds ()
-  {
-    return m_aExecutionTimeWarning.toMillis ();
   }
 
   public boolean isJdbcDebugConnections ()
@@ -247,60 +239,28 @@ public class JdbcConfiguration implements IJdbcConfiguration
     return m_nPoolingMaxConnections;
   }
 
-  @Override
   @NonNull
   public Duration getJdbcPoolingMaxWait ()
   {
     return m_aPoolingMaxWait;
   }
 
-  @CheckForSigned
-  @Deprecated (forRemoval = false, since = "8.3.0")
-  public long getJdbcPoolingMaxWaitMillis ()
-  {
-    return m_aPoolingMaxWait.toMillis ();
-  }
-
-  @Override
   @NonNull
   public Duration getJdbcPoolingBetweenEvictionRuns ()
   {
     return m_aPoolingBetweenEvictionRuns;
   }
 
-  @CheckForSigned
-  @Deprecated (forRemoval = false, since = "8.3.0")
-  public long getJdbcPoolingBetweenEvictionRunsMillis ()
-  {
-    return m_aPoolingBetweenEvictionRuns.toMillis ();
-  }
-
-  @Override
   @NonNull
   public Duration getJdbcPoolingMinEvictableIdle ()
   {
     return m_aPoolingMinEvictableIdle;
   }
 
-  @CheckForSigned
-  @Deprecated (forRemoval = false, since = "8.3.0")
-  public long getJdbcPoolingMinEvictableIdleMillis ()
-  {
-    return m_aPoolingMinEvictableIdle.toMillis ();
-  }
-
-  @Override
   @NonNull
   public Duration getJdbcPoolingRemoveAbandonedTimeout ()
   {
     return m_aPoolingRemoveAbandonedTimeout;
-  }
-
-  @CheckForSigned
-  @Deprecated (forRemoval = false, since = "8.3.0")
-  public long getJdbcPoolingRemoveAbandonedTimeoutMillis ()
-  {
-    return m_aPoolingRemoveAbandonedTimeout.toMillis ();
   }
 
   public boolean isJdbcPoolingTestOnBorrow ()

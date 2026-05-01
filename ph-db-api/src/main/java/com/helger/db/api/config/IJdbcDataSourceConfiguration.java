@@ -56,10 +56,7 @@ public interface IJdbcDataSourceConfiguration
    * @since 8.3.0
    */
   @NonNull
-  default Duration getJdbcPoolingMaxWait ()
-  {
-    return Duration.ofMillis (getJdbcPoolingMaxWaitMillis ());
-  }
+  Duration getJdbcPoolingMaxWait ();
 
   /**
    * @return The maximum time in milliseconds to wait for a connection from the pool before throwing
@@ -68,18 +65,18 @@ public interface IJdbcDataSourceConfiguration
    * @deprecated Since 8.3.0; use {@link #getJdbcPoolingMaxWait()} instead.
    */
   @CheckForSigned
-  @Deprecated (forRemoval = false, since = "8.3.0")
-  long getJdbcPoolingMaxWaitMillis ();
+  @Deprecated (forRemoval = true, since = "8.3.0")
+  default long getJdbcPoolingMaxWaitMillis ()
+  {
+    return getJdbcPoolingMaxWait ().toMillis ();
+  }
 
   /**
    * @return The time between runs of the idle connection evictor. Never <code>null</code>.
    * @since 8.3.0
    */
   @NonNull
-  default Duration getJdbcPoolingBetweenEvictionRuns ()
-  {
-    return Duration.ofMillis (getJdbcPoolingBetweenEvictionRunsMillis ());
-  }
+  Duration getJdbcPoolingBetweenEvictionRuns ();
 
   /**
    * @return The time in milliseconds between runs of the idle connection evictor.
@@ -87,8 +84,11 @@ public interface IJdbcDataSourceConfiguration
    * @deprecated Since 8.3.0; use {@link #getJdbcPoolingBetweenEvictionRuns()} instead.
    */
   @CheckForSigned
-  @Deprecated (forRemoval = false, since = "8.3.0")
-  long getJdbcPoolingBetweenEvictionRunsMillis ();
+  @Deprecated (forRemoval = true, since = "8.3.0")
+  default long getJdbcPoolingBetweenEvictionRunsMillis ()
+  {
+    return getJdbcPoolingBetweenEvictionRuns ().toMillis ();
+  }
 
   /**
    * @return The minimum idle time before a connection is eligible for eviction. Never
@@ -96,10 +96,7 @@ public interface IJdbcDataSourceConfiguration
    * @since 8.3.0
    */
   @NonNull
-  default Duration getJdbcPoolingMinEvictableIdle ()
-  {
-    return Duration.ofMillis (getJdbcPoolingMinEvictableIdleMillis ());
-  }
+  Duration getJdbcPoolingMinEvictableIdle ();
 
   /**
    * @return The minimum idle time in milliseconds before a connection is eligible for eviction.
@@ -107,18 +104,18 @@ public interface IJdbcDataSourceConfiguration
    * @deprecated Since 8.3.0; use {@link #getJdbcPoolingMinEvictableIdle()} instead.
    */
   @CheckForSigned
-  @Deprecated (forRemoval = false, since = "8.3.0")
-  long getJdbcPoolingMinEvictableIdleMillis ();
+  @Deprecated (forRemoval = true, since = "8.3.0")
+  default long getJdbcPoolingMinEvictableIdleMillis ()
+  {
+    return getJdbcPoolingMinEvictableIdle ().toMillis ();
+  }
 
   /**
    * @return The timeout before an abandoned connection can be removed. Never <code>null</code>.
    * @since 8.3.0
    */
   @NonNull
-  default Duration getJdbcPoolingRemoveAbandonedTimeout ()
-  {
-    return Duration.ofMillis (getJdbcPoolingRemoveAbandonedTimeoutMillis ());
-  }
+  Duration getJdbcPoolingRemoveAbandonedTimeout ();
 
   /**
    * @return The timeout in milliseconds before an abandoned connection can be removed.
@@ -126,8 +123,11 @@ public interface IJdbcDataSourceConfiguration
    * @deprecated Since 8.3.0; use {@link #getJdbcPoolingRemoveAbandonedTimeout()} instead.
    */
   @CheckForSigned
-  @Deprecated (forRemoval = false, since = "8.3.0")
-  long getJdbcPoolingRemoveAbandonedTimeoutMillis ();
+  @Deprecated (forRemoval = true, since = "8.3.0")
+  default long getJdbcPoolingRemoveAbandonedTimeoutMillis ()
+  {
+    return getJdbcPoolingRemoveAbandonedTimeout ().toMillis ();
+  }
 
   /**
    * @return Whether or not the pool will validate objects before they are borrowed from the pool.
