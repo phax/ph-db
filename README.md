@@ -49,6 +49,9 @@ Note: prior to v8.0.0 the group ID was `com.helger`
 
 # News and noteworthy
 
+v8.3.1 - work in progress
+* `DBExecutor` now stores the execution duration warning threshold as `java.time.Duration` internally. Added new primary setter `setExecutionDurationWarn(Duration)`; the existing `setExecutionDurationWarnMS(long)` is retained as `@Deprecated` and delegates to the new setter.
+
 v8.3.0 - 2026-05-01
 * Removed OSGI bundling
 * `JdbcConfigurationConfig` now accepts the duration grammar from ph-commons 12.2.5 (`ConfigDurationParser`) on five new configuration keys: `execution-time-warning`, `pooling.max-wait`, `pooling.between-evictions-runs`, `pooling.min-evictable-idle`, `pooling.remove-abandoned-timeout`. Values like `5s`, `2m`, `1h 30m` are parsed to `java.time.Duration`. The legacy `*.millis`/`*.ms` keys remain supported for backward compatibility; the duration key wins when both are set, and a parse failure on the duration key falls back to the legacy key.

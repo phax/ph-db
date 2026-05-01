@@ -27,6 +27,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -131,7 +132,7 @@ public class DBExecutor implements Serializable
   private final CallbackList <IExceptionCallback <? super Exception>> m_aExceptionCallbacks = new CallbackList <> ();
   private IConnectionExecutor m_aConnectionExecutor;
 
-  private long m_nExecutionDurationWarnMS = JdbcConfiguration.DEFAULT_EXECUTION_TIME_WARNING_DURATION.toMillis ();
+  private Duration m_aExecutionDurationWarn = JdbcConfiguration.DEFAULT_EXECUTION_TIME_WARNING_DURATION;
   private static final CallbackList <IExecutionTimeExceededCallback> EXECUTION_TIME_EXCEEDED_HANDLERS = new CallbackList <> ();
 
   static
@@ -294,21 +295,48 @@ public class DBExecutor implements Serializable
   @CheckForSigned
   public final long getExecutionDurationWarnMS ()
   {
-    return m_nExecutionDurationWarnMS;
+    return m_aExecutionDurationWarn.toMillis ();
+  }
+
+  /**
+   * @return The duration after which a warning is emitted. Use a negative value to indicate that
+   *         the value is not relevant.
+   */
+  @NonNull
+  public final Duration getExecutionDuration ()
+  {
+    return m_aExecutionDurationWarn;
   }
 
   /**
    * Check if the execution duration warning is enabled or not. This uses the defined execution
-   * duration milliseconds.
+   * duration.
    *
    * @return <code>true</code> if the execution duration warning is enabled, <code>false</code> if
    *         not.
    * @see #getExecutionDurationWarnMS()
-   * @see #setExecutionDurationWarnMS(long)
+   * @see #setExecutionDurationWarn(Duration)
    */
   public final boolean isExecutionDurationWarnEnabled ()
   {
-    return m_nExecutionDurationWarnMS > 0;
+    return m_aExecutionDurationWarn.compareTo (Duration.ZERO) >= 0;
+  }
+
+  /**
+   * Set the execution duration warning.
+   *
+   * @param aExecutionDurationWarn
+   *        All positive durations enable the warning, all other values disable the warning. May not
+   *        be <code>null</code>.
+   * @return this for chaining
+   * @since 8.3.1
+   */
+  @NonNull
+  public final DBExecutor setExecutionDurationWarn (@NonNull final Duration aExecutionDurationWarn)
+  {
+    ValueEnforcer.notNull (aExecutionDurationWarn, "ExecutionDurationWarn");
+    m_aExecutionDurationWarn = aExecutionDurationWarn;
+    return this;
   }
 
   /**
@@ -317,12 +345,13 @@ public class DBExecutor implements Serializable
    * @param nExecutionDurationWarnMS
    *        All values &gt; 0 enable the warning, all other values disable the warning.
    * @return this for chaining
+   * @deprecated Since 8.3.1; use {@link #setExecutionDurationWarn(Duration)} instead.
    */
   @NonNull
+  @Deprecated (forRemoval = true, since = "8.3.1")
   public final DBExecutor setExecutionDurationWarnMS (final long nExecutionDurationWarnMS)
   {
-    m_nExecutionDurationWarnMS = nExecutionDurationWarnMS;
-    return this;
+    return setExecutionDurationWarn (Duration.ofMillis (nExecutionDurationWarnMS));
   }
 
   /**
@@ -341,7 +370,7 @@ public class DBExecutor implements Serializable
   {
     EXECUTION_TIME_EXCEEDED_HANDLERS.forEach (x -> x.onExecutionTimeExceeded (sMsg,
                                                                               nExecutionMillis,
-                                                                              m_nExecutionDurationWarnMS));
+                                                                              m_aExecutionDurationWarn.toMillis ()));
   }
 
   /**
@@ -693,16 +722,16 @@ public class DBExecutor implements Serializable
     finally
     {
       aSW.stop ();
-      final long nDurationMillis = aSW.getMillis ();
+      final Duration aDuration = aSW.getDuration ();
       if (isExecutionDurationWarnEnabled ())
       {
-        if (nDurationMillis > m_nExecutionDurationWarnMS)
-          onExecutionTimeExceeded ("DB execution " + sDescription, nDurationMillis);
+        if (aDuration.compareTo (m_aExecutionDurationWarn) > 0)
+          onExecutionTimeExceeded ("DB execution " + sDescription, aDuration.toMillis ());
       }
       else
       {
         if (LOGGER.isTraceEnabled ())
-          LOGGER.trace ("DB execution " + sDescription + " took " + nDurationMillis + " ms");
+          LOGGER.trace ("DB execution " + sDescription + " took " + aDuration.toString ());
       }
     }
   }
@@ -1201,7 +1230,7 @@ public class DBExecutor implements Serializable
     return new ToStringGenerator (this).append ("ConnectionProvider", m_aConnectionProvider)
                                        .append ("ExceptionCalbacks", m_aExceptionCallbacks)
                                        .append ("ConnectionExecutor", m_aConnectionExecutor)
-                                       .append ("ExecutionDurationWarnMS", m_nExecutionDurationWarnMS)
+                                       .append ("ExecutionDurationWarn", m_aExecutionDurationWarn)
                                        .append ("TransactionLevel", m_aTransactionLevel)
                                        .append ("DebugConnections", m_bDebugConnections)
                                        .append ("DebugTransactions", m_bDebugTransactions)
