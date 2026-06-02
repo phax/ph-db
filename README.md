@@ -3,6 +3,8 @@
 <!-- ph-badge-start -->
 [![Sonatype Central](https://maven-badges.sml.io/sonatype-central/com.helger.db/ph-db-parent-pom/badge.svg)](https://maven-badges.sml.io/sonatype-central/com.helger.db/ph-db-parent-pom/)
 [![javadoc](https://javadoc.io/badge2/com.helger.db/ph-db-api/javadoc.svg)](https://javadoc.io/doc/com.helger.db/ph-db-api)
+
+> If this project saved you some time or made your day a little easier, a star would mean a lot — it helps others find it too.
 <!-- ph-badge-end -->
 
 Java library with some common DB API, a special JDBC version and a JPA version based on EclipseLink.
