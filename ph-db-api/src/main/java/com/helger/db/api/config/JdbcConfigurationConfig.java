@@ -17,6 +17,8 @@
 package com.helger.db.api.config;
 
 import java.time.Duration;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -94,6 +96,9 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
   public static final String SUFFIX_POOLING_TEST_ON_BORROW = "pooling.test-on-borrow";
 
   private static final Logger LOGGER = LoggerFactory.getLogger (JdbcConfigurationConfig.class);
+  // Remember the legacy keys for which a deprecation warning was already logged, so it is emitted
+  // only once per key
+  private static final Set <String> WARNED_DEPRECATED_KEYS = ConcurrentHashMap.newKeySet ();
 
   private final IConfig m_aConfig;
   private final String m_sConfigPrefix;
@@ -166,11 +171,12 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
 
     if (m_aConfig.containsConfiguredValue (sLegacyMillisKey))
     {
-      LOGGER.warn ("Configuration key '" +
-                   sLegacyMillisKey +
-                   "' is deprecated; please use '" +
-                   sDurationKey +
-                   "' with the duration grammar (e.g. '5s', '1m 30s') instead.");
+      if (WARNED_DEPRECATED_KEYS.add (sLegacyMillisKey))
+        LOGGER.warn ("Configuration key '" +
+                     sLegacyMillisKey +
+                     "' is deprecated; please use '" +
+                     sDurationKey +
+                     "' with the duration grammar (e.g. '5s', '1m 30s') instead.");
       return Duration.ofMillis (m_aConfig.getAsLong (sLegacyMillisKey, aDefault.toMillis ()));
     }
 

@@ -51,6 +51,9 @@ Note: prior to v8.0.0 the group ID was `com.helger`
 
 # News and noteworthy
 
+v8.4.1 - work in progress
+* `JdbcConfigurationConfig` now logs the deprecation warning for a legacy `*.millis`/`*.ms` configuration key only once per key, instead of on every access.
+
 v8.4.0 - 2026-05-01
 * Updated to Flyway 12.5.0
 * `IExecutionTimeExceededCallback.onExecutionTimeExceeded` now takes `Duration` parameters (`aExecutionDuration`, `aLimitDuration`) instead of `long` milliseconds — **breaking signature change**. `LoggingExecutionTimeExceededCallback` was updated accordingly.
