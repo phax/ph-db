@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.base.tostring.ToStringGenerator;
+import com.helger.db.api.jdbc.JDBCHelper;
 
 /**
  * A logging H2 event listener.
@@ -35,7 +36,7 @@ public class LoggingH2EventListener implements DatabaseEventListener
 
   public void init (final String sURL)
   {
-    LOGGER.info ("init(" + sURL + ")");
+    LOGGER.info ("init(" + JDBCHelper.getMaskedConnectionString (sURL) + ")");
   }
 
   public void opened ()

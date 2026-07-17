@@ -51,23 +51,47 @@ Note: prior to v8.0.0 the group ID was `com.helger`
 
 # News and noteworthy
 
-v8.4.1 - work in progress
+v8.4.1 - 2026-07-17
 * `JdbcConfigurationConfig` now logs the deprecation warning for a legacy `*.millis`/`*.ms` configuration key only once per key, instead of on every access.
+* Security: `H2Helper.buildJDBCString` now rejects connection property names containing `;` or `=` and property values containing `;`, preventing injection of additional H2 URL settings (e.g. `INIT=RUNSCRIPT`).
+* Security: `AbstractGlobalEntityManagerFactory` no longer includes the plaintext JDBC password in its `IllegalStateException` messages;
+  the property map is now masked before being logged.
+* Security: added `JDBCHelper.getMaskedConnectionString(String)` which masks `password=`/`pwd=` values in a JDBC connection string.
+  It is now applied when logging JDBC URLs in `AbstractGlobalEntityManagerFactory`, `DataSourceProviderFromJdbcConfiguration` and `LoggingH2EventListener`.
+* Extended `IFlywayConfiguration` with the `validateOnMigrate` flag (default `false`), configurable via `FlywayConfigurationBuilderConfig` key `validate-on-migrate`.
+  Previously Flyway validation was unconditionally disabled.
+* `DBExecutor` now fails fast with an `IllegalStateException` if an instance that has an open transaction is used concurrently from another thread, instead of silently executing on the foreign transaction's connection.
+* Fixed `ConnectionFromDataSource.setValidityCheckTimeoutSeconds` clamping any positive timeout to `0`;
+  it now correctly keeps positive values and floors negatives at `0`.
+  The connection is now also closed when the validity check fails, avoiding a connection pool leak.
+* Fixed a `NullPointerException` in `AbstractGlobalEntityManagerFactory` when the optional additional factory properties map was `null`.
 
 v8.4.0 - 2026-05-01
 * Updated to Flyway 12.5.0
-* `IExecutionTimeExceededCallback.onExecutionTimeExceeded` now takes `Duration` parameters (`aExecutionDuration`, `aLimitDuration`) instead of `long` milliseconds — **breaking signature change**. `LoggingExecutionTimeExceededCallback` was updated accordingly.
-* `DBExecutor` now stores the execution duration warning threshold as `java.time.Duration` internally. Added new primary setter `setExecutionWarnDuration(Duration)` and getter `getExecutionWarnDuration()`; the previously named `setExecutionDurationWarn(Duration)` / `getExecutionDuration()` / `isExecutionDurationWarnEnabled()` and the millis-based `setExecutionDurationWarnMS(long)` / `getExecutionDurationWarnMS()` are retained as `@Deprecated(forRemoval = true)` and delegate to the new methods. The new `isExecutionWarnDurationEnabled()` requires a strictly positive duration (`> 0`).
+* `IExecutionTimeExceededCallback.onExecutionTimeExceeded` now takes `Duration` parameters (`aExecutionDuration`, `aLimitDuration`) instead of `long` milliseconds — **breaking signature change**.
+  `LoggingExecutionTimeExceededCallback` was updated accordingly.
+* `DBExecutor` now stores the execution duration warning threshold as `java.time.Duration` internally.
+  Added new primary setter `setExecutionWarnDuration(Duration)` and getter `getExecutionWarnDuration()`;
+  the previously named `setExecutionDurationWarn(Duration)` / `getExecutionDuration()` / `isExecutionDurationWarnEnabled()` and the millis-based `setExecutionDurationWarnMS(long)` / `getExecutionDurationWarnMS()` are retained as `@Deprecated(forRemoval = true)` and delegate to the new methods.
+  The new `isExecutionWarnDurationEnabled()` requires a strictly positive duration (`> 0`).
 * `DBExecutor.onExecutionTimeExceeded(String, long)` was changed to `onExecutionTimeExceeded(String, Duration)` to match the new callback signature.
-* `JPAEnabledManager.onExecutionTimeExceeded(String, long)` was changed to `onExecutionTimeExceeded(String, Duration)`. Added new `getDefaultExecutionWarnDuration()` and `setDefaultExecutionDuration(Duration)` plus a `DEFAULT_EXECUTION_WARN_DURATION` constant; the existing `getDefaultExecutionWarnTime()`, `setDefaultExecutionWarnTime(int)` and `DEFAULT_EXECUTION_WARN_TIME_MS` are now `@Deprecated(forRemoval = true)`.
+* `JPAEnabledManager.onExecutionTimeExceeded(String, long)` was changed to `onExecutionTimeExceeded(String, Duration)`. Added new `getDefaultExecutionWarnDuration()` and `setDefaultExecutionDuration(Duration)` plus a `DEFAULT_EXECUTION_WARN_DURATION` constant;
+  the existing `getDefaultExecutionWarnTime()`, `setDefaultExecutionWarnTime(int)` and `DEFAULT_EXECUTION_WARN_TIME_MS` are now `@Deprecated(forRemoval = true)`.
 
 v8.3.0 - 2026-05-01
 * Removed OSGI bundling
-* `JdbcConfigurationConfig` now accepts the duration grammar from ph-commons 12.2.5 (`ConfigDurationParser`) on five new configuration keys: `execution-time-warning`, `pooling.max-wait`, `pooling.between-evictions-runs`, `pooling.min-evictable-idle`, `pooling.remove-abandoned-timeout`. Values like `5s`, `2m`, `1h 30m` are parsed to `java.time.Duration`. The legacy `*.millis`/`*.ms` keys remain supported for backward compatibility; the duration key wins when both are set, and a parse failure on the duration key falls back to the legacy key.
-* Added five `java.time.Duration`-typed accessors on `IJdbcDataSourceConfiguration` / `IJdbcConfiguration`: `getJdbcPoolingMaxWait()`, `getJdbcPoolingBetweenEvictionRuns()`, `getJdbcPoolingMinEvictableIdle()`, `getJdbcPoolingRemoveAbandonedTimeout()`, `getJdbcExecutionTimeWarning()`. The Duration getters are now the primary API; the existing `getJdbc*Millis()` long-millis getters are retained as `@Deprecated` thin wrappers.
-* `JdbcConfiguration` (POJO) now stores its five duration values as `Duration` internally. A new primary constructor accepts `Duration` parameters; the existing long-millis constructor is `@Deprecated` and delegates to it. Added matching `DEFAULT_*` `Duration` constants alongside the existing `DEFAULT_*_MILLIS` longs.
+* `JdbcConfigurationConfig` now accepts the duration grammar from ph-commons 12.2.5 (`ConfigDurationParser`) on five new configuration keys: `execution-time-warning`, `pooling.max-wait`, `pooling.between-evictions-runs`, `pooling.min-evictable-idle`, `pooling.remove-abandoned-timeout`.
+  Values like `5s`, `2m`, `1h 30m` are parsed to `java.time.Duration`.
+  The legacy `*.millis`/`*.ms` keys remain supported for backward compatibility;
+  the duration key wins when both are set, and a parse failure on the duration key falls back to the legacy key.
+* Added five `java.time.Duration`-typed accessors on `IJdbcDataSourceConfiguration` / `IJdbcConfiguration`: `getJdbcPoolingMaxWait()`, `getJdbcPoolingBetweenEvictionRuns()`, `getJdbcPoolingMinEvictableIdle()`, `getJdbcPoolingRemoveAbandonedTimeout()`, `getJdbcExecutionTimeWarning()`.
+  The Duration getters are now the primary API;
+  the existing `getJdbc*Millis()` long-millis getters are retained as `@Deprecated` thin wrappers.
+* `JdbcConfiguration` (POJO) now stores its five duration values as `Duration` internally. A new primary constructor accepts `Duration` parameters; 
+  the existing long-millis constructor is `@Deprecated` and delegates to it. Added matching `DEFAULT_*` `Duration` constants alongside the existing `DEFAULT_*_MILLIS` longs.
 * `DataSourceProviderFromJdbcConfiguration` now consumes the new `Duration` accessors directly, removing the `Duration.ofMillis(...)` wrappers around millis getters.
-* The legacy `*.millis`/`*.ms` configuration keys, the corresponding `SUFFIX_*_MILLIS`/`SUFFIX_*_MS` constants, the `getConfigKey*Millis*()` accessors, and the `getJdbc*Millis()` getters on `IJdbcDataSourceConfiguration` / `IJdbcConfiguration` / `JdbcConfiguration` / `JdbcConfigurationConfig` are now `@Deprecated`. A WARN-level log message is emitted at runtime when a legacy `*.millis`/`*.ms` configuration key is read, pointing at the new duration-grammar key.
+* The legacy `*.millis`/`*.ms` configuration keys, the corresponding `SUFFIX_*_MILLIS`/`SUFFIX_*_MS` constants, the `getConfigKey*Millis*()` accessors, and the `getJdbc*Millis()` getters on `IJdbcDataSourceConfiguration` / `IJdbcConfiguration` / `JdbcConfiguration` / `JdbcConfigurationConfig` are now `@Deprecated`.
+  A WARN-level log message is emitted at runtime when a legacy `*.millis`/`*.ms` configuration key is read, pointing at the new duration-grammar key.
 
 v8.2.1 - 2026-04-12
 * Extended `IJdbcDataSourceConfiguration`, `JdbcConfiguration` and `JdbcConfigurationConfig` with the `testOnBorrow` pooling parameter

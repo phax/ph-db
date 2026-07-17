@@ -31,6 +31,7 @@ import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.ICommonsMap;
+import com.helger.db.api.jdbc.JDBCHelper;
 import com.helger.db.jpa.eclipselink.EclipseLinkLogger;
 import com.helger.db.jpa.eclipselink.EclipseLinkSessionCustomizer;
 import com.helger.db.jpa.utils.PersistenceXmlHelper;
@@ -97,7 +98,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
     ValueEnforcer.notEmpty (sPersistenceUnitName, "PersistenceUnitName");
 
     LOGGER.info ("Using JDBC URL " +
-                 sJdbcURL +
+                 JDBCHelper.getMaskedConnectionString (sJdbcURL) +
                  " with JDBC driver " +
                  sJdbcDriverClass +
                  " and user '" +
@@ -120,8 +121,9 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
     // PersistenceUnitProperties.DROP_JDBC_DDL_FILE, when multiple JPA
     // configurations are present
 
-    // Add parameter properties
-    aFactoryProps.putAll (aAdditionalFactoryProperties);
+    // Add parameter properties (the map is optional)
+    if (aAdditionalFactoryProperties != null)
+      aFactoryProps.putAll (aAdditionalFactoryProperties);
 
     // Consistency check if no explicit DDL generation mode is specified!
     if (aFactoryProps.containsKey (PersistenceUnitProperties.DDL_GENERATION) &&
@@ -161,6 +163,23 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
     return aEMF;
   }
 
+  /**
+   * Create a string representation of the provided factory properties with the JDBC password masked,
+   * so that it can safely be put into log or exception messages.
+   *
+   * @param aProps
+   *        The properties to convert. May not be <code>null</code>.
+   * @return The masked string representation. Never <code>null</code>.
+   */
+  @NonNull
+  private static String _getMaskedPropsString (@NonNull final Map <String, ?> aProps)
+  {
+    final ICommonsMap <String, Object> aMasked = new CommonsHashMap <> (aProps);
+    if (aMasked.containsKey (PersistenceUnitProperties.JDBC_PASSWORD))
+      aMasked.put (PersistenceUnitProperties.JDBC_PASSWORD, "***");
+    return aMasked.toString ();
+  }
+
   @Override
   @OverridingMethodsMustInvokeSuper
   protected void onAfterInstantiation (@NonNull final IScope aScope)
@@ -172,7 +191,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
       throw new IllegalStateException ("Failed to create entity manager factory for persistence unit '" +
                                        m_sPersistenceUnitName +
                                        "' with properties " +
-                                       m_aFactoryProps.toString () +
+                                       _getMaskedPropsString (m_aFactoryProps) +
                                        "!");
 
     // Customize on demand
@@ -194,7 +213,7 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
                                          "' which can erase all your data. Please explicitly state a value for the property '" +
                                          PersistenceUnitProperties.DDL_GENERATION_MODE +
                                          "'!!!\nEffective properties are: " +
-                                         aRealProps.toString ());
+                                         _getMaskedPropsString (aRealProps));
       }
     }
   }

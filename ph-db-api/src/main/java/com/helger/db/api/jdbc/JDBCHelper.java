@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.regex.Pattern;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -41,8 +42,32 @@ public final class JDBCHelper
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (JDBCHelper.class);
 
+  // Matches "password=..." and "pwd=..." (case insensitive) in a JDBC connection
+  // string, in both '&'-separated (query) and ';'-separated (property) forms
+  private static final Pattern PATTERN_URL_PASSWORD = Pattern.compile ("(?i)(password|pwd)=([^&;]*)");
+
   private JDBCHelper ()
   {}
+
+  /**
+   * Mask the password contained in a JDBC connection string, so that it can safely be written to log
+   * or exception messages. This masks the value of any <code>password=</code> or <code>pwd=</code>
+   * parameter, independent of whether it is separated by <code>&amp;</code> (query style) or
+   * <code>;</code> (property style). The user name is intentionally left untouched.
+   *
+   * @param sConnectionString
+   *        The JDBC connection string to mask. May be <code>null</code>.
+   * @return <code>null</code> if the input was <code>null</code>, otherwise the connection string
+   *         with all contained passwords replaced by <code>***</code>.
+   * @since 8.4.1
+   */
+  @Nullable
+  public static String getMaskedConnectionString (@Nullable final String sConnectionString)
+  {
+    if (sConnectionString == null)
+      return null;
+    return PATTERN_URL_PASSWORD.matcher (sConnectionString).replaceAll ("$1=***");
+  }
 
   @NonNull
   public static ESuccess commit (@Nullable final Connection aConnection)

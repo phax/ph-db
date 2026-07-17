@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
+import com.helger.db.api.jdbc.JDBCHelper;
 import com.helger.db.jdbc.executor.DBNoConnectionException;
 
 /**
@@ -78,8 +79,8 @@ public class ConnectionFromDataSource implements IHasConnection
   @NonNull
   public final ConnectionFromDataSource setValidityCheckTimeoutSeconds (final int nValidityCheckTimeoutSeconds)
   {
-    // 0 means infinite waiting
-    m_nValidityCheckTimeoutSeconds = Math.min (nValidityCheckTimeoutSeconds, 0);
+    // 0 means infinite waiting; negative values are invalid for Connection.isValid
+    m_nValidityCheckTimeoutSeconds = Math.max (nValidityCheckTimeoutSeconds, 0);
     return this;
   }
 
@@ -102,6 +103,9 @@ public class ConnectionFromDataSource implements IHasConnection
         }
         else
         {
+          // Return the borrowed connection to the pool before failing, to avoid
+          // leaking (and eventually exhausting) the underlying connection pool
+          JDBCHelper.close (ret);
           throw new DBNoConnectionException ("SQL Connection from DataSource " +
                                              m_aDS +
                                              " is not valid anymore (" +

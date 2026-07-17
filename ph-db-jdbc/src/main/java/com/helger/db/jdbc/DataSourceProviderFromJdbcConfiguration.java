@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.db.api.config.IJdbcConfiguration;
 import com.helger.db.api.config.IJdbcDataSourceConfiguration;
+import com.helger.db.api.jdbc.JDBCHelper;
 
 /**
  * Data source provider from {@link IJdbcConfiguration}.
@@ -103,7 +104,7 @@ public class DataSourceProviderFromJdbcConfiguration implements IHasDataSource, 
     LOGGER.info ("DataSource created with max " +
                  nMaxConnections +
                  " connections to '" +
-                 aJdbcConfig.getJdbcUrl () +
+                 JDBCHelper.getMaskedConnectionString (aJdbcConfig.getJdbcUrl ()) +
                  "'");
   }
 

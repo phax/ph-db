@@ -131,6 +131,9 @@ public class DBExecutor implements Serializable
   private final IHasConnection m_aConnectionProvider;
   private final CallbackList <IExceptionCallback <? super Exception>> m_aExceptionCallbacks = new CallbackList <> ();
   private IConnectionExecutor m_aConnectionExecutor;
+  // The thread that currently owns an open transaction (if any). While set, the
+  // transaction-bound connection executor may only be used from this thread.
+  private volatile Thread m_aTransactionOwnerThread;
 
   private Duration m_aExecutionWarnDuration = JdbcConfiguration.DEFAULT_EXECUTION_TIME_WARNING_DURATION;
   private static final CallbackList <IExecutionTimeExceededCallback> EXECUTION_TIME_EXCEEDED_HANDLERS = new CallbackList <> ();
@@ -614,6 +617,33 @@ public class DBExecutor implements Serializable
     aGeneratedKeysCB.onGeneratedKeys (aValues);
   }
 
+  /**
+   * Central entry point for executing something on a connection. While a transaction is open, the
+   * connection executor is bound to that transaction's connection; this instance is
+   * <code>@NotThreadSafe</code>, so using it concurrently from another thread would silently run on the
+   * foreign transaction's connection. This guard turns that data-corruption scenario into a
+   * fail-fast {@link IllegalStateException}.
+   *
+   * @param aWithConnectionCB
+   *        The callback to run on the connection. May not be <code>null</code>.
+   * @param aExtraExCB
+   *        The optional extra exception callback. May be <code>null</code>.
+   * @return The execution result. Never <code>null</code>.
+   */
+  @NonNull
+  private ESuccess _executeInConnection (@NonNull final IWithConnectionCallback aWithConnectionCB,
+                                         @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
+  {
+    final Thread aOwnerThread = m_aTransactionOwnerThread;
+    if (aOwnerThread != null && aOwnerThread != Thread.currentThread ())
+      throw new IllegalStateException ("This DBExecutor is not thread safe and is currently bound to an open transaction on thread '" +
+                                       aOwnerThread.getName () +
+                                       "'. Concurrent use from thread '" +
+                                       Thread.currentThread ().getName () +
+                                       "' would execute on the foreign transaction's connection and corrupt data. Use a dedicated DBExecutor instance per thread.");
+    return m_aConnectionExecutor.execute (aWithConnectionCB, aExtraExCB);
+  }
+
   @NonNull
   public final ESuccess performInTransaction (@NonNull final IThrowingRunnable <Exception> aRunnable)
   {
@@ -627,6 +657,13 @@ public class DBExecutor implements Serializable
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
       // First level has 1
       final int nTransactionLevel = m_aTransactionLevel.incrementAndGet ();
+      if (nTransactionLevel == 1)
+      {
+        // Remember the owning thread, so that concurrent use of this
+        // @NotThreadSafe instance from another thread fails fast instead of
+        // silently executing on this transaction's connection
+        m_aTransactionOwnerThread = Thread.currentThread ();
+      }
       try
       {
         final long nTransactionID = COUNTER_TRANSACTION.incrementAndGet ();
@@ -711,10 +748,14 @@ public class DBExecutor implements Serializable
       }
       finally
       {
-        m_aTransactionLevel.decrementAndGet ();
+        if (m_aTransactionLevel.decrementAndGet () == 0)
+        {
+          // Transaction fully finished - release the thread ownership
+          m_aTransactionOwnerThread = null;
+        }
       }
     };
-    return m_aConnectionExecutor.execute (aWithConnectionCB, aExtraExCB);
+    return _executeInConnection (aWithConnectionCB, aExtraExCB);
   }
 
   @NonNull
@@ -737,7 +778,7 @@ public class DBExecutor implements Serializable
         StreamHelper.close (aStatement);
       }
     };
-    return m_aConnectionExecutor.execute (aWithConnectionCB, aExtraExCB);
+    return _executeInConnection (aWithConnectionCB, aExtraExCB);
   }
 
   protected final void withTimingDo (@NonNull final String sDescription,
@@ -826,7 +867,7 @@ public class DBExecutor implements Serializable
         }
       });
     };
-    return m_aConnectionExecutor.execute (aWithConnectionCB, aExtraExCB);
+    return _executeInConnection (aWithConnectionCB, aExtraExCB);
   }
 
   @NonNull

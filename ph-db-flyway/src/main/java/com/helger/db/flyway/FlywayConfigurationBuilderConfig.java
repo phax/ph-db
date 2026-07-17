@@ -43,6 +43,7 @@ public class FlywayConfigurationBuilderConfig extends FlywayConfigurationBuilder
   public static final String SUFFIX_HISTORY_TABLE = "history-table";
   public static final String SUFFIX_DEBUG_MODE = "debug-mode";
   public static final String SUFFIX_REPAIR_MODE = "repair-mode";
+  public static final String SUFFIX_VALIDATE_ON_MIGRATE = "validate-on-migrate";
 
   private final String m_sConfigPrefix;
 
@@ -77,6 +78,8 @@ public class FlywayConfigurationBuilderConfig extends FlywayConfigurationBuilder
     historyTable (aConfig.getAsString (getConfigKeyHistoryTable ()));
     debugMode (aConfig.getAsBoolean (getConfigKeyDebugMode (), FlywayConfiguration.DEFAULT_FLYWAY_DEBUG_MODE));
     repairMode (aConfig.getAsBoolean (getConfigKeyRepairMode (), FlywayConfiguration.DEFAULT_FLYWAY_REPAIR_MODE));
+    validateOnMigrate (aConfig.getAsBoolean (getConfigKeyValidateOnMigrate (),
+                                             FlywayConfiguration.DEFAULT_FLYWAY_VALIDATE_ON_MIGRATE));
   }
 
   /**
@@ -149,5 +152,12 @@ public class FlywayConfigurationBuilderConfig extends FlywayConfigurationBuilder
   public final String getConfigKeyRepairMode ()
   {
     return m_sConfigPrefix + SUFFIX_REPAIR_MODE;
+  }
+
+  @NonNull
+  @Nonempty
+  public final String getConfigKeyValidateOnMigrate ()
+  {
+    return m_sConfigPrefix + SUFFIX_VALIDATE_ON_MIGRATE;
   }
 }

@@ -34,7 +34,7 @@ public class FlywayConfigurationTest
   @Test
   public void testBasic ()
   {
-    final FlywayConfiguration a = new FlywayConfiguration (false, "url", "usr", "pw", true, 0, null, false, false);
+    final FlywayConfiguration a = new FlywayConfiguration (false, "url", "usr", "pw", true, 0, null, false, false, false);
     assertFalse (a.isFlywayEnabled ());
     assertEquals ("url", a.getFlywayJdbcUrl ());
     assertEquals ("usr", a.getFlywayJdbcUser ());
@@ -43,6 +43,7 @@ public class FlywayConfigurationTest
     assertEquals (0, a.getFlywayBaselineVersion ());
     assertFalse (a.isFlywayDebugMode ());
     assertFalse (a.isFlywayRepairMode ());
+    assertFalse (a.isFlywayValidateOnMigrate ());
 
     TestHelper.testDefaultImplementationWithEqualContentObject (a,
                                                                 new FlywayConfiguration (false,
@@ -52,6 +53,7 @@ public class FlywayConfigurationTest
                                                                                          true,
                                                                                          0,
                                                                                          null,
+                                                                                         false,
                                                                                          false,
                                                                                          false));
     TestHelper.testDefaultImplementationWithDifferentContentObject (a,
@@ -63,6 +65,7 @@ public class FlywayConfigurationTest
                                                                                              0,
                                                                                              null,
                                                                                              false,
+                                                                                             false,
                                                                                              false));
     TestHelper.testDefaultImplementationWithDifferentContentObject (a,
                                                                     new FlywayConfiguration (false,
@@ -72,6 +75,7 @@ public class FlywayConfigurationTest
                                                                                              true,
                                                                                              0,
                                                                                              null,
+                                                                                             false,
                                                                                              false,
                                                                                              false));
     TestHelper.testDefaultImplementationWithDifferentContentObject (a,
@@ -83,6 +87,7 @@ public class FlywayConfigurationTest
                                                                                              0,
                                                                                              null,
                                                                                              false,
+                                                                                             false,
                                                                                              false));
     TestHelper.testDefaultImplementationWithDifferentContentObject (a,
                                                                     new FlywayConfiguration (false,
@@ -93,6 +98,7 @@ public class FlywayConfigurationTest
                                                                                              0,
                                                                                              null,
                                                                                              false,
+                                                                                             false,
                                                                                              false));
     TestHelper.testDefaultImplementationWithDifferentContentObject (a,
                                                                     new FlywayConfiguration (false,
@@ -102,6 +108,7 @@ public class FlywayConfigurationTest
                                                                                              false,
                                                                                              0,
                                                                                              null,
+                                                                                             false,
                                                                                              false,
                                                                                              false));
     TestHelper.testDefaultImplementationWithDifferentContentObject (a,
@@ -113,6 +120,7 @@ public class FlywayConfigurationTest
                                                                                              1,
                                                                                              null,
                                                                                              false,
+                                                                                             false,
                                                                                              false));
     TestHelper.testDefaultImplementationWithDifferentContentObject (a,
                                                                     new FlywayConfiguration (false,
@@ -123,6 +131,7 @@ public class FlywayConfigurationTest
                                                                                              0,
                                                                                              null,
                                                                                              true,
+                                                                                             false,
                                                                                              false));
     TestHelper.testDefaultImplementationWithDifferentContentObject (a,
                                                                     new FlywayConfiguration (false,
@@ -132,6 +141,18 @@ public class FlywayConfigurationTest
                                                                                              true,
                                                                                              0,
                                                                                              null,
+                                                                                             false,
+                                                                                             true,
+                                                                                             false));
+    TestHelper.testDefaultImplementationWithDifferentContentObject (a,
+                                                                    new FlywayConfiguration (false,
+                                                                                             "url",
+                                                                                             "usr",
+                                                                                             "pw",
+                                                                                             true,
+                                                                                             0,
+                                                                                             null,
+                                                                                             false,
                                                                                              false,
                                                                                              true));
   }
@@ -150,6 +171,7 @@ public class FlywayConfigurationTest
                                                      .historyTable ("flyway-history-1")
                                                      .debugMode (true)
                                                      .repairMode (true)
+                                                     .validateOnMigrate (true)
                                                      .build ();
     assertTrue (a.isFlywayEnabled ());
     assertEquals ("url", a.getFlywayJdbcUrl ());
@@ -160,6 +182,7 @@ public class FlywayConfigurationTest
     assertEquals ("flyway-history-1", a.getFlywayHistoryTable ());
     assertTrue (a.isFlywayDebugMode ());
     assertTrue (a.isFlywayRepairMode ());
+    assertTrue (a.isFlywayValidateOnMigrate ());
 
     // Create a copy via the builder
     final FlywayConfiguration a2 = FlywayConfiguration.builder (a).build ();

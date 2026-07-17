@@ -63,7 +63,22 @@ public final class H2Helper
     final StringBuilder aSB = new StringBuilder (sJdbcURL);
     if (aConnectionProperties != null)
       for (final Map.Entry <String, String> aEntry : aConnectionProperties.entrySet ())
-        aSB.append (';').append (aEntry.getKey ()).append ('=').append (aEntry.getValue ());
+      {
+        final String sKey = aEntry.getKey ();
+        final String sValue = aEntry.getValue ();
+        // A ';' or '=' in the key, or a ';' in the value, would inject additional
+        // H2 URL settings (e.g. ";INIT=RUNSCRIPT ...", a known H2 RCE vector).
+        // Reject such entries instead of blindly appending them.
+        if (sKey == null || sKey.indexOf (';') >= 0 || sKey.indexOf ('=') >= 0)
+          throw new IllegalArgumentException ("The H2 connection property name '" +
+                                              sKey +
+                                              "' is invalid - it may not contain ';' or '='");
+        if (sValue != null && sValue.indexOf (';') >= 0)
+          throw new IllegalArgumentException ("The value of the H2 connection property '" +
+                                              sKey +
+                                              "' is invalid - it may not contain ';'");
+        aSB.append (';').append (sKey).append ('=').append (sValue);
+      }
     return aSB.toString ();
   }
 }

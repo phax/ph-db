@@ -129,8 +129,9 @@ public final class FlywayMigrationRunner
     // Required for creating DB tables
     aActualFlywayConfig.baselineOnMigrate (true);
 
-    // Disable validation, because DDL comments are also taken into consideration
-    aActualFlywayConfig.validateOnMigrate (false);
+    // Validation is disabled by default, because DDL comments are also taken
+    // into consideration for the checksum
+    aActualFlywayConfig.validateOnMigrate (aFlywayConfig.isFlywayValidateOnMigrate ());
 
     // Baseline version
     aActualFlywayConfig.baselineVersion (Integer.toString (aFlywayConfig.getFlywayBaselineVersion ()));

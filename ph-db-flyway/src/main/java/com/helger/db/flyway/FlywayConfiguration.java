@@ -42,6 +42,7 @@ public class FlywayConfiguration implements IFlywayConfiguration
   public static final int DEFAULT_FLYWAY_BASELINE_VERSION = 0;
   public static final boolean DEFAULT_FLYWAY_DEBUG_MODE = false;
   public static final boolean DEFAULT_FLYWAY_REPAIR_MODE = false;
+  public static final boolean DEFAULT_FLYWAY_VALIDATE_ON_MIGRATE = false;
 
   private final boolean m_bEnabled;
   private final String m_sJdbcUrl;
@@ -52,6 +53,7 @@ public class FlywayConfiguration implements IFlywayConfiguration
   private final String m_sHistoryTable;
   private final boolean m_bDebugMode;
   private final boolean m_bRepairMode;
+  private final boolean m_bValidateOnMigrate;
 
   public FlywayConfiguration (final boolean bEnabled,
                               @Nullable final String sJdbcUrl,
@@ -61,7 +63,8 @@ public class FlywayConfiguration implements IFlywayConfiguration
                               @Nonnegative final int nBaselineVersion,
                               @Nullable final String sHistoryTable,
                               final boolean bDebugMode,
-                              final boolean bRepairMode)
+                              final boolean bRepairMode,
+                              final boolean bValidateOnMigrate)
   {
     ValueEnforcer.isGE0 (nBaselineVersion, "BaselineVersion");
 
@@ -74,6 +77,7 @@ public class FlywayConfiguration implements IFlywayConfiguration
     m_sHistoryTable = sHistoryTable;
     m_bDebugMode = bDebugMode;
     m_bRepairMode = bRepairMode;
+    m_bValidateOnMigrate = bValidateOnMigrate;
   }
 
   public boolean isFlywayEnabled ()
@@ -126,6 +130,11 @@ public class FlywayConfiguration implements IFlywayConfiguration
     return m_bRepairMode;
   }
 
+  public boolean isFlywayValidateOnMigrate ()
+  {
+    return m_bValidateOnMigrate;
+  }
+
   @Override
   public boolean equals (final Object o)
   {
@@ -142,7 +151,8 @@ public class FlywayConfiguration implements IFlywayConfiguration
            m_nBaselineVersion == rhs.m_nBaselineVersion &&
            EqualsHelper.equals (m_sHistoryTable, rhs.m_sHistoryTable) &&
            m_bDebugMode == rhs.m_bDebugMode &&
-           m_bRepairMode == rhs.m_bRepairMode;
+           m_bRepairMode == rhs.m_bRepairMode &&
+           m_bValidateOnMigrate == rhs.m_bValidateOnMigrate;
   }
 
   @Override
@@ -157,6 +167,7 @@ public class FlywayConfiguration implements IFlywayConfiguration
                                        .append (m_sHistoryTable)
                                        .append (m_bDebugMode)
                                        .append (m_bRepairMode)
+                                       .append (m_bValidateOnMigrate)
                                        .getHashCode ();
   }
 
@@ -172,6 +183,7 @@ public class FlywayConfiguration implements IFlywayConfiguration
                                        .append ("HistoryTable", m_sHistoryTable)
                                        .append ("DebugMode", m_bDebugMode)
                                        .append ("RepairMode", m_bRepairMode)
+                                       .append ("ValidateOnMigrate", m_bValidateOnMigrate)
                                        .getToString ();
   }
 
@@ -215,6 +227,7 @@ public class FlywayConfiguration implements IFlywayConfiguration
     private String m_sHistoryTable;
     private boolean m_bDebugMode = DEFAULT_FLYWAY_DEBUG_MODE;
     private boolean m_bRepairMode = DEFAULT_FLYWAY_REPAIR_MODE;
+    private boolean m_bValidateOnMigrate = DEFAULT_FLYWAY_VALIDATE_ON_MIGRATE;
 
     public FlywayConfigurationBuilder ()
     {}
@@ -229,7 +242,8 @@ public class FlywayConfiguration implements IFlywayConfiguration
                                         .baselineVersion (aBase.getFlywayBaselineVersion ())
                                         .historyTable (aBase.getFlywayHistoryTable ())
                                         .debugMode (aBase.isFlywayDebugMode ())
-                                        .repairMode (aBase.isFlywayRepairMode ());
+                                        .repairMode (aBase.isFlywayRepairMode ())
+                                        .validateOnMigrate (aBase.isFlywayValidateOnMigrate ());
     }
 
     public final boolean enabled ()
@@ -346,6 +360,18 @@ public class FlywayConfiguration implements IFlywayConfiguration
       return this;
     }
 
+    public final boolean validateOnMigrate ()
+    {
+      return m_bValidateOnMigrate;
+    }
+
+    @NonNull
+    public FlywayConfigurationBuilder validateOnMigrate (final boolean b)
+    {
+      m_bValidateOnMigrate = b;
+      return this;
+    }
+
     @NonNull
     public FlywayConfiguration build ()
     {
@@ -358,7 +384,8 @@ public class FlywayConfiguration implements IFlywayConfiguration
                                       m_nBaselineVersion,
                                       m_sHistoryTable,
                                       m_bDebugMode,
-                                      m_bRepairMode);
+                                      m_bRepairMode,
+                                      m_bValidateOnMigrate);
     }
   }
 }
