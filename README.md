@@ -51,6 +51,14 @@ Note: prior to v8.0.0 the group ID was `com.helger`
 
 # News and noteworthy
 
+v8.4.2 - work in progress
+* Requires at least ph-commons 12.4.0
+* Added the new package `com.helger.db.api.paging` in `ph-db-api`, that creates the SQL clauses for a paged and sorted query from the data store independent `IPagingSpec` of ph-commons 12.4.0.
+  `DBPagingHelper.getPagingClause (EDatabaseSystemType, IPagingSpec)` creates the database system specific clause to limit a query to a single page - `LIMIT .. OFFSET ..` for MySQL and the SQL standard `OFFSET .. ROWS FETCH NEXT .. ROWS ONLY` for DB2, H2, Oracle, PostgreSQL and SQL Server. "All rows starting at an offset" is supported as well; for MySQL it uses the documented workaround of a very large row count (`DBPagingHelper.MYSQL_ALL_ROWS`).
+  `DBPagingHelper.getOrderByClause (IPagingSpec, IDBColumnNameResolver)` creates the matching `ORDER BY` clause, and `getOrderByAndPagingClause (...)` combines the two and warns if paging is applied without an order, because which rows a page contains is undefined that way.
+  The new interface `IDBColumnNameResolver` maps the logical field name of a `SortField` onto the SQL column expression. It is the security boundary of the whole sorting: the field names typically originate from a UI and are therefore attacker controlled, while the returned expression ends up in the statement verbatim, because a column cannot be a JDBC parameter. Unknown field names are ignored, and `IDBColumnNameResolver.createFromMap (Map)` provides a whitelist based implementation.
+  Note that a paging specification requesting 0 rows is rejected with an `IllegalArgumentException`, because there is no portable SQL for it - such a query should not be executed at all.
+
 v8.4.1 - 2026-07-17
 * `JdbcConfigurationConfig` now logs the deprecation warning for a legacy `*.millis`/`*.ms` configuration key only once per key, instead of on every access.
 * Security: `H2Helper.buildJDBCString` now rejects connection property names containing `;` or `=` and property values containing `;`, preventing injection of additional H2 URL settings (e.g. `INIT=RUNSCRIPT`).
