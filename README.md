@@ -51,7 +51,7 @@ Note: prior to v8.0.0 the group ID was `com.helger`
 
 # News and noteworthy
 
-v8.4.2 - work in progress
+v8.4.2 - 2026-08-30
 * Requires at least ph-commons 12.4.0
 * Added the new package `com.helger.db.api.paging` in `ph-db-api`, that creates the SQL clauses for a paged and sorted query from the data store independent `IPagingSpec` of ph-commons 12.4.0.
   `DBPagingHelper.getPagingClause (EDatabaseSystemType, IPagingSpec)` creates the database system specific clause to limit a query to a single page - `LIMIT .. OFFSET ..` for MySQL and the SQL standard `OFFSET .. ROWS FETCH NEXT .. ROWS ONLY` for DB2, H2, Oracle, PostgreSQL and SQL Server. "All rows starting at an offset" is supported as well; for MySQL it uses the documented workaround of a very large row count (`DBPagingHelper.MYSQL_ALL_ROWS`).
