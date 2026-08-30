@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.paging.IPagingSpec;
 import com.helger.collection.paging.SortField;
 import com.helger.db.api.EDatabaseSystemType;
@@ -72,19 +73,29 @@ public final class DBPagingHelper
     for (final SortField aSortField : aPagingSpec.getAllSortFields ())
     {
       final String sFieldName = aSortField.getFieldName ();
-      final String sColumnName = aColumnNameResolver.getSQLColumnName (sFieldName);
-      if (StringHelper.isEmpty (sColumnName))
+      final ICommonsList <String> aColumnNames = aColumnNameResolver.getAllSQLColumnNames (sFieldName);
+      if (aColumnNames == null || aColumnNames.isEmpty ())
       {
         // This is the expected way to reject an unknown - and possibly forged - field name
         LOGGER.warn ("The sort field name '" + sFieldName + "' cannot be resolved to an SQL column and is ignored");
         continue;
       }
 
-      if (aSB.length () == 0)
-        aSB.append (" ORDER BY ");
-      else
-        aSB.append (", ");
-      aSB.append (sColumnName).append (aSortField.isAscending () ? " ASC" : " DESC");
+      final String sSortOrder = aSortField.isAscending () ? " ASC" : " DESC";
+      for (final String sColumnName : aColumnNames)
+      {
+        if (StringHelper.isEmpty (sColumnName))
+        {
+          LOGGER.warn ("The sort field name '" + sFieldName + "' resolved to an empty SQL column that is ignored");
+          continue;
+        }
+
+        if (aSB.length () == 0)
+          aSB.append (" ORDER BY ");
+        else
+          aSB.append (", ");
+        aSB.append (sColumnName).append (sSortOrder);
+      }
     }
     return aSB.toString ();
   }

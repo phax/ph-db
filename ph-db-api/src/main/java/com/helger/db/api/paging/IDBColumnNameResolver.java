@@ -16,6 +16,7 @@
  */
 package com.helger.db.api.paging;
 
+import java.util.List;
 import java.util.Map;
 
 import org.jspecify.annotations.NonNull;
@@ -23,7 +24,9 @@ import org.jspecify.annotations.Nullable;
 
 import com.helger.annotation.Nonempty;
 import com.helger.base.enforce.ValueEnforcer;
+import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsMap;
 
 /**
@@ -50,20 +53,25 @@ public interface IDBColumnNameResolver
   IDBColumnNameResolver NONE = sFieldName -> null;
 
   /**
-   * Get the SQL column expression to sort by, for the provided logical field name.
+   * Get the SQL column expressions to sort by, for the provided logical field name. More than one
+   * column may be returned, because a logical field may be stored in multiple columns - like a
+   * participant identifier that consists of a scheme and a value column. The sort order is applied
+   * to every returned column.
    *
    * @param sFieldName
    *        The logical field name to resolve. Neither <code>null</code> nor empty. Must be treated
    *        as untrusted input.
-   * @return The SQL column expression to be used in the <code>ORDER BY</code> clause, or
-   *         <code>null</code> if the field name is unknown, in which case it is ignored.
+   * @return The SQL column expressions to be used in the <code>ORDER BY</code> clause, in the order
+   *         of precedence. Return <code>null</code> or an empty list if the field name is unknown,
+   *         in which case it is ignored.
    */
   @Nullable
-  String getSQLColumnName (@NonNull @Nonempty String sFieldName);
+  ICommonsList <String> getAllSQLColumnNames (@NonNull @Nonempty String sFieldName);
 
   /**
-   * Create a resolver based on a fixed map from logical field name to SQL column expression. This
-   * is the recommended way to implement this interface, because the map is inherently a whitelist.
+   * Create a resolver based on a fixed map from logical field name to a single SQL column
+   * expression. This is the recommended way to implement this interface, because the map is
+   * inherently a whitelist.
    *
    * @param aFieldNameToColumnName
    *        The map to use. May not be <code>null</code>. It is copied, so later modifications of
@@ -75,7 +83,29 @@ public interface IDBColumnNameResolver
   {
     ValueEnforcer.notNullNoNullValue (aFieldNameToColumnName, "FieldNameToColumnName");
 
-    final ICommonsMap <String, String> aMap = new CommonsHashMap <> (aFieldNameToColumnName);
+    final ICommonsMap <String, ICommonsList <String>> aMap = new CommonsHashMap <> ();
+    for (final Map.Entry <String, String> aEntry : aFieldNameToColumnName.entrySet ())
+      aMap.put (aEntry.getKey (), new CommonsArrayList <> (aEntry.getValue ()));
+    return aMap::get;
+  }
+
+  /**
+   * Create a resolver based on a fixed map from logical field name to a list of SQL column
+   * expressions.
+   *
+   * @param aFieldNameToColumnNames
+   *        The map to use. May not be <code>null</code>. It is copied, so later modifications of
+   *        the provided map have no effect.
+   * @return Never <code>null</code>.
+   */
+  @NonNull
+  static IDBColumnNameResolver createFromMultiMap (@NonNull final Map <String, ? extends List <String>> aFieldNameToColumnNames)
+  {
+    ValueEnforcer.notNullNoNullValue (aFieldNameToColumnNames, "FieldNameToColumnNames");
+
+    final ICommonsMap <String, ICommonsList <String>> aMap = new CommonsHashMap <> ();
+    for (final Map.Entry <String, ? extends List <String>> aEntry : aFieldNameToColumnNames.entrySet ())
+      aMap.put (aEntry.getKey (), new CommonsArrayList <> (aEntry.getValue ()));
     return aMap::get;
   }
 }

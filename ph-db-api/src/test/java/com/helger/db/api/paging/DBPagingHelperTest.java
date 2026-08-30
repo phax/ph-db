@@ -17,11 +17,14 @@
 package com.helger.db.api.paging;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
+import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsMap;
 import com.helger.collection.paging.IPagingSpec;
 import com.helger.collection.paging.PagingSpec;
@@ -124,6 +127,19 @@ public final class DBPagingHelperTest
   }
 
   @Test
+  public void testOrderByClauseWithCompositeKey ()
+  {
+    // One logical field that is stored in two columns - the sort order applies to both
+    final ICommonsMap <String, ICommonsList <String>> aMap = new CommonsHashMap <> ();
+    aMap.put ("participantid", new CommonsArrayList <> ("sg.scheme", "sg.value"));
+    final IDBColumnNameResolver aResolver = IDBColumnNameResolver.createFromMultiMap (aMap);
+
+    assertEquals (" ORDER BY sg.scheme DESC, sg.value DESC",
+                  DBPagingHelper.getOrderByClause (new PagingSpec (0, 25, SortField.descending ("participantid")),
+                                                   aResolver));
+  }
+
+  @Test
   public void testOrderByAndPagingClause ()
   {
     assertEquals (" ORDER BY sg.id ASC LIMIT 25 OFFSET 50",
@@ -154,10 +170,10 @@ public final class DBPagingHelperTest
     final ICommonsMap <String, String> aMap = new CommonsHashMap <> ();
     aMap.put ("id", "sg.id");
     final IDBColumnNameResolver aResolver = IDBColumnNameResolver.createFromMap (aMap);
-    assertEquals ("sg.id", aResolver.getSQLColumnName ("id"));
+    assertEquals (new CommonsArrayList <> ("sg.id"), aResolver.getAllSQLColumnNames ("id"));
 
     // Later modifications of the source map must have no effect
     aMap.put ("name", "sg.name");
-    assertEquals (null, aResolver.getSQLColumnName ("name"));
+    assertNull (aResolver.getAllSQLColumnNames ("name"));
   }
 }
