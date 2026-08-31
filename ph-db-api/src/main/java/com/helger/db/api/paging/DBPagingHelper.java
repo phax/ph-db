@@ -17,6 +17,7 @@
 package com.helger.db.api.paging;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,18 +67,73 @@ public final class DBPagingHelper
   public static String getOrderByClause (@NonNull final IPagingSpec aPagingSpec,
                                          @NonNull final IDBColumnNameResolver aColumnNameResolver)
   {
+    return getOrderByClause (aPagingSpec, aColumnNameResolver, (Iterable <? extends SortField>) null);
+  }
+
+  /**
+   * Create the <code>ORDER BY</code> clause for the sort fields of the provided paging
+   * specification. Sort fields that the resolver does not know are skipped. If no sort field
+   * remains - because none was requested or because none could be resolved - the provided default
+   * sort fields are used instead.<br>
+   * Providing the default sort fields is strongly recommended whenever the result is paged, because
+   * a query without an <code>ORDER BY</code> returns the rows of a page in an undefined order, so
+   * that consecutive pages may overlap or lose rows.
+   *
+   * @param aPagingSpec
+   *        The paging specification to use. May not be <code>null</code>.
+   * @param aColumnNameResolver
+   *        The resolver from logical field name to SQL column expression. May not be
+   *        <code>null</code>. See {@link IDBColumnNameResolver} for the security implications.
+   * @param aDefaultSortFields
+   *        The sort fields to be used if the paging specification contains no usable one. May be
+   *        <code>null</code> or empty. Contrary to the requested sort fields these are provided by
+   *        the application and are therefore expected to be resolvable - an unresolvable default
+   *        sort field is logged as an error.
+   * @return The SQL clause to be appended to the query, starting with a blank. Never
+   *         <code>null</code> but empty if no sort field could be resolved at all.
+   * @since 8.4.3
+   */
+  @NonNull
+  public static String getOrderByClause (@NonNull final IPagingSpec aPagingSpec,
+                                         @NonNull final IDBColumnNameResolver aColumnNameResolver,
+                                         @Nullable final Iterable <? extends SortField> aDefaultSortFields)
+  {
     ValueEnforcer.notNull (aPagingSpec, "PagingSpec");
     ValueEnforcer.notNull (aColumnNameResolver, "ColumnNameResolver");
 
+    // The requested order always wins
+    final String ret = _getOrderByClause (aPagingSpec.getAllSortFields (), aColumnNameResolver, false);
+    if (ret.length () > 0 || aDefaultSortFields == null)
+      return ret;
+
+    // Nothing was requested or nothing could be resolved - fall back to the default order
+    return _getOrderByClause (aDefaultSortFields, aColumnNameResolver, true);
+  }
+
+  @NonNull
+  private static String _getOrderByClause (@NonNull final Iterable <? extends SortField> aSortFields,
+                                           @NonNull final IDBColumnNameResolver aColumnNameResolver,
+                                           final boolean bIsDefault)
+  {
     final StringBuilder aSB = new StringBuilder ();
-    for (final SortField aSortField : aPagingSpec.getAllSortFields ())
+    for (final SortField aSortField : aSortFields)
     {
       final String sFieldName = aSortField.getFieldName ();
       final ICommonsList <String> aColumnNames = aColumnNameResolver.getAllSQLColumnNames (sFieldName);
       if (aColumnNames == null || aColumnNames.isEmpty ())
       {
-        // This is the expected way to reject an unknown - and possibly forged - field name
-        LOGGER.warn ("The sort field name '" + sFieldName + "' cannot be resolved to an SQL column and is ignored");
+        if (bIsDefault)
+        {
+          // The default sort fields come from the application, so this is a programming error
+          LOGGER.error ("The default sort field name '" +
+                        sFieldName +
+                        "' cannot be resolved to an SQL column and is ignored");
+        }
+        else
+        {
+          // This is the expected way to reject an unknown - and possibly forged - field name
+          LOGGER.warn ("The sort field name '" + sFieldName + "' cannot be resolved to an SQL column and is ignored");
+        }
         continue;
       }
 
@@ -171,7 +227,41 @@ public final class DBPagingHelper
                                                   @NonNull final IPagingSpec aPagingSpec,
                                                   @NonNull final IDBColumnNameResolver aColumnNameResolver)
   {
-    final String sOrderBy = getOrderByClause (aPagingSpec, aColumnNameResolver);
+    return getOrderByAndPagingClause (eDBType,
+                                      aPagingSpec,
+                                      aColumnNameResolver,
+                                      (Iterable <? extends SortField>) null);
+  }
+
+  /**
+   * Create the combined <code>ORDER BY</code> and paging clause, using the provided default sort
+   * fields if the paging specification contains no usable one. This is the method to be used in
+   * practice, because the two clauses belong together - paging without a deterministic order
+   * returns arbitrary rows.
+   *
+   * @param eDBType
+   *        The database system to create the clause for. May not be <code>null</code>.
+   * @param aPagingSpec
+   *        The paging specification to use. May not be <code>null</code>.
+   * @param aColumnNameResolver
+   *        The resolver from logical field name to SQL column expression. May not be
+   *        <code>null</code>.
+   * @param aDefaultSortFields
+   *        The sort fields to be used if the paging specification contains no usable one. May be
+   *        <code>null</code> or empty.
+   * @return The SQL clause to be appended to the query, starting with a blank. Never
+   *         <code>null</code> but maybe empty.
+   * @since 8.4.3
+   * @see #getOrderByClause(IPagingSpec, IDBColumnNameResolver, Iterable)
+   * @see #getPagingClause(EDatabaseSystemType, IPagingSpec)
+   */
+  @NonNull
+  public static String getOrderByAndPagingClause (@NonNull final EDatabaseSystemType eDBType,
+                                                  @NonNull final IPagingSpec aPagingSpec,
+                                                  @NonNull final IDBColumnNameResolver aColumnNameResolver,
+                                                  @Nullable final Iterable <? extends SortField> aDefaultSortFields)
+  {
+    final String sOrderBy = getOrderByClause (aPagingSpec, aColumnNameResolver, aDefaultSortFields);
     final String sPaging = getPagingClause (eDBType, aPagingSpec);
 
     if (sPaging.length () > 0 && sOrderBy.length () == 0)

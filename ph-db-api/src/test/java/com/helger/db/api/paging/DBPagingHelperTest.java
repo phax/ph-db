@@ -140,6 +140,50 @@ public final class DBPagingHelperTest
   }
 
   @Test
+  public void testOrderByClauseWithDefaults ()
+  {
+    final ICommonsList <SortField> aDefault = new CommonsArrayList <> (SortField.ascending ("name"),
+                                                                       SortField.descending ("id"));
+
+    // Nothing requested - the default is used
+    assertEquals (" ORDER BY sg.name ASC, sg.id DESC",
+                  DBPagingHelper.getOrderByClause (new PagingSpec (0, 25), RESOLVER, aDefault));
+
+    // Nothing resolvable - the default is used as well
+    assertEquals (" ORDER BY sg.name ASC, sg.id DESC",
+                  DBPagingHelper.getOrderByClause (new PagingSpec (0, 25, SortField.ascending ("unknown")),
+                                                   RESOLVER,
+                                                   aDefault));
+
+    // A requested order always wins over the default
+    assertEquals (" ORDER BY sg.id ASC",
+                  DBPagingHelper.getOrderByClause (new PagingSpec (0, 25, SortField.ascending ("id")),
+                                                   RESOLVER,
+                                                   aDefault));
+
+    // Without a default the clause stays empty
+    assertEquals ("", DBPagingHelper.getOrderByClause (new PagingSpec (0, 25), RESOLVER, null));
+    assertEquals ("", DBPagingHelper.getOrderByClause (new PagingSpec (0, 25), RESOLVER));
+
+    // An unresolvable default is ignored - it cannot create an invalid statement
+    assertEquals ("",
+                  DBPagingHelper.getOrderByClause (new PagingSpec (0, 25),
+                                                   RESOLVER,
+                                                   new CommonsArrayList <> (SortField.ascending ("unknown"))));
+  }
+
+  @Test
+  public void testOrderByAndPagingClauseWithDefaults ()
+  {
+    // The default order makes the paging deterministic
+    assertEquals (" ORDER BY sg.id ASC LIMIT 25 OFFSET 50",
+                  DBPagingHelper.getOrderByAndPagingClause (EDatabaseSystemType.MYSQL,
+                                                            new PagingSpec (50, 25),
+                                                            RESOLVER,
+                                                            new CommonsArrayList <> (SortField.ascending ("id"))));
+  }
+
+  @Test
   public void testOrderByAndPagingClause ()
   {
     assertEquals (" ORDER BY sg.id ASC LIMIT 25 OFFSET 50",
