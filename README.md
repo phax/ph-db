@@ -51,7 +51,7 @@ Note: prior to v8.0.0 the group ID was `com.helger`
 
 # News and noteworthy
 
-v8.4.3 - work in progress
+v8.4.3 - 2026-09-03
 * Added the new overloads `DBPagingHelper.getOrderByClause (IPagingSpec, IDBColumnNameResolver, Iterable)` and `getOrderByAndPagingClause (EDatabaseSystemType, IPagingSpec, IDBColumnNameResolver, Iterable)`, that take the default sort fields to be used if the paging specification contains no usable one - because none was requested, or because none could be resolved.
   Providing them is strongly recommended whenever the result is paged: without an `ORDER BY` a query returns the rows of a page in an undefined order, so that consecutive pages may overlap or lose rows.
   Contrary to the requested sort fields, which come from a client, the default sort fields come from the application and are therefore expected to be resolvable - an unresolvable default sort field is logged on the error level instead of the warning level.
