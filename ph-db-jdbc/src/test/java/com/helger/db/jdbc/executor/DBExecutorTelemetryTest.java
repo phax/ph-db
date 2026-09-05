@@ -64,6 +64,7 @@ public final class DBExecutorTelemetryTest
   private static final String JDBC_URL = "jdbc:h2:mem:phdbtelemetry;DB_CLOSE_DELAY=-1";
   private static final String TABLE = "test_telemetry";
 
+  // TODO ph-telemetry 1.0.2: replace the local test doubles below with com.helger.telemetry.mock.CapturingTelemetry
   /** A span that only records what was set on it. */
   private static final class CapturingSpan implements ITelemetrySpan
   {
