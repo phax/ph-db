@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger.db</groupId>
     <artifactId>ph-db-parent-pom</artifactId>
-    <version>8.4.4-SNAPSHOT</version>
+    <version>8.5.0-SNAPSHOT</version>
   </parent>
   <artifactId>ph-db-jpa</artifactId>
   <packaging>jar</packaging>
@@ -82,6 +82,10 @@
     <dependency>
       <groupId>com.helger.db</groupId>
       <artifactId>ph-db-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.telemetry</groupId>
+      <artifactId>ph-telemetry</artifactId>
     </dependency>
     <dependency>
       <groupId>com.helger.commons</groupId>

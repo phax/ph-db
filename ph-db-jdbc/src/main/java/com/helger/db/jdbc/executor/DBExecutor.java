@@ -63,10 +63,12 @@ import com.helger.base.tostring.ToStringGenerator;
 import com.helger.base.wrapper.Wrapper;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
+import com.helger.db.api.EDatabaseSystemType;
 import com.helger.db.api.callback.IExecutionTimeExceededCallback;
 import com.helger.db.api.callback.LoggingExecutionTimeExceededCallback;
 import com.helger.db.api.config.JdbcConfiguration;
 import com.helger.db.api.jdbc.JDBCHelper;
+import com.helger.db.api.telemetry.CDBTelemetry;
 import com.helger.db.jdbc.ConnectionFromDataSource;
 import com.helger.db.jdbc.IHasConnection;
 import com.helger.db.jdbc.IHasDataSource;
@@ -78,6 +80,7 @@ import com.helger.db.jdbc.callback.IResultSetRowCallback;
 import com.helger.db.jdbc.callback.IUpdatedRowCountCallback;
 import com.helger.db.jdbc.callback.UpdatedRowCountCallback;
 import com.helger.diagnostics.callback.exception.LoggingExceptionCallback;
+import com.helger.telemetry.ITelemetrySpan;
 
 /**
  * Simple wrapper around common JDBC functionality.
@@ -102,7 +105,7 @@ public class DBExecutor implements Serializable
   @FunctionalInterface
   private interface IWithPreparedStatementCallback extends ICallback
   {
-    void run (@NonNull PreparedStatement aPreparedStatement) throws SQLException;
+    void run (@NonNull PreparedStatement aPreparedStatement, @NonNull ITelemetrySpan aSpan) throws SQLException;
   }
 
   @FunctionalInterface
@@ -112,6 +115,19 @@ public class DBExecutor implements Serializable
     ESuccess execute (@NonNull IWithConnectionCallback aCB,
                       @Nullable IExceptionCallback <? super Exception> aExtraExCB);
   }
+
+  /**
+   * By default ph-telemetry spans and metrics are emitted
+   *
+   * @since 8.5.0
+   */
+  public static final boolean DEFAULT_TELEMETRY = true;
+  /**
+   * By default the SQL text is attached to the telemetry spans
+   *
+   * @since 8.5.0
+   */
+  public static final boolean DEFAULT_TELEMETRY_SQL_TEXT = true;
 
   private static final Logger LOGGER = LoggerFactory.getLogger (DBExecutor.class);
 
@@ -147,6 +163,9 @@ public class DBExecutor implements Serializable
   private boolean m_bDebugConnections = JdbcConfiguration.DEFAULT_DEBUG_CONNECTIONS;
   private boolean m_bDebugTransactions = JdbcConfiguration.DEFAULT_DEBUG_TRANSACTIONS;
   private boolean m_bDebugSQLStatements = JdbcConfiguration.DEFAULT_DEBUG_SQL_STATEMENTS;
+  private EDatabaseSystemType m_eDBSystemType;
+  private boolean m_bTelemetry = DEFAULT_TELEMETRY;
+  private boolean m_bTelemetrySQLText = DEFAULT_TELEMETRY_SQL_TEXT;
 
   public DBExecutor (@NonNull final IHasDataSource aDataSourceProvider)
   {
@@ -480,6 +499,94 @@ public class DBExecutor implements Serializable
     return this;
   }
 
+  /**
+   * @return The database system this executor talks to, or <code>null</code> if it was not set. It
+   *         is only used as the <code>db.system.name</code> telemetry attribute.
+   * @see #setDatabaseSystemType(EDatabaseSystemType)
+   * @since 8.5.0
+   */
+  @Nullable
+  public final EDatabaseSystemType getDatabaseSystemType ()
+  {
+    return m_eDBSystemType;
+  }
+
+  /**
+   * Set the database system this executor talks to. This is optional information, that is solely
+   * used to enrich the emitted telemetry with the <code>db.system.name</code> attribute - without
+   * it, that attribute is simply omitted.
+   *
+   * @param eDBSystemType
+   *        The database system in use. May be <code>null</code>.
+   * @return this for chaining
+   * @since 8.5.0
+   */
+  @NonNull
+  public final DBExecutor setDatabaseSystemType (@Nullable final EDatabaseSystemType eDBSystemType)
+  {
+    m_eDBSystemType = eDBSystemType;
+    return this;
+  }
+
+  /**
+   * @return <code>true</code> if ph-telemetry spans and metrics are emitted, <code>false</code> if
+   *         not. Default is {@link #DEFAULT_TELEMETRY}.
+   * @see #setTelemetry(boolean)
+   * @since 8.5.0
+   */
+  public final boolean isTelemetry ()
+  {
+    return m_bTelemetry;
+  }
+
+  /**
+   * Enable or disable the emission of ph-telemetry spans and metrics. If no telemetry SPI is
+   * registered at all, the emission is a cheap no-op anyway - disable this only to keep a
+   * particularly hot execution path free of any telemetry overhead.
+   *
+   * @param bTelemetry
+   *        <code>true</code> to emit telemetry, <code>false</code> to not do it
+   * @return this for chaining
+   * @see #isTelemetry()
+   * @since 8.5.0
+   */
+  @NonNull
+  public final DBExecutor setTelemetry (final boolean bTelemetry)
+  {
+    m_bTelemetry = bTelemetry;
+    return this;
+  }
+
+  /**
+   * @return <code>true</code> if the SQL text is attached to the telemetry spans,
+   *         <code>false</code> if not. Default is {@link #DEFAULT_TELEMETRY_SQL_TEXT}.
+   * @see #setTelemetrySQLText(boolean)
+   * @since 8.5.0
+   */
+  public final boolean isTelemetrySQLText ()
+  {
+    return m_bTelemetrySQLText;
+  }
+
+  /**
+   * Enable or disable the <code>db.query.text</code> span attribute. Prepared statements only carry
+   * the parameterized SQL text, but the SQL passed to {@link #executeStatement(String)} and
+   * {@link #queryAll(String)} may contain literal values - disable this, if such values must not
+   * leave the process.
+   *
+   * @param bTelemetrySQLText
+   *        <code>true</code> to attach the SQL text, <code>false</code> to not do it
+   * @return this for chaining
+   * @see #isTelemetrySQLText()
+   * @since 8.5.0
+   */
+  @NonNull
+  public final DBExecutor setTelemetrySQLText (final boolean bTelemetrySQLText)
+  {
+    m_bTelemetrySQLText = bTelemetrySQLText;
+    return this;
+  }
+
   @CodingStyleguideUnaware ("Needs to be synchronized!")
   @NonNull
   protected final ESuccess withNewConnectionDo (@NonNull final IWithConnectionCallback aCB,
@@ -491,9 +598,11 @@ public class DBExecutor implements Serializable
       // Avoid trying again
       if (m_bDebugConnections)
         debugLog ("Refuse to open SQL Connection [" + nConnectionID + "] because it failed previously");
+      DBExecutorTelemetry.onConnectionRefused (m_bTelemetry, m_eDBSystemType);
       return ESuccess.FAILURE;
     }
     Connection aConnection = null;
+    boolean bConnectionActive = false;
     try
     {
       if (m_bDebugConnections)
@@ -501,7 +610,18 @@ public class DBExecutor implements Serializable
 
       // Get connection
       COUNTER_CONNECTION_OPEN.incrementAndGet ();
-      aConnection = m_aConnectionProvider.getConnection ();
+      final StopWatch aSWConnectionAcquire = StopWatch.createdStarted ();
+      try
+      {
+        aConnection = m_aConnectionProvider.getConnection ();
+      }
+      finally
+      {
+        DBExecutorTelemetry.onConnectionAcquired (m_bTelemetry,
+                                                  m_eDBSystemType,
+                                                  aSWConnectionAcquire.stopAndGetDuration (),
+                                                  aConnection != null);
+      }
       if (aConnection == null)
       {
         LOGGER.warn ("  Failed to open SQL Connection [" + nConnectionID + "]");
@@ -522,6 +642,8 @@ public class DBExecutor implements Serializable
         setConnectionEstablished (ETriState.TRUE);
 
       // Okay, connection was established
+      DBExecutorTelemetry.addActiveConnections (m_bTelemetry, m_eDBSystemType, +1);
+      bConnectionActive = true;
 
       // Now do the main work
       return withExistingConnectionDo (aConnection, aCB, aExtraExCB);
@@ -542,6 +664,9 @@ public class DBExecutor implements Serializable
     }
     finally
     {
+      if (bConnectionActive)
+        DBExecutorTelemetry.addActiveConnections (m_bTelemetry, m_eDBSystemType, -1);
+
       // Close connection again (if necessary)
       if (aConnection != null && m_aConnectionProvider.shouldCloseConnection ())
       {
@@ -670,81 +795,103 @@ public class DBExecutor implements Serializable
         if (m_bDebugTransactions)
           debugLog ("Starting a level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
 
-        // Avoid creating a new connection
-        final IConnectionExecutor aOldConnectionExecutor = m_aConnectionExecutor;
-        m_aConnectionExecutor = (aCB2, aExCB2) -> this.withExistingConnectionDo (aConnection, aCB2, aExCB2);
-        try
-        {
-          // Run the callback
-          aRunnable.run ();
-          if (nTransactionLevel == 1)
+        DBExecutorTelemetry.withTransactionDo (m_bTelemetry,
+                                               m_eDBSystemType,
+                                               nTransactionID,
+                                               nTransactionLevel,
+                                               aSpan -> {
+          // Avoid creating a new connection
+          final IConnectionExecutor aOldConnectionExecutor = m_aConnectionExecutor;
+          m_aConnectionExecutor = (aCB2, aExCB2) -> this.withExistingConnectionDo (aConnection, aCB2, aExCB2);
+          try
           {
-            if (m_bDebugTransactions)
-              debugLog ("Now commiting level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
+            // Run the callback
+            aRunnable.run ();
+            if (nTransactionLevel == 1)
+            {
+              if (m_bDebugTransactions)
+                debugLog ("Now commiting level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
 
-            // Commit
-            aConnection.commit ();
+              // Commit
+              aConnection.commit ();
+              DBExecutorTelemetry.onTransactionEnd (m_bTelemetry,
+                                                    aSpan,
+                                                    m_eDBSystemType,
+                                                    CDBTelemetry.TRANSACTION_OUTCOME_COMMITTED,
+                                                    nTransactionLevel);
+            }
+            else
+            {
+              if (m_bDebugTransactions)
+                debugLog ("Not commiting level " +
+                          nTransactionLevel +
+                          " transaction [" +
+                          nTransactionID +
+                          "] because it is nested");
+              DBExecutorTelemetry.onTransactionEnd (m_bTelemetry,
+                                                    aSpan,
+                                                    m_eDBSystemType,
+                                                    CDBTelemetry.TRANSACTION_OUTCOME_NESTED,
+                                                    nTransactionLevel);
+            }
           }
-          else
+          catch (final Exception ex)
           {
-            if (m_bDebugTransactions)
-              debugLog ("Not commiting level " +
-                        nTransactionLevel +
-                        " transaction [" +
-                        nTransactionID +
-                        "] because it is nested");
+            if (nTransactionLevel == 1)
+            {
+              if (m_bDebugTransactions)
+                debugLog ("Now rolling back level " +
+                          nTransactionLevel +
+                          " transaction [" +
+                          nTransactionID +
+                          "]: " +
+                          ex.getClass ().getName () +
+                          " - " +
+                          ex.getMessage ());
+
+              // Rollback
+              aConnection.rollback ();
+            }
+            else
+            {
+              if (m_bDebugTransactions)
+                debugLog ("Not rolling back level " +
+                          nTransactionLevel +
+                          " transaction [" +
+                          nTransactionID +
+                          "] because it is nested");
+            }
+            DBExecutorTelemetry.onTransactionEnd (m_bTelemetry,
+                                                  aSpan,
+                                                  m_eDBSystemType,
+                                                  CDBTelemetry.TRANSACTION_OUTCOME_ROLLED_BACK,
+                                                  nTransactionLevel);
+
+            // Exception handler
+            if (aExtraExCB != null)
+              aExtraExCB.onException (ex);
+
+            // Propagate
+            if (ex instanceof RuntimeException)
+              throw (RuntimeException) ex;
+            if (ex instanceof SQLException)
+              throw (SQLException) ex;
+            throw new SQLException ("Caught exception while perfoming something in a level " +
+                                    nTransactionLevel +
+                                    " transaction [" +
+                                    nTransactionID +
+                                    "]",
+                                    ex);
           }
-        }
-        catch (final Exception ex)
-        {
-          if (nTransactionLevel == 1)
+          finally
           {
+            // Reset state
+            m_aConnectionExecutor = aOldConnectionExecutor;
+
             if (m_bDebugTransactions)
-              debugLog ("Now rolling back level " +
-                        nTransactionLevel +
-                        " transaction [" +
-                        nTransactionID +
-                        "]: " +
-                        ex.getClass ().getName () +
-                        " - " +
-                        ex.getMessage ());
-
-            // Rollback
-            aConnection.rollback ();
+              debugLog ("Finished level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
           }
-          else
-          {
-            if (m_bDebugTransactions)
-              debugLog ("Not rolling back level " +
-                        nTransactionLevel +
-                        " transaction [" +
-                        nTransactionID +
-                        "] because it is nested");
-          }
-          // Exception handler
-          if (aExtraExCB != null)
-            aExtraExCB.onException (ex);
-
-          // Propagate
-          if (ex instanceof RuntimeException)
-            throw (RuntimeException) ex;
-          if (ex instanceof SQLException)
-            throw (SQLException) ex;
-          throw new SQLException ("Caught exception while perfoming something in a level " +
-                                  nTransactionLevel +
-                                  " transaction [" +
-                                  nTransactionID +
-                                  "]",
-                                  ex);
-        }
-        finally
-        {
-          // Reset state
-          m_aConnectionExecutor = aOldConnectionExecutor;
-
-          if (m_bDebugTransactions)
-            debugLog ("Finished level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
-        }
+        });
       }
       finally
       {
@@ -825,7 +972,14 @@ public class DBExecutor implements Serializable
       if (m_bDebugSQLStatements)
         debugLog ("Will execute " + sWhat);
 
-      withTimingDo (sWhat, () -> {
+      withTimingDo (sWhat,
+                    () -> DBExecutorTelemetry.withStatementDo (m_bTelemetry,
+                                                               m_eDBSystemType,
+                                                               sSQL,
+                                                               m_bTelemetrySQLText,
+                                                               true,
+                                                               aPSDP.getValueCount (),
+                                                               aSpan -> {
         try (final PreparedStatement aPS = aConnection.prepareStatement (sSQL, Statement.RETURN_GENERATED_KEYS))
         {
           // Handle by JDBC driver
@@ -846,7 +1000,7 @@ public class DBExecutor implements Serializable
             aPS.setObject (nIndex++, aArg);
 
           // call callback
-          aPSCallback.run (aPS);
+          aPSCallback.run (aPS, aSpan);
 
           // Updated row count callback present?
           if (aUpdatedRowCountCB != null)
@@ -860,12 +1014,16 @@ public class DBExecutor implements Serializable
             {
               aUpdatedRowCountCB.setUpdatedRowCount (aPS.getUpdateCount ());
             }
+
+            final long nUpdatedRows = aUpdatedRowCountCB.getUpdatedRowCount ();
+            if (nUpdatedRows >= 0)
+              aSpan.setAttribute (CDBTelemetry.ATTR_JDBC_UPDATED_ROWS, nUpdatedRows);
           }
           // retrieve generated keys?
           if (aGeneratedKeysCB != null)
             handleGeneratedKeys (aPS.getGeneratedKeys (), aGeneratedKeysCB);
         }
-      });
+      }));
     };
     return _executeInConnection (aWithConnectionCB, aExtraExCB);
   }
@@ -887,7 +1045,14 @@ public class DBExecutor implements Serializable
       if (m_bDebugSQLStatements)
         debugLog ("Will execute " + sWhat);
 
-      withTimingDo (sWhat, () -> aStatement.execute (sSQL));
+      withTimingDo (sWhat,
+                    () -> DBExecutorTelemetry.withStatementDo (m_bTelemetry,
+                                                               m_eDBSystemType,
+                                                               sSQL,
+                                                               m_bTelemetrySQLText,
+                                                               false,
+                                                               -1,
+                                                               aSpan -> aStatement.execute (sSQL)));
     }, aGeneratedKeysCB, aExtraExCB);
   }
 
@@ -905,7 +1070,12 @@ public class DBExecutor implements Serializable
                                             @Nullable final IGeneratedKeysCallback aGeneratedKeysCB,
                                             @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
   {
-    return withPreparedStatementDo (sSQL, aPSDP, PreparedStatement::execute, aURWCC, aGeneratedKeysCB, aExtraExCB);
+    return withPreparedStatementDo (sSQL,
+                                    aPSDP,
+                                    (aPreparedStatement, aSpan) -> aPreparedStatement.execute (),
+                                    aURWCC,
+                                    aGeneratedKeysCB,
+                                    aExtraExCB);
   }
 
   /**
@@ -966,7 +1136,12 @@ public class DBExecutor implements Serializable
     // We need this wrapper because the anonymous inner class cannot change
     // variables in outer scope.
     final IUpdatedRowCountCallback aURCCB = new UpdatedRowCountCallback ();
-    withPreparedStatementDo (sSQL, aPSDP, PreparedStatement::execute, aURCCB, aGeneratedKeysCB, aExtraExCB);
+    withPreparedStatementDo (sSQL,
+                             aPSDP,
+                             (aPreparedStatement, aSpan) -> aPreparedStatement.execute (),
+                             aURCCB,
+                             aGeneratedKeysCB,
+                             aExtraExCB);
     return aURCCB.getUpdatedRowCount ();
   }
 
@@ -1128,9 +1303,17 @@ public class DBExecutor implements Serializable
       if (m_bDebugSQLStatements)
         debugLog ("Will execute " + sWhat);
 
-      withTimingDo (sWhat, () -> {
+      withTimingDo (sWhat,
+                    () -> DBExecutorTelemetry.withStatementDo (m_bTelemetry,
+                                                               m_eDBSystemType,
+                                                               sSQL,
+                                                               m_bTelemetrySQLText,
+                                                               false,
+                                                               -1,
+                                                               aSpan -> {
         final ResultSet aResultSet = aStatement.executeQuery (sSQL);
         final long nResultRows = iterateResultSet (aResultSet, aResultItemCallback);
+        aSpan.setAttribute (CDBTelemetry.ATTR_DB_RESPONSE_RETURNED_ROWS, nResultRows);
 
         if (m_bDebugSQLStatements)
           debugLog ("  Found " +
@@ -1140,7 +1323,7 @@ public class DBExecutor implements Serializable
                     " [" +
                     nSQLStatementID +
                     "]");
-      });
+      }));
     }, (IGeneratedKeysCallback) null, null);
   }
 
@@ -1165,9 +1348,11 @@ public class DBExecutor implements Serializable
     ValueEnforcer.notNull (aPSDP, "PreparedStatementDataProvider");
     ValueEnforcer.notNull (aResultItemCallback, "aResultItemCallbackSQL");
 
-    return withPreparedStatementDo (sSQL, aPSDP, aPreparedStatement -> {
+    return withPreparedStatementDo (sSQL, aPSDP, (aPreparedStatement, aSpan) -> {
       final ResultSet aResultSet = aPreparedStatement.executeQuery ();
       final long nResultRows = iterateResultSet (aResultSet, aResultItemCallback);
+      aSpan.setAttribute (CDBTelemetry.ATTR_DB_RESPONSE_RETURNED_ROWS, nResultRows);
+
       if (m_bDebugSQLStatements)
         debugLog ("  Found " + nResultRows + " result " + (nResultRows == 1 ? "row" : "rows"));
     }, (IUpdatedRowCountCallback) null, (IGeneratedKeysCallback) null, null);
@@ -1304,6 +1489,9 @@ public class DBExecutor implements Serializable
                                        .append ("DebugConnections", m_bDebugConnections)
                                        .append ("DebugTransactions", m_bDebugTransactions)
                                        .append ("DebugSQLStatements", m_bDebugSQLStatements)
+                                       .appendIfNotNull ("DBSystemType", m_eDBSystemType)
+                                       .append ("Telemetry", m_bTelemetry)
+                                       .append ("TelemetrySQLText", m_bTelemetrySQLText)
                                        .getToString ();
   }
 }

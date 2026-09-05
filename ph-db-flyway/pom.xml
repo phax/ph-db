@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger.db</groupId>
     <artifactId>ph-db-parent-pom</artifactId>
-    <version>8.4.4-SNAPSHOT</version>
+    <version>8.5.0-SNAPSHOT</version>
   </parent>
   <artifactId>ph-db-flyway</artifactId>
   <packaging>jar</packaging>
@@ -55,12 +55,22 @@
       <artifactId>ph-db-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.helger.telemetry</groupId>
+      <artifactId>ph-telemetry</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>${h2.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

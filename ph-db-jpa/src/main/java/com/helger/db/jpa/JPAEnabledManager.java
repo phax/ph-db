@@ -37,9 +37,13 @@ import com.helger.base.iface.IThrowingRunnable;
 import com.helger.base.timing.StopWatch;
 import com.helger.db.api.callback.IExecutionTimeExceededCallback;
 import com.helger.db.api.callback.LoggingExecutionTimeExceededCallback;
+import com.helger.db.api.telemetry.CDBTelemetry;
 import com.helger.statistics.api.IMutableStatisticsHandlerCounter;
 import com.helger.statistics.api.IMutableStatisticsHandlerTimer;
 import com.helger.statistics.impl.StatisticsManager;
+import com.helger.telemetry.ETelemetrySpanKind;
+import com.helger.telemetry.ITelemetrySpan;
+import com.helger.telemetry.Telemetry;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -68,6 +72,12 @@ public class JPAEnabledManager
   @Deprecated (forRemoval = true, since = "8.4.0")
   public static final int DEFAULT_EXECUTION_WARN_TIME_MS = 1000;
   public static final Duration DEFAULT_EXECUTION_WARN_DURATION = Duration.ofMillis (DEFAULT_EXECUTION_WARN_TIME_MS);
+  /**
+   * By default ph-telemetry spans and metrics are emitted
+   *
+   * @since 8.5.0
+   */
+  public static final boolean DEFAULT_TELEMETRY = true;
 
   private static final Logger LOGGER = LoggerFactory.getLogger (JPAEnabledManager.class);
   private static final IMutableStatisticsHandlerCounter STATS_COUNTER_TRANSACTIONS = StatisticsManager.getCounterHandler (JPAEnabledManager.class.getName () +
@@ -86,6 +96,7 @@ public class JPAEnabledManager
   protected static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
   private static final CallbackList <IExceptionCallback <Throwable>> EXCEPTION_CALLBACKS = new CallbackList <> ();
   private static final AtomicBoolean EXECUTION_WARN_ENABLED = new AtomicBoolean (DEFAULT_EXECUTION_WARN_ENABLED);
+  private static final AtomicBoolean TELEMETRY_ENABLED = new AtomicBoolean (DEFAULT_TELEMETRY);
   @GuardedBy ("RW_LOCK")
   private static Duration EXECUTION_WARN_DURATION = DEFAULT_EXECUTION_WARN_DURATION;
   private static final CallbackList <IExecutionTimeExceededCallback> EXECUTION_TIME_EXCEEDED_HANDLERS = new CallbackList <> ();
@@ -199,6 +210,32 @@ public class JPAEnabledManager
   private static void _invokeCustomExceptionCallback (@NonNull final Throwable ex)
   {
     EXCEPTION_CALLBACKS.forEach (x -> x.onException (ex));
+  }
+
+  /**
+   * @return <code>true</code> if ph-telemetry spans and metrics are emitted, <code>false</code> if
+   *         not. Default is {@link #DEFAULT_TELEMETRY}.
+   * @see #setTelemetryEnabled(boolean)
+   * @since 8.5.0
+   */
+  public static final boolean isTelemetryEnabled ()
+  {
+    return TELEMETRY_ENABLED.get ();
+  }
+
+  /**
+   * Enable or disable the emission of ph-telemetry spans and metrics for all JPA operations. If no
+   * telemetry SPI is registered at all, the emission is a cheap no-op anyway - disable this only to
+   * keep a particularly hot execution path free of any telemetry overhead.
+   *
+   * @param bEnabled
+   *        <code>true</code> to emit telemetry, <code>false</code> to not do it
+   * @see #isTelemetryEnabled()
+   * @since 8.5.0
+   */
+  public static final void setTelemetryEnabled (final boolean bEnabled)
+  {
+    TELEMETRY_ENABLED.set (bEnabled);
   }
 
   /**
@@ -343,13 +380,15 @@ public class JPAEnabledManager
   }
 
   @NonNull
-  public static final <T> JPAExecutionResult <T> doInTransaction (@NonNull @WillNotClose final EntityManager aEntityMgr,
-                                                                  final boolean bAllowNestedTransactions,
-                                                                  @NonNull final Callable <T> aCallable)
+  private static <T> JPAExecutionResult <T> _doInTransaction (@NonNull @WillNotClose final EntityManager aEntityMgr,
+                                                              final boolean bAllowNestedTransactions,
+                                                              @NonNull final Callable <T> aCallable,
+                                                              @NonNull final ITelemetrySpan aSpan)
   {
     final StopWatch aSW = StopWatch.createdStarted ();
     final EntityTransaction aTransaction = aEntityMgr.getTransaction ();
     final boolean bTransactionRequired = !bAllowNestedTransactions || !aTransaction.isActive ();
+    JPATelemetry.onTransactionStarted (aSpan, bTransactionRequired);
     if (bTransactionRequired)
     {
       STATS_COUNTER_TRANSACTIONS.increment ();
@@ -365,6 +404,7 @@ public class JPAEnabledManager
       STATS_COUNTER_SUCCESS.increment ();
       aSW.stop ();
       STATS_TIMER_EXECUTION_SUCCESS.addTime (aSW.getMillis ());
+      JPATelemetry.onSuccess (aSpan, CDBTelemetry.JPA_OPERATION_TRANSACTION, aSW.getDuration ());
       return JPAExecutionResult.createSuccess (ret);
     }
     catch (final Exception ex)
@@ -372,6 +412,7 @@ public class JPAEnabledManager
       STATS_COUNTER_ERROR.increment ();
       aSW.stop ();
       STATS_TIMER_EXECUTION_ERROR.addTime (aSW.getMillis ());
+      JPATelemetry.onError (aSpan, CDBTelemetry.JPA_OPERATION_TRANSACTION, ex, aSW.getDuration ());
       _invokeCustomExceptionCallback (ex);
       return JPAExecutionResult.createFailure (ex);
     }
@@ -396,6 +437,20 @@ public class JPAEnabledManager
                                    aCallable.toString (),
                                    aSW.getDuration ());
     }
+  }
+
+  @NonNull
+  public static final <T> JPAExecutionResult <T> doInTransaction (@NonNull @WillNotClose final EntityManager aEntityMgr,
+                                                                  final boolean bAllowNestedTransactions,
+                                                                  @NonNull final Callable <T> aCallable)
+  {
+    if (!isTelemetryEnabled ())
+      return _doInTransaction (aEntityMgr, bAllowNestedTransactions, aCallable, Telemetry.NoOpTelemetrySpan.INSTANCE);
+
+    return Telemetry.withSpan (CDBTelemetry.SPAN_JPA_TRANSACTION, ETelemetrySpanKind.CLIENT, aSpan -> {
+      JPATelemetry.onStart (aSpan, CDBTelemetry.JPA_OPERATION_TRANSACTION);
+      return _doInTransaction (aEntityMgr, bAllowNestedTransactions, aCallable, aSpan);
+    });
   }
 
   @NonNull
@@ -427,10 +482,9 @@ public class JPAEnabledManager
    *        The return type of the callable
    */
   @NonNull
-  public static final <T> JPAExecutionResult <T> doSelectStatic (@NonNull final Callable <T> aCallable)
+  private static <T> JPAExecutionResult <T> _doSelectStatic (@NonNull final Callable <T> aCallable,
+                                                             @NonNull final ITelemetrySpan aSpan)
   {
-    ValueEnforcer.notNull (aCallable, "Callable");
-
     final StopWatch aSW = StopWatch.createdStarted ();
     try
     {
@@ -439,6 +493,7 @@ public class JPAEnabledManager
       STATS_COUNTER_SUCCESS.increment ();
       aSW.stop ();
       STATS_TIMER_EXECUTION_SUCCESS.addTime (aSW.getMillis ());
+      JPATelemetry.onSuccess (aSpan, CDBTelemetry.JPA_OPERATION_SELECT, aSW.getDuration ());
       return JPAExecutionResult.createSuccess (ret);
     }
     catch (final Exception ex)
@@ -446,6 +501,7 @@ public class JPAEnabledManager
       STATS_COUNTER_ERROR.increment ();
       aSW.stop ();
       STATS_TIMER_EXECUTION_ERROR.addTime (aSW.getMillis ());
+      JPATelemetry.onError (aSpan, CDBTelemetry.JPA_OPERATION_SELECT, ex, aSW.getDuration ());
       _invokeCustomExceptionCallback (ex);
       return JPAExecutionResult.<T> createFailure (ex);
     }
@@ -455,6 +511,20 @@ public class JPAEnabledManager
         if (aSW.getDuration ().compareTo (getDefaultExecutionWarnDuration ()) > 0)
           onExecutionTimeExceeded ("Execution of select took too long: " + aCallable.toString (), aSW.getDuration ());
     }
+  }
+
+  @NonNull
+  public static final <T> JPAExecutionResult <T> doSelectStatic (@NonNull final Callable <T> aCallable)
+  {
+    ValueEnforcer.notNull (aCallable, "Callable");
+
+    if (!isTelemetryEnabled ())
+      return _doSelectStatic (aCallable, Telemetry.NoOpTelemetrySpan.INSTANCE);
+
+    return Telemetry.withSpan (CDBTelemetry.SPAN_JPA_SELECT, ETelemetrySpanKind.CLIENT, aSpan -> {
+      JPATelemetry.onStart (aSpan, CDBTelemetry.JPA_OPERATION_SELECT);
+      return _doSelectStatic (aCallable, aSpan);
+    });
   }
 
   /**

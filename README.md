@@ -49,7 +49,76 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 
 Note: prior to v8.0.0 the group ID was `com.helger`
 
+# Telemetry
+
+All three implementation modules emit vendor neutral telemetry through the [ph-telemetry](https://github.com/phax/ph-telemetry) facades `Telemetry` (tracing) and `TelemetryMetrics` (metrics).
+Without a registered `ITelemetryTracerSPI` / `ITelemetryMeterSPI`, every span and every instrument degrades to a cheap no-op - so a deployment without an observability backend pays (almost) nothing.
+To get real data, add `ph-telemetry-otel` (or any other SPI implementation) to your application and register it via `META-INF/services`.
+
+All emitted names are constants of `CDBTelemetry` in `ph-db-api`, so dashboards, alerting rules and tests can reference the literally same strings.
+Where the OpenTelemetry database semantic conventions define a name, that name is used verbatim (`db.query.text`, `db.operation.name`, `db.response.returned_rows`, `db.system.name`, `db.namespace`, `error.type` and the `db.client.operation.duration` instrument) - everything else is namespaced with `phdb.`.
+Note that the *value* of `db.system.name` is the ph-db `EDatabaseSystemType` ID (`db2`, `h2`, `mysql`, `oracle`, `postgresql`, `sqlserver`).
+
+**All duration instruments record seconds**, because that is the unit the stable `db.client.operation.duration` convention prescribes.
+
+## Spans
+
+| Span | Emitted by | Notes |
+|---|---|---|
+| `SELECT` / `INSERT` / ... (`db.query` as fallback) | `DBExecutor` | one span per executed statement; the span name is the SQL operation |
+| `phdb.jdbc.transaction` | `DBExecutor.performInTransaction` | one span per transaction level, with `phdb.jdbc.transaction.outcome` = `committed`, `rolled-back` or `nested` |
+| `phdb.jpa.transaction` | `JPAEnabledManager.doInTransaction` | |
+| `phdb.jpa.select` | `JPAEnabledManager.doSelect` / `doSelectStatic` | |
+| `phdb.flyway.migrate` | `FlywayMigrationRunner.runFlyway` | one span per migration run |
+
+## Metrics
+
+| Instrument | Type | Unit |
+|---|---|---|
+| `db.client.operation.duration` | Histogram | s |
+| `phdb.jdbc.statements` | Counter | `{statement}` |
+| `phdb.jdbc.transactions` | Counter | `{transaction}` |
+| `phdb.jdbc.connections` | Counter | `{connection}` |
+| `phdb.jdbc.connections.active` | UpDownCounter | `{connection}` |
+| `phdb.jdbc.connection.acquire.duration` | Histogram | s |
+| `phdb.jpa.operations` | Counter | `{operation}` |
+| `phdb.flyway.migrations` | Counter | `{migration}` |
+| `phdb.flyway.migrate.duration` | Histogram | s |
+
+Only bounded values are used as metric attributes - the SQL text is a span attribute only.
+
+## Configuration
+
+`DBExecutor` does not know which database it talks to, so the `db.system.name` attribute is only emitted if it was provided:
+
+```java
+aExecutor.setDatabaseSystemType (EDatabaseSystemType.POSTGRESQL);
+```
+
+The emission can be switched off per `DBExecutor` instance, and globally for all JPA operations:
+
+```java
+// no spans and no metrics from this executor
+aExecutor.setTelemetry (false);
+// keep the spans, but never attach the SQL text
+aExecutor.setTelemetrySQLText (false);
+// no spans and no metrics from any JPAEnabledManager
+JPAEnabledManager.setTelemetryEnabled (false);
+```
+
+Prepared statements only carry the parameterized SQL text, but the SQL passed to `DBExecutor.executeStatement (String)` and `DBExecutor.queryAll (String)` may contain literal values - use `setTelemetrySQLText (false)` if such values must not leave the process.
+
 # News and noteworthy
+
+v8.5.0 - work in progress
+* Added optional [ph-telemetry](https://github.com/phax/ph-telemetry) support to `ph-db-jdbc`, `ph-db-jpa` and `ph-db-flyway`. Without a registered telemetry SPI, all emission degrades to cheap no-ops.
+  `DBExecutor` emits a span per executed statement (named after the SQL operation, as the OpenTelemetry conventions demand), a span per transaction, and the metrics `db.client.operation.duration`, `phdb.jdbc.statements`, `phdb.jdbc.transactions`, `phdb.jdbc.connections`, `phdb.jdbc.connections.active` and `phdb.jdbc.connection.acquire.duration`.
+  `JPAEnabledManager` emits a span per `doInTransaction` / `doSelect` plus the metrics `db.client.operation.duration` and `phdb.jpa.operations`.
+  `FlywayMigrationRunner` emits a span per migration run plus the metrics `phdb.flyway.migrations` and `phdb.flyway.migrate.duration`.
+  All emitted span, metric and attribute names are constants of the new class `CDBTelemetry` in `ph-db-api`. The OpenTelemetry database semantic conventions are followed where they define a name; everything else is namespaced with `phdb.`. All duration instruments use seconds as their unit, because `db.client.operation.duration` prescribes it.
+* Added `DBExecutor.setDatabaseSystemType (EDatabaseSystemType)` to provide the `db.system.name` telemetry attribute - the attribute is omitted if it is not set.
+* Added `DBExecutor.setTelemetry (boolean)` and `DBExecutor.setTelemetrySQLText (boolean)` as well as the static `JPAEnabledManager.setTelemetryEnabled (boolean)` to disable the telemetry emission. All of them default to enabled.
+  Disable `setTelemetrySQLText` if the SQL passed to `executeStatement` or `queryAll` may contain literal values that must not leave the process - prepared statements only carry the parameterized SQL text anyway.
 
 v8.4.3 - 2026-09-03
 * Added the new overloads `DBPagingHelper.getOrderByClause (IPagingSpec, IDBColumnNameResolver, Iterable)` and `getOrderByAndPagingClause (EDatabaseSystemType, IPagingSpec, IDBColumnNameResolver, Iterable)`, that take the default sort fields to be used if the paging specification contains no usable one - because none was requested, or because none could be resolved.

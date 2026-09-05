@@ -26,6 +26,7 @@ import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.flywaydb.core.api.logging.LogFactory;
 import org.flywaydb.core.api.logging.LogLevel;
 import org.flywaydb.core.api.migration.JavaMigration;
+import org.flywaydb.core.api.output.MigrateResult;
 import org.flywaydb.core.api.resolver.ResolvedMigration;
 import org.flywaydb.core.internal.info.MigrationInfoImpl;
 import org.flywaydb.core.internal.jdbc.DriverDataSource;
@@ -38,6 +39,7 @@ import com.helger.base.array.ArrayHelper;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
 import com.helger.db.api.config.IJdbcConfiguration;
+import com.helger.telemetry.ITelemetrySpan;
 
 /**
  * Shared utility for running Flyway database migrations. This class encapsulates the common Flyway
@@ -89,7 +91,7 @@ public final class FlywayMigrationRunner
   {}
 
   /**
-   * Run Flyway database migration.
+   * Run Flyway database migration inside an already started telemetry span.
    *
    * @param aJdbcConfig
    *        The JDBC configuration providing the JDBC driver and the schema name. May not be
@@ -97,24 +99,21 @@ public final class FlywayMigrationRunner
    * @param aFlywayConfig
    *        The Flyway configuration. May not be <code>null</code>.
    * @param sLocation
-   *        The Flyway migration scripts location (e.g. {@code "db/migrate-postgresql"}). May
-   *        neither be <code>null</code> nor empty.
+   *        The Flyway migration scripts location. May neither be <code>null</code> nor empty.
    * @param aJavaMigrations
    *        Optional Java migration instances. May be <code>null</code> or empty.
    * @param aCallbacks
-   *        Optional Flyway callbacks. May be <code>null</code> or empty. If <code>null</code> or
-   *        empty, {@link #CALLBACK_LOGGING} is used as the default.
+   *        Optional Flyway callbacks. May be <code>null</code> or empty.
+   * @param aSpan
+   *        The span of the migration run. May not be <code>null</code>.
    */
-  public static void runFlyway (@NonNull final IJdbcConfiguration aJdbcConfig,
-                                @NonNull final IFlywayConfiguration aFlywayConfig,
-                                @NonNull final String sLocation,
-                                @Nullable final JavaMigration @NonNull [] aJavaMigrations,
-                                @Nullable final Callback @NonNull [] aCallbacks)
+  private static void _runFlyway (@NonNull final IJdbcConfiguration aJdbcConfig,
+                                  @NonNull final IFlywayConfiguration aFlywayConfig,
+                                  @NonNull final String sLocation,
+                                  @Nullable final JavaMigration @NonNull [] aJavaMigrations,
+                                  @Nullable final Callback @NonNull [] aCallbacks,
+                                  @NonNull final ITelemetrySpan aSpan)
   {
-    ValueEnforcer.notNull (aJdbcConfig, "JdbcConfig");
-    ValueEnforcer.notNull (aFlywayConfig, "FlywayConfig");
-    ValueEnforcer.notEmpty (sLocation, "Location");
-
     LOGGER.info ("Starting to run Flyway with location '" + sLocation + "'");
 
     final FluentConfiguration aActualFlywayConfig = Flyway.configure ()
@@ -183,8 +182,47 @@ public final class FlywayMigrationRunner
       aFlyway.repair ();
     }
 
-    aFlyway.migrate ();
+    final MigrateResult aResult = aFlyway.migrate ();
+    FlywayTelemetry.onMigrated (aSpan, aJdbcConfig.getJdbcDatabaseSystemType (), aResult);
 
     LOGGER.info ("Finished running Flyway");
+  }
+
+  /**
+   * Run Flyway database migration.
+   *
+   * @param aJdbcConfig
+   *        The JDBC configuration providing the JDBC driver and the schema name. May not be
+   *        <code>null</code>.
+   * @param aFlywayConfig
+   *        The Flyway configuration. May not be <code>null</code>.
+   * @param sLocation
+   *        The Flyway migration scripts location (e.g. {@code "db/migrate-postgresql"}). May
+   *        neither be <code>null</code> nor empty.
+   * @param aJavaMigrations
+   *        Optional Java migration instances. May be <code>null</code> or empty.
+   * @param aCallbacks
+   *        Optional Flyway callbacks. May be <code>null</code> or empty. If <code>null</code> or
+   *        empty, {@link #CALLBACK_LOGGING} is used as the default.
+   */
+  public static void runFlyway (@NonNull final IJdbcConfiguration aJdbcConfig,
+                                @NonNull final IFlywayConfiguration aFlywayConfig,
+                                @NonNull final String sLocation,
+                                @Nullable final JavaMigration @NonNull [] aJavaMigrations,
+                                @Nullable final Callback @NonNull [] aCallbacks)
+  {
+    ValueEnforcer.notNull (aJdbcConfig, "JdbcConfig");
+    ValueEnforcer.notNull (aFlywayConfig, "FlywayConfig");
+    ValueEnforcer.notEmpty (sLocation, "Location");
+
+    FlywayTelemetry.withMigrateDo (aJdbcConfig,
+                                   aFlywayConfig,
+                                   sLocation,
+                                   aSpan -> _runFlyway (aJdbcConfig,
+                                                        aFlywayConfig,
+                                                        sLocation,
+                                                        aJavaMigrations,
+                                                        aCallbacks,
+                                                        aSpan));
   }
 }

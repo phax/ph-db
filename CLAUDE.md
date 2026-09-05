@@ -43,12 +43,14 @@ ph-db-api          ← core abstractions, config interfaces, DB-specific helpers
 - **`JPAEnabledManager`** (`ph-db-jpa`) — main JPA transaction executor with statistics tracking
 - **`AbstractGlobalEntityManagerFactory`** (`ph-db-jpa`) — singleton base for EntityManagerFactory; DB-specific subclasses for H2 and MySQL
 - **`FlywayMigrationRunner`** (`ph-db-flyway`) — utility class to run Flyway migrations
+- **`CDBTelemetry`** (`ph-db-api`) — all span, metric and attribute names emitted via ph-telemetry; OpenTelemetry DB semantic convention names where they exist, `phdb.*` otherwise
 
 ### Patterns
 
 - **Template Method**: `AbstractDBConnector`, `AbstractGlobalEntityManagerFactory` — subclass to provide DB-specific details
 - **Callback interfaces**: `IResultSetRowCallback`, `IPreparedStatementDataProvider` for JDBC result/parameter handling
 - **Proxy wrappers**: `EntityManagerProxy` / `EntityManagerFactoryProxy` add listener support to JPA
+- **Telemetry**: names in `CDBTelemetry` (`ph-db-api`, no dependencies), a public `*Metrics` instrument holder plus a package-private `*Telemetry` emitter per module (`DBExecutorMetrics`/`DBExecutorTelemetry`, `JPAMetrics`/`JPATelemetry`, `FlywayMetrics`/`FlywayTelemetry`). All emission goes through the ph-telemetry facades and degrades to no-ops without a registered SPI. Durations are recorded in seconds
 - All modules are OSGi bundles with JPMS Automatic-Module-Name
 
 ## Testing
