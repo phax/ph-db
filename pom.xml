@@ -26,7 +26,7 @@
   </parent>
   <groupId>com.helger.db</groupId>
   <artifactId>ph-db-parent-pom</artifactId>
-  <version>8.5.0</version>
+  <version>8.5.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>ph-db-parent-pom</name>
   <description>Base POM to build the ph-db projects</description>
