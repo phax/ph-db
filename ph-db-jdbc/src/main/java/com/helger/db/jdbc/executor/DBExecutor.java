@@ -160,6 +160,9 @@ public class DBExecutor implements Serializable
   }
 
   private final AtomicInteger m_aTransactionLevel = new AtomicInteger (0);
+  // SQL operations report failures through return values/callbacks, so remember
+  // them even if the transaction callback does not throw an exception.
+  private boolean m_bTransactionRollbackOnly;
   private boolean m_bDebugConnections = JdbcConfiguration.DEFAULT_DEBUG_CONNECTIONS;
   private boolean m_bDebugTransactions = JdbcConfiguration.DEFAULT_DEBUG_TRANSACTIONS;
   private boolean m_bDebugSQLStatements = JdbcConfiguration.DEFAULT_DEBUG_SQL_STATEMENTS;
@@ -701,14 +704,15 @@ public class DBExecutor implements Serializable
     ValueEnforcer.notNull (aConnection, "Connection");
     ValueEnforcer.notNull (aCB, "CB");
 
-    ESuccess eCommited = ESuccess.FAILURE;
+    final boolean bInTransaction = m_aTransactionLevel.get () > 0;
+    ESuccess eResult = ESuccess.FAILURE;
     try
     {
       // Perform action on connection
       aCB.run (aConnection);
 
-      // Commit
-      eCommited = JDBCHelper.commit (aConnection);
+      // An operation inside a transaction must not commit the shared connection.
+      eResult = bInTransaction ? ESuccess.SUCCESS : JDBCHelper.commit (aConnection);
     }
     catch (final SQLException | RuntimeException ex)
     {
@@ -721,10 +725,15 @@ public class DBExecutor implements Serializable
     finally
     {
       // Failure? Roll back!
-      if (eCommited.isFailure ())
-        JDBCHelper.rollback (aConnection);
+      if (eResult.isFailure ())
+      {
+        if (bInTransaction)
+          m_bTransactionRollbackOnly = true;
+        else
+          JDBCHelper.rollback (aConnection);
+      }
     }
-    return eCommited;
+    return eResult;
   }
 
   protected static void handleGeneratedKeys (@NonNull final ResultSet aGeneratedKeysRS,
@@ -769,6 +778,16 @@ public class DBExecutor implements Serializable
     return m_aConnectionExecutor.execute (aWithConnectionCB, aExtraExCB);
   }
 
+  /**
+   * Run with a shared transaction connection. Nested calls join the outer transaction;
+   * a failed SQL operation or nested transaction marks it for rollback even if the
+   * runnable subsequently returns normally. The connection provider must supply a
+   * connection with auto-commit disabled.
+   *
+   * @param aRunnable
+   *        The transaction callback. May not be <code>null</code>.
+   * @return The transaction result. Never <code>null</code>.
+   */
   @NonNull
   public final ESuccess performInTransaction (@NonNull final IThrowingRunnable <Exception> aRunnable)
   {
@@ -784,6 +803,7 @@ public class DBExecutor implements Serializable
       final int nTransactionLevel = m_aTransactionLevel.incrementAndGet ();
       if (nTransactionLevel == 1)
       {
+        m_bTransactionRollbackOnly = false;
         // Remember the owning thread, so that concurrent use of this
         // @NotThreadSafe instance from another thread fails fast instead of
         // silently executing on this transaction's connection
@@ -809,6 +829,9 @@ public class DBExecutor implements Serializable
             aRunnable.run ();
             if (nTransactionLevel == 1)
             {
+              if (m_bTransactionRollbackOnly)
+                throw new SQLException ("Transaction marked for rollback by a failed SQL operation or nested transaction");
+
               if (m_bDebugTransactions)
                 debugLog ("Now commiting level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
 
@@ -897,6 +920,7 @@ public class DBExecutor implements Serializable
       {
         if (m_aTransactionLevel.decrementAndGet () == 0)
         {
+          m_bTransactionRollbackOnly = false;
           // Transaction fully finished - release the thread ownership
           m_aTransactionOwnerThread = null;
         }
