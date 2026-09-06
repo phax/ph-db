@@ -116,7 +116,7 @@ public final class FlywayMigrationRunnerTelemetryTest
 
     final CapturedMeasurement aMigrations = CT.getFirstMeasurement (CDBTelemetry.METRIC_FLYWAY_MIGRATIONS);
     assertNotNull (aMigrations);
-    assertEquals (1, (long) aMigrations.getValue ());
+    assertEquals (1, aMigrations.getValueAsLong ());
     assertEquals (EDatabaseSystemType.H2.getID (), aMigrations.getAttribute (CDBTelemetry.ATTR_DB_SYSTEM_NAME));
 
     final CapturedMeasurement aDuration = CT.getFirstMeasurement (CDBTelemetry.METRIC_FLYWAY_MIGRATE_DURATION);
