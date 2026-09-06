@@ -110,7 +110,7 @@ Prepared statements only carry the parameterized SQL text, but the SQL passed to
 
 # News and noteworthy
 
-v8.5.0 - work in progress
+v8.5.0 - 2026-09-06
 * Added optional [ph-telemetry](https://github.com/phax/ph-telemetry) support to `ph-db-jdbc`, `ph-db-jpa` and `ph-db-flyway`. Without a registered telemetry SPI, all emission degrades to cheap no-ops.
   `DBExecutor` emits a span per executed statement (named after the SQL operation, as the OpenTelemetry conventions demand), a span per transaction, and the metrics `db.client.operation.duration`, `phdb.jdbc.statements`, `phdb.jdbc.transactions`, `phdb.jdbc.connections`, `phdb.jdbc.connections.active` and `phdb.jdbc.connection.acquire.duration`.
   `JPAEnabledManager` emits a span per `doInTransaction` / `doSelect` plus the metrics `db.client.operation.duration` and `phdb.jpa.operations`.
@@ -123,6 +123,7 @@ v8.5.0 - work in progress
   Every statement and every query executed inside a transaction committed the shared connection right after it was executed, so a later rollback could not undo the already committed work, and the intermediate states of a transaction became visible to concurrent readers on other connections.
   Commit and rollback now only happen at the outermost transaction boundary. Note that a failed SQL operation or a failed nested transaction now marks the whole transaction for rollback, even if the caller evaluates the returned `ESuccess` or the updated row count and continues instead of throwing - so a "try the insert, and on failure do the update instead" pattern no longer works inside a transaction, because no savepoints are used.
   As before, `performInTransaction` requires a connection with auto-commit disabled, and a nested `performInTransaction` joins the outer transaction instead of starting a new one.
+  Because a connection with auto-commit enabled silently degrades a transaction to no transaction at all - every statement is committed on its own and the rollback has no effect - this case is now logged as an error when the outermost transaction is started.
 
 v8.4.3 - 2026-09-03
 * Added the new overloads `DBPagingHelper.getOrderByClause (IPagingSpec, IDBColumnNameResolver, Iterable)` and `getOrderByAndPagingClause (EDatabaseSystemType, IPagingSpec, IDBColumnNameResolver, Iterable)`, that take the default sort fields to be used if the paging specification contains no usable one - because none was requested, or because none could be resolved.
