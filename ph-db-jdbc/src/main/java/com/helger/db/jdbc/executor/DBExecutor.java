@@ -716,21 +716,17 @@ public class DBExecutor implements Serializable
     ValueEnforcer.notNull (aConnection, "Connection");
     ValueEnforcer.notNull (aCB, "CB");
 
-    final boolean bInTransaction = m_aTransactionLevel.get () > 0;
-    ESuccess eResult = ESuccess.FAILURE;
-    Exception aCaughtEx = null;
+    ESuccess eCommited = ESuccess.FAILURE;
     try
     {
       // Perform action on connection
       aCB.run (aConnection);
 
-      // An operation inside a transaction must not commit the shared connection.
-      eResult = bInTransaction ? ESuccess.SUCCESS : JDBCHelper.commit (aConnection);
+      // Commit
+      eCommited = JDBCHelper.commit (aConnection);
     }
     catch (final SQLException | RuntimeException ex)
     {
-      aCaughtEx = ex;
-
       // Invoke callback
       m_aExceptionCallbacks.forEach (x -> x.onException (ex));
       if (aExtraExCB != null)
@@ -740,20 +736,10 @@ public class DBExecutor implements Serializable
     finally
     {
       // Failure? Roll back!
-      if (eResult.isFailure ())
-      {
-        if (bInTransaction)
-        {
-          m_bNeedToRollbackTransaction = true;
-          // Remember the first failure only - that is the root cause
-          if (m_aRollbackTransactionCause == null)
-            m_aRollbackTransactionCause = aCaughtEx;
-        }
-        else
-          JDBCHelper.rollback (aConnection);
-      }
+      if (eCommited.isFailure ())
+        JDBCHelper.rollback (aConnection);
     }
-    return eResult;
+    return eCommited;
   }
 
   protected static void handleGeneratedKeys (@NonNull final ResultSet aGeneratedKeysRS,
@@ -799,6 +785,52 @@ public class DBExecutor implements Serializable
   }
 
   /**
+   * Execute something on the connection of the currently open transaction. Contrary to
+   * {@link #withExistingConnectionDo(Connection, IWithConnectionCallback, IExceptionCallback)} this
+   * neither commits nor rolls back, because the connection is owned by the enclosing transaction. A
+   * failure is remembered instead, so that the enclosing transaction is rolled back even if the
+   * caller evaluates the return value and continues.
+   *
+   * @param aConnection
+   *        The connection of the enclosing transaction. May not be <code>null</code>.
+   * @param aCB
+   *        The callback to run on the connection. May not be <code>null</code>.
+   * @param aExtraExCB
+   *        The optional extra exception callback. May be <code>null</code>.
+   * @return {@link ESuccess#SUCCESS} if the callback was executed without an exception. Never
+   *         <code>null</code>.
+   */
+  @NonNull
+  private ESuccess _withTransactionConnectionDo (@NonNull final Connection aConnection,
+                                                 @NonNull final IWithConnectionCallback aCB,
+                                                 @Nullable final IExceptionCallback <? super Exception> aExtraExCB)
+  {
+    ValueEnforcer.notNull (aConnection, "Connection");
+    ValueEnforcer.notNull (aCB, "CB");
+
+    try
+    {
+      // Perform action on connection
+      aCB.run (aConnection);
+    }
+    catch (final SQLException | RuntimeException ex)
+    {
+      // Neither commit nor rollback - that is up to the enclosing transaction
+      m_bNeedToRollbackTransaction = true;
+      // Remember the first failure only - that is the root cause
+      if (m_aRollbackTransactionCause == null)
+        m_aRollbackTransactionCause = ex;
+
+      // Invoke callback
+      m_aExceptionCallbacks.forEach (x -> x.onException (ex));
+      if (aExtraExCB != null)
+        aExtraExCB.onException (ex);
+      return ESuccess.FAILURE;
+    }
+    return ESuccess.SUCCESS;
+  }
+
+  /**
    * Run with a shared transaction connection. Nested calls join the outer transaction; a failed SQL
    * operation or nested transaction marks it for rollback even if the runnable subsequently returns
    * normally. The connection provider must supply a connection with auto-commit disabled.
@@ -840,11 +872,13 @@ public class DBExecutor implements Serializable
         final IThrowingSpanConsumer <SQLException> aTransactionRunner = aSpan -> {
           // Avoid creating a new connection
           final IConnectionExecutor aOldConnectionExecutor = m_aConnectionExecutor;
-          m_aConnectionExecutor = (aCB2, aExCB2) -> this.withExistingConnectionDo (aConnection, aCB2, aExCB2);
+          m_aConnectionExecutor = (aCB2, aExCB2) -> _withTransactionConnectionDo (aConnection, aCB2, aExCB2);
           try
           {
             // Run the callback
             aRunnable.run ();
+
+            // Evaluate the status
             if (nTransactionLevel == 1)
             {
               if (m_bNeedToRollbackTransaction)
@@ -882,6 +916,7 @@ public class DBExecutor implements Serializable
           }
           catch (final Exception ex)
           {
+            // Something wen't wrong in this transaction
             if (nTransactionLevel == 1)
             {
               if (m_bDebugTransactions)
