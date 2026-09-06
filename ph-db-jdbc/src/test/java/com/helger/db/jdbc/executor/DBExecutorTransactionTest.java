@@ -23,16 +23,16 @@ import static org.junit.Assert.assertTrue;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.helger.base.io.stream.StreamHelper;
+import com.helger.base.numeric.mutable.MutableBoolean;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.db.jdbc.IHasConnection;
 import com.helger.db.jdbc.callback.ConstantPreparedStatementDataProvider;
 
@@ -43,6 +43,8 @@ import com.helger.db.jdbc.callback.ConstantPreparedStatementDataProvider;
  */
 public final class DBExecutorTransactionTest
 {
+  private static final Integer ONE = Integer.valueOf (1);
+
   private Connection m_aWriter;
   private Connection m_aObserver;
   private DBExecutor m_aExecutor;
@@ -76,37 +78,30 @@ public final class DBExecutorTransactionTest
   }
 
   @After
-  public void after () throws SQLException
+  public void after ()
   {
-    try
-    {
-      if (m_aWriter != null)
-        m_aWriter.close ();
-    }
-    finally
-    {
-      if (m_aObserver != null)
-        m_aObserver.close ();
-    }
+    StreamHelper.close (m_aWriter);
+    StreamHelper.close (m_aObserver);
   }
 
-  private static void _assertRows (final Connection aConnection, final Integer... aExpected) throws SQLException
+  private static void _assertRowIDs (final Connection aConnection, final ICommonsList <Integer> aExpected)
+                                                                                                           throws SQLException
   {
-    final List <Integer> aIDs = new ArrayList <> ();
+    final ICommonsList <Integer> aIDs = new CommonsArrayList <> ();
     try (final var aStatement = aConnection.createStatement ();
          final var aRows = aStatement.executeQuery ("SELECT id FROM test_transaction ORDER BY id"))
     {
       while (aRows.next ())
         aIDs.add (Integer.valueOf (aRows.getInt (1)));
     }
-    assertEquals (Arrays.asList (aExpected), aIDs);
+    assertEquals (aExpected, aIDs);
   }
 
   private void _delete ()
   {
     assertEquals (1,
                   m_aExecutor.insertOrUpdateOrDelete ("DELETE FROM test_transaction WHERE id=?",
-                                                      new ConstantPreparedStatementDataProvider (Integer.valueOf (1))));
+                                                      new ConstantPreparedStatementDataProvider (ONE)));
   }
 
   @Test
@@ -116,10 +111,10 @@ public final class DBExecutorTransactionTest
     {
       aStatement.executeUpdate ("DELETE FROM test_transaction");
     }
-    _assertRows (m_aWriter);
-    _assertRows (m_aObserver, 1);
+    _assertRowIDs (m_aWriter, new CommonsArrayList <> ());
+    _assertRowIDs (m_aObserver, new CommonsArrayList <> (ONE));
     m_aWriter.rollback ();
-    _assertRows (m_aObserver, 1);
+    _assertRowIDs (m_aObserver, new CommonsArrayList <> (ONE));
   }
 
   @Test
@@ -127,10 +122,10 @@ public final class DBExecutorTransactionTest
   {
     assertTrue (m_aExecutor.performInTransaction (() -> {
       _delete ();
-      _assertRows (m_aWriter);
-      _assertRows (m_aObserver, 1);
+      _assertRowIDs (m_aWriter, new CommonsArrayList <> ());
+      _assertRowIDs (m_aObserver, new CommonsArrayList <> (ONE));
     }).isSuccess ());
-    _assertRows (m_aObserver);
+    _assertRowIDs (m_aObserver, new CommonsArrayList <> ());
     assertFalse (m_aWriter.getAutoCommit ());
     assertFalse (m_aWriter.isClosed ());
   }
@@ -140,9 +135,9 @@ public final class DBExecutorTransactionTest
   {
     assertTrue (m_aExecutor.performInTransaction (() -> {
       assertTrue (m_aExecutor.executeStatement ("DELETE FROM test_transaction").isSuccess ());
-      _assertRows (m_aObserver, 1);
+      _assertRowIDs (m_aObserver, new CommonsArrayList <> (ONE));
     }).isSuccess ());
-    _assertRows (m_aObserver);
+    _assertRowIDs (m_aObserver, new CommonsArrayList <> ());
   }
 
   private void _testRollback (final Exception aException) throws SQLException
@@ -151,11 +146,11 @@ public final class DBExecutorTransactionTest
       _delete ();
       throw aException;
     }).isFailure ());
-    _assertRows (m_aObserver, 1);
-    _assertRows (m_aWriter, 1);
+    _assertRowIDs (m_aObserver, new CommonsArrayList <> (ONE));
+    _assertRowIDs (m_aWriter, new CommonsArrayList <> (ONE));
     // The same executor must be usable after rollback.
     assertTrue (m_aExecutor.performInTransaction (this::_delete).isSuccess ());
-    _assertRows (m_aObserver);
+    _assertRowIDs (m_aObserver, new CommonsArrayList <> ());
   }
 
   @Test
@@ -178,14 +173,15 @@ public final class DBExecutorTransactionTest
       {
         aStatement.executeUpdate ("DELETE FROM test_transaction");
       }
+
       if (bPrepared)
         assertTrue (m_aExecutor.queryAll ("SELECT id FROM test_transaction WHERE id=?",
-                                         new ConstantPreparedStatementDataProvider (Integer.valueOf (1))).isEmpty ());
+                                          new ConstantPreparedStatementDataProvider (ONE)).isEmpty ());
       else
         assertTrue (m_aExecutor.queryAll ("SELECT id FROM test_transaction").isEmpty ());
-      _assertRows (m_aObserver, 1);
+      _assertRowIDs (m_aObserver, new CommonsArrayList <> (ONE));
     }).isSuccess ());
-    _assertRows (m_aObserver);
+    _assertRowIDs (m_aObserver, new CommonsArrayList <> ());
   }
 
   @Test
@@ -205,10 +201,10 @@ public final class DBExecutorTransactionTest
   {
     assertTrue (m_aExecutor.performInTransaction (() -> {
       assertTrue (m_aExecutor.performInTransaction (this::_delete).isSuccess ());
-      _assertRows (m_aWriter);
-      _assertRows (m_aObserver, 1);
+      _assertRowIDs (m_aWriter, new CommonsArrayList <> ());
+      _assertRowIDs (m_aObserver, new CommonsArrayList <> (ONE));
     }).isSuccess ());
-    _assertRows (m_aObserver);
+    _assertRowIDs (m_aObserver, new CommonsArrayList <> ());
   }
 
   @Test
@@ -218,7 +214,7 @@ public final class DBExecutorTransactionTest
       assertTrue (m_aExecutor.performInTransaction (this::_delete).isSuccess ());
       throw new SQLException ("Outer transaction failed");
     }).isFailure ());
-    _assertRows (m_aObserver, 1);
+    _assertRowIDs (m_aObserver, new CommonsArrayList <> (ONE));
   }
 
   @Test
@@ -226,45 +222,47 @@ public final class DBExecutorTransactionTest
   {
     assertTrue (m_aExecutor.performInTransaction (() -> {
       _delete ();
-      assertTrue (m_aExecutor.performInTransaction (() -> {
-        throw new SQLException ("Nested transaction failed");
-      }).isFailure ());
-      _assertRows (m_aWriter);
-      _assertRows (m_aObserver, 1);
+      assertTrue (m_aExecutor.performInTransaction (() -> { throw new SQLException ("Nested transaction failed"); })
+                             .isFailure ());
+      _assertRowIDs (m_aWriter, new CommonsArrayList <> ());
+      _assertRowIDs (m_aObserver, new CommonsArrayList <> (ONE));
       // A failure result must not allow partial work to be committed, even if
       // the caller continues instead of throwing an exception.
       assertTrue (m_aExecutor.executeStatement ("INSERT INTO test_transaction VALUES (2)").isSuccess ());
     }).isFailure ());
-    _assertRows (m_aObserver, 1);
+    _assertRowIDs (m_aObserver, new CommonsArrayList <> (ONE));
     assertTrue (m_aExecutor.performInTransaction (this::_delete).isSuccess ());
-    _assertRows (m_aObserver);
+    _assertRowIDs (m_aObserver, new CommonsArrayList <> ());
   }
 
   @Test
   public void testSQLFailurePreventsCommit () throws SQLException
   {
-    final AtomicBoolean aExceptionReported = new AtomicBoolean ();
     assertTrue (m_aExecutor.performInTransaction (() -> {
       _delete ();
+
+      final MutableBoolean aExceptionReported = new MutableBoolean (false);
       m_aExecutor.insertOrUpdateOrDelete ("INSERT INTO missing_table VALUES (?)",
                                           new ConstantPreparedStatementDataProvider (Integer.valueOf (2)),
                                           null,
                                           ex -> aExceptionReported.set (true));
-      assertTrue (aExceptionReported.get ());
-      _assertRows (m_aWriter);
-      _assertRows (m_aObserver, 1);
+      assertTrue (aExceptionReported.booleanValue ());
+      _assertRowIDs (m_aWriter, new CommonsArrayList <> ());
+      _assertRowIDs (m_aObserver, new CommonsArrayList <> (ONE));
+
       assertTrue (m_aExecutor.executeStatement ("INSERT INTO test_transaction VALUES (2)").isSuccess ());
     }).isFailure ());
-    _assertRows (m_aObserver, 1);
+    _assertRowIDs (m_aObserver, new CommonsArrayList <> (ONE));
   }
 
   @Test
   public void testStandaloneOperationsStillCommit () throws SQLException
   {
     _delete ();
-    _assertRows (m_aObserver);
+    _assertRowIDs (m_aObserver, new CommonsArrayList <> ());
+
     assertTrue (m_aExecutor.executeStatement ("INSERT INTO test_transaction VALUES (2)").isSuccess ());
-    _assertRows (m_aObserver, 2);
+    _assertRowIDs (m_aObserver, new CommonsArrayList <> (Integer.valueOf (2)));
   }
 
   @Test
@@ -276,9 +274,10 @@ public final class DBExecutorTransactionTest
       aStatement.executeUpdate ("DELETE FROM test_transaction");
     }
     assertTrue (m_aExecutor.executeStatement ("INSERT INTO missing_table VALUES (2)").isFailure ());
-    _assertRows (m_aWriter, 1);
-    _assertRows (m_aObserver, 1);
+    _assertRowIDs (m_aWriter, new CommonsArrayList <> (ONE));
+    _assertRowIDs (m_aObserver, new CommonsArrayList <> (ONE));
+
     _delete ();
-    _assertRows (m_aObserver);
+    _assertRowIDs (m_aObserver, new CommonsArrayList <> ());
   }
 }

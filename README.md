@@ -119,6 +119,10 @@ v8.5.0 - work in progress
 * Added `DBExecutor.setDatabaseSystemType (EDatabaseSystemType)` to provide the `db.system.name` telemetry attribute - the attribute is omitted if it is not set.
 * Added `DBExecutor.setTelemetry (boolean)` and `DBExecutor.setTelemetrySQLText (boolean)` as well as the static `JPAEnabledManager.setTelemetryEnabled (boolean)` to disable the telemetry emission. All of them default to enabled.
   Disable `setTelemetrySQLText` if the SQL passed to `executeStatement` or `queryAll` may contain literal values that must not leave the process - prepared statements only carry the parameterized SQL text anyway.
+* Fixed the transaction boundaries of `DBExecutor.performInTransaction` - thanks to @vinit-thummar for reporting and fixing it in [issue #2](https://github.com/phax/ph-db/issues/2).
+  Every statement and every query executed inside a transaction committed the shared connection right after it was executed, so a later rollback could not undo the already committed work, and the intermediate states of a transaction became visible to concurrent readers on other connections.
+  Commit and rollback now only happen at the outermost transaction boundary. Note that a failed SQL operation or a failed nested transaction now marks the whole transaction for rollback, even if the caller evaluates the returned `ESuccess` or the updated row count and continues instead of throwing - so a "try the insert, and on failure do the update instead" pattern no longer works inside a transaction, because no savepoints are used.
+  As before, `performInTransaction` requires a connection with auto-commit disabled, and a nested `performInTransaction` joins the outer transaction instead of starting a new one.
 
 v8.4.3 - 2026-09-03
 * Added the new overloads `DBPagingHelper.getOrderByClause (IPagingSpec, IDBColumnNameResolver, Iterable)` and `getOrderByAndPagingClause (EDatabaseSystemType, IPagingSpec, IDBColumnNameResolver, Iterable)`, that take the default sort fields to be used if the paging specification contains no usable one - because none was requested, or because none could be resolved.
