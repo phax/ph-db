@@ -854,6 +854,14 @@ public class DBExecutor implements Serializable
       final int nTransactionLevel = m_aTransactionLevel.incrementAndGet ();
       if (nTransactionLevel == 1)
       {
+        // A connection with auto-commit enabled commits every statement on its own, so
+        // that neither the commit nor the rollback at the end of this transaction has
+        // any effect - that would silently degrade this transaction to no transaction
+        if (aConnection.getAutoCommit ())
+          LOGGER.error ("The connection " +
+                        aConnection +
+                        " provided for a transaction has auto-commit enabled - every statement is committed on its own and the rollback of this transaction will have no effect");
+
         // Init transaction specific settings
         m_bNeedToRollbackTransaction = false;
         m_aRollbackTransactionCause = null;
