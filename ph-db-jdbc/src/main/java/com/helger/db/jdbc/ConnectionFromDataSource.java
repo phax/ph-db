@@ -31,8 +31,7 @@ import com.helger.db.api.jdbc.JDBCHelper;
 import com.helger.db.jdbc.executor.DBNoConnectionException;
 
 /**
- * Implementation of {@link IHasConnection} that creates a connection from an
- * {@link DataSource}.
+ * Implementation of {@link IHasConnection} that creates a connection from an {@link DataSource}.
  *
  * @author Philip Helger
  * @since 6.5.1

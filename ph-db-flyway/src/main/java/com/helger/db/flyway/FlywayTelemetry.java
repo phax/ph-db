@@ -59,8 +59,7 @@ final class FlywayTelemetry
   }
 
   /**
-   * Remember the outcome of a finished migration run on the span and count the executed
-   * migrations.
+   * Remember the outcome of a finished migration run on the span and count the executed migrations.
    *
    * @param aSpan
    *        The span of the migration run. May not be <code>null</code>.

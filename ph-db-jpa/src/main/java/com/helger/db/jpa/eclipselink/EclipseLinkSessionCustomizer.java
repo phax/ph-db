@@ -26,8 +26,7 @@ import com.helger.base.CGlobal;
 
 /**
  * Class for customizing JPA sessions.<br>
- * Set the class name in the property
- * <code>eclipselink.session.customizer</code><br>
+ * Set the class name in the property <code>eclipselink.session.customizer</code><br>
  * Should have a public no-argument ctor
  *
  * @author Philip Helger

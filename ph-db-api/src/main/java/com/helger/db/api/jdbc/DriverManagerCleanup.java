@@ -27,8 +27,8 @@ import org.slf4j.LoggerFactory;
 import com.helger.annotation.concurrent.Immutable;
 
 /**
- * A simple class that deregisters all {@link Driver}'s registered in the
- * central {@link DriverManager}.
+ * A simple class that deregisters all {@link Driver}'s registered in the central
+ * {@link DriverManager}.
  *
  * @author Philip Helger
  */
@@ -41,8 +41,8 @@ public final class DriverManagerCleanup
   {}
 
   /**
-   * Unregister all JDBC drivers, still registered in the {@link DriverManager}.
-   * This method should be called upon application shutdown!
+   * Unregister all JDBC drivers, still registered in the {@link DriverManager}. This method should
+   * be called upon application shutdown!
    */
   public static void deregisterAllDrivers ()
   {

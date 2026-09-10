@@ -50,10 +50,11 @@ public final class JDBCHelper
   {}
 
   /**
-   * Mask the password contained in a JDBC connection string, so that it can safely be written to log
-   * or exception messages. This masks the value of any <code>password=</code> or <code>pwd=</code>
-   * parameter, independent of whether it is separated by <code>&amp;</code> (query style) or
-   * <code>;</code> (property style). The user name is intentionally left untouched.
+   * Mask the password contained in a JDBC connection string, so that it can safely be written to
+   * log or exception messages. This masks the value of any <code>password=</code> or
+   * <code>pwd=</code> parameter, independent of whether it is separated by <code>&amp;</code>
+   * (query style) or <code>;</code> (property style). The user name is intentionally left
+   * untouched.
    *
    * @param sConnectionString
    *        The JDBC connection string to mask. May be <code>null</code>.

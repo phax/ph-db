@@ -75,7 +75,15 @@ public class LoggingH2EventListener implements DatabaseEventListener
 
   public void setProgress (final int nState, final String sObjectName, final int nCurrentStep, final int nTotalSteps)
   {
-    LOGGER.info ("setProgress(" + _getStateName (nState) + "," + sObjectName + "," + nCurrentStep + "," + nTotalSteps + ")");
+    LOGGER.info ("setProgress(" +
+                 _getStateName (nState) +
+                 "," +
+                 sObjectName +
+                 "," +
+                 nCurrentStep +
+                 "," +
+                 nTotalSteps +
+                 ")");
   }
 
   public void closingDatabase ()

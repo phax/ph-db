@@ -227,10 +227,7 @@ public final class DBPagingHelper
                                                   @NonNull final IPagingSpec aPagingSpec,
                                                   @NonNull final IDBColumnNameResolver aColumnNameResolver)
   {
-    return getOrderByAndPagingClause (eDBType,
-                                      aPagingSpec,
-                                      aColumnNameResolver,
-                                      (Iterable <? extends SortField>) null);
+    return getOrderByAndPagingClause (eDBType, aPagingSpec, aColumnNameResolver, (Iterable <? extends SortField>) null);
   }
 
   /**

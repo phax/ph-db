@@ -85,9 +85,9 @@ public interface IFlywayConfiguration
   boolean isFlywayRepairMode ();
 
   /**
-   * @return <code>true</code> if Flyway should validate the applied migrations against the available
-   *         ones before migrating, <code>false</code> if not. Disabled by default, because DDL
-   *         comments are also taken into consideration for the checksum.
+   * @return <code>true</code> if Flyway should validate the applied migrations against the
+   *         available ones before migrating, <code>false</code> if not. Disabled by default,
+   *         because DDL comments are also taken into consideration for the checksum.
    * @since 8.4.1
    */
   boolean isFlywayValidateOnMigrate ();

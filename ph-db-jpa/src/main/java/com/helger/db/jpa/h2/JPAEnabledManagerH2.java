@@ -51,7 +51,7 @@ public class JPAEnabledManagerH2 extends JPAEnabledManager
 
   private void _executeH2Native (@NonNull @Nonempty final String sNativeSQL)
   {
-    doInTransaction ( () -> {
+    doInTransaction (() -> {
       LOGGER.info ("Running H2 native command: " + sNativeSQL);
       getEntityManager ().createNativeQuery (sNativeSQL).executeUpdate ();
     });

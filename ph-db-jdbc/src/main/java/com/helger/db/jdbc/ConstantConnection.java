@@ -24,8 +24,7 @@ import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 
 /**
- * Implementation of {@link IHasConnection} that with a constant
- * {@link Connection}
+ * Implementation of {@link IHasConnection} that with a constant {@link Connection}
  *
  * @author Philip Helger
  * @since 6.2.0

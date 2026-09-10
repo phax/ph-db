@@ -29,8 +29,8 @@ import com.helger.base.state.SuccessWithValue;
 import com.helger.base.tostring.ToStringGenerator;
 
 /**
- * Represents the result of a single transaction/select within this module. It
- * consists of 3 total fields:
+ * Represents the result of a single transaction/select within this module. It consists of 3 total
+ * fields:
  * <ul>
  * <li>Success/Failure</li>
  * <li>Return object - mostly in case of success</li>
@@ -65,8 +65,7 @@ public class JPAExecutionResult <DATATYPE> extends SuccessWithValue <DATATYPE>
   }
 
   /**
-   * @return <code>true</code> if an exception is present, <code>false</code> if
-   *         not.
+   * @return <code>true</code> if an exception is present, <code>false</code> if not.
    * @see #getException()
    */
   public boolean hasException ()
@@ -98,13 +97,16 @@ public class JPAExecutionResult <DATATYPE> extends SuccessWithValue <DATATYPE>
     if (!super.equals (o))
       return false;
     final JPAExecutionResult <?> rhs = (JPAExecutionResult <?>) o;
-    return EqualsHelper.equals (ClassHelper.getSafeClassName (m_aException), ClassHelper.getSafeClassName (rhs.m_aException));
+    return EqualsHelper.equals (ClassHelper.getSafeClassName (m_aException),
+                                ClassHelper.getSafeClassName (rhs.m_aException));
   }
 
   @Override
   public int hashCode ()
   {
-    return HashCodeGenerator.getDerived (super.hashCode ()).append (ClassHelper.getSafeClassName (m_aException)).getHashCode ();
+    return HashCodeGenerator.getDerived (super.hashCode ())
+                            .append (ClassHelper.getSafeClassName (m_aException))
+                            .getHashCode ();
   }
 
   @Override

@@ -38,17 +38,15 @@ public final class H2Helper
   {}
 
   /**
-   * Build the final connection string from the base JDBC URL and an optional
-   * set of connection properties.
+   * Build the final connection string from the base JDBC URL and an optional set of connection
+   * properties.
    *
    * @param sJdbcURL
-   *        The base JDBC URL. May neither be <code>null</code> nor empty and
-   *        must started with {@link CJDBC_H2#CONNECTION_PREFIX}
+   *        The base JDBC URL. May neither be <code>null</code> nor empty and must started with
+   *        {@link CJDBC_H2#CONNECTION_PREFIX}
    * @param aConnectionProperties
-   *        An optional map with connection properties. May be <code>null</code>
-   *        .
-   * @return The final JDBC connection string to be used. Never
-   *         <code>null</code> or empty
+   *        An optional map with connection properties. May be <code>null</code> .
+   * @return The final JDBC connection string to be used. Never <code>null</code> or empty
    */
   @NonNull
   @Nonempty

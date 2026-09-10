@@ -23,9 +23,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Just to indicate that a method is present for JPA only. This method is not
- * meant for direct user access. It is usually applied to certain setter methods
- * or to a default constructor.
+ * Just to indicate that a method is present for JPA only. This method is not meant for direct user
+ * access. It is usually applied to certain setter methods or to a default constructor.
  *
  * @author Philip Helger
  */

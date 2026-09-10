@@ -126,7 +126,9 @@ public final class CDBTelemetry
   public static final String ATTR_JDBC_TRANSACTION_ID = "phdb.jdbc.transaction.id";
   /** The nesting level of the transaction - the outermost transaction has level 1. */
   public static final String ATTR_JDBC_TRANSACTION_LEVEL = "phdb.jdbc.transaction.level";
-  /** Whether the transaction is nested inside another one - and therefore does not commit itself. */
+  /**
+   * Whether the transaction is nested inside another one - and therefore does not commit itself.
+   */
   public static final String ATTR_JDBC_TRANSACTION_NESTED = "phdb.jdbc.transaction.nested";
   /**
    * How the transaction ended - {@link #TRANSACTION_OUTCOME_COMMITTED},

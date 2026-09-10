@@ -22,8 +22,7 @@ import com.helger.base.callback.ICallback;
 import com.helger.db.jdbc.executor.DBResultRow;
 
 /**
- * A simple callback that can be executed for each row in a
- * {@link java.sql.ResultSet}.
+ * A simple callback that can be executed for each row in a {@link java.sql.ResultSet}.
  *
  * @author Philip Helger
  */

@@ -330,8 +330,8 @@ final class DBExecutorTelemetry
       return;
 
     final TelemetryAttributes aAttrs = _createCommon (eDBSystemType).put (CDBTelemetry.ATTR_JDBC_CONNECTION_OUTCOME,
-                                                                         bSuccess ? CDBTelemetry.CONNECTION_OUTCOME_ACQUIRED
-                                                                                  : CDBTelemetry.CONNECTION_OUTCOME_FAILED)
+                                                                          bSuccess ? CDBTelemetry.CONNECTION_OUTCOME_ACQUIRED
+                                                                                   : CDBTelemetry.CONNECTION_OUTCOME_FAILED)
                                                                     .build ();
     DBExecutorMetrics.CONNECTIONS.add (1, aAttrs);
     DBExecutorMetrics.CONNECTION_ACQUIRE_DURATION.record (_toSeconds (aDuration), aAttrs);

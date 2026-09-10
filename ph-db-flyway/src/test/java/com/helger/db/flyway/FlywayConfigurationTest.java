@@ -34,7 +34,16 @@ public class FlywayConfigurationTest
   @Test
   public void testBasic ()
   {
-    final FlywayConfiguration a = new FlywayConfiguration (false, "url", "usr", "pw", true, 0, null, false, false, false);
+    final FlywayConfiguration a = new FlywayConfiguration (false,
+                                                           "url",
+                                                           "usr",
+                                                           "pw",
+                                                           true,
+                                                           0,
+                                                           null,
+                                                           false,
+                                                           false,
+                                                           false);
     assertFalse (a.isFlywayEnabled ());
     assertEquals ("url", a.getFlywayJdbcUrl ());
     assertEquals ("usr", a.getFlywayJdbcUser ());

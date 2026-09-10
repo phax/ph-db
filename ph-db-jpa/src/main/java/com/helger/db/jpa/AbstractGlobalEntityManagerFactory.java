@@ -164,8 +164,8 @@ public abstract class AbstractGlobalEntityManagerFactory extends AbstractGlobalS
   }
 
   /**
-   * Create a string representation of the provided factory properties with the JDBC password masked,
-   * so that it can safely be put into log or exception messages.
+   * Create a string representation of the provided factory properties with the JDBC password
+   * masked, so that it can safely be put into log or exception messages.
    *
    * @param aProps
    *        The properties to convert. May not be <code>null</code>.

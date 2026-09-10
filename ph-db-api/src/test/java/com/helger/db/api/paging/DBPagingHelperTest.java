@@ -105,8 +105,7 @@ public final class DBPagingHelperTest
                   DBPagingHelper.getOrderByClause (new PagingSpec (0,
                                                                    25,
                                                                    SortField.descending ("name"),
-                                                                   SortField.ascending ("id")),
-                                                   RESOLVER));
+                                                                   SortField.ascending ("id")), RESOLVER));
 
     // No sort field at all
     assertEquals ("", DBPagingHelper.getOrderByClause (new PagingSpec (0, 25), RESOLVER));
@@ -203,9 +202,7 @@ public final class DBPagingHelperTest
 
     // Neither ordering nor paging
     assertEquals ("",
-                  DBPagingHelper.getOrderByAndPagingClause (EDatabaseSystemType.MYSQL,
-                                                            PagingSpec.UNLIMITED,
-                                                            RESOLVER));
+                  DBPagingHelper.getOrderByAndPagingClause (EDatabaseSystemType.MYSQL, PagingSpec.UNLIMITED, RESOLVER));
   }
 
   @Test

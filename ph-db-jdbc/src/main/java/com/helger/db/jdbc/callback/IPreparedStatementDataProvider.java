@@ -24,8 +24,7 @@ import com.helger.annotation.Nonnegative;
 import com.helger.collection.commons.ICommonsList;
 
 /**
- * Interface for objects that deliver content to pass parameters to a prepared
- * statement.
+ * Interface for objects that deliver content to pass parameters to a prepared statement.
  *
  * @author Philip Helger
  */
@@ -38,9 +37,8 @@ public interface IPreparedStatementDataProvider extends Serializable
   int getValueCount ();
 
   /**
-   * @return A non-<code>null</code>, unmodifiable list of values. The length of
-   *         the returned list must match the result of {@link #getValueCount()}
-   *         .
+   * @return A non-<code>null</code>, unmodifiable list of values. The length of the returned list
+   *         must match the result of {@link #getValueCount()} .
    */
   @NonNull
   ICommonsList <Object> getObjectValues ();

@@ -89,10 +89,9 @@ public abstract class AbstractGlobalEntityManagerFactoryH2 extends AbstractGloba
    * @param sPersistenceUnitName
    *        The name of the persistence unit as stated in the persistence.xml
    * @param aAdditionalFactoryProperties
-   *        An optional Map with properties for {@link EntityManagerFactory}.
-   *        This can even be used to overwrite the settings specified as
-   *        explicit parameters, so be careful. This map is applied after the
-   *        special properties are set! May be <code>null</code>.
+   *        An optional Map with properties for {@link EntityManagerFactory}. This can even be used
+   *        to overwrite the settings specified as explicit parameters, so be careful. This map is
+   *        applied after the special properties are set! May be <code>null</code>.
    */
   protected AbstractGlobalEntityManagerFactoryH2 (@NonNull @Nonempty final String sJdbcURL,
                                                   @Nullable final Map <String, String> aConnectionProperties,

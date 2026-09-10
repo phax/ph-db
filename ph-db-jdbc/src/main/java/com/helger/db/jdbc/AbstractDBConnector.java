@@ -34,8 +34,8 @@ import com.helger.base.concurrent.SimpleLock;
 import com.helger.base.tostring.ToStringGenerator;
 
 /**
- * Abstract implementation of {@link IHasDataSource} based on
- * {@link BasicDataSource} implementation.
+ * Abstract implementation of {@link IHasDataSource} based on {@link BasicDataSource}
+ * implementation.
  *
  * @author Philip Helger
  */
@@ -62,8 +62,7 @@ public abstract class AbstractDBConnector implements IHasDataSource, Closeable
   protected abstract String getJDBCDriverClassName ();
 
   /**
-   * @return The final connection URL to be used for connecting. May not be
-   *         <code>null</code>.
+   * @return The final connection URL to be used for connecting. May not be <code>null</code>.
    */
   @NonNull
   public abstract String getConnectionUrl ();
@@ -95,7 +94,7 @@ public abstract class AbstractDBConnector implements IHasDataSource, Closeable
   @NonNull
   public final DataSource getDataSource ()
   {
-    return m_aLock.lockedGet ( () -> {
+    return m_aLock.lockedGet (() -> {
       BasicDataSource ret = m_aDataSource;
       if (ret != null && ret.isClosed ())
         ret = null;
@@ -131,7 +130,7 @@ public abstract class AbstractDBConnector implements IHasDataSource, Closeable
   {
     try
     {
-      m_aLock.lockedThrowing ( () -> {
+      m_aLock.lockedThrowing (() -> {
         if (m_aDataSource != null)
         {
           if (LOGGER.isDebugEnabled ())

@@ -30,9 +30,8 @@ import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsMap;
 
 /**
- * Resolve the logical field name of a
- * {@link com.helger.collection.paging.SortField} onto the SQL column expression to be used in the
- * <code>ORDER BY</code> clause.<br>
+ * Resolve the logical field name of a {@link com.helger.collection.paging.SortField} onto the SQL
+ * column expression to be used in the <code>ORDER BY</code> clause.<br>
  * <b>This interface is the security boundary of the whole sorting.</b> The field names usually
  * originate from a UI and are therefore attacker controlled, whereas the returned column expression
  * ends up in the SQL statement verbatim - it cannot be a JDBC parameter. An implementation must

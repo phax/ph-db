@@ -28,8 +28,8 @@ import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 
 /**
- * A simple implementation of the {@link IPreparedStatementDataProvider} that
- * takes a list of objects and returns theses objects as they are.
+ * A simple implementation of the {@link IPreparedStatementDataProvider} that takes a list of
+ * objects and returns theses objects as they are.
  *
  * @author Philip Helger
  */

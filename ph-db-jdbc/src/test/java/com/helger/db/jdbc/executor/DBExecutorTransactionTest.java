@@ -84,8 +84,8 @@ public final class DBExecutorTransactionTest
     StreamHelper.close (m_aObserver);
   }
 
-  private static void _assertRowIDs (final Connection aConnection, final ICommonsList <Integer> aExpected)
-                                                                                                           throws SQLException
+  private static void _assertRowIDs (final Connection aConnection,
+                                     final ICommonsList <Integer> aExpected) throws SQLException
   {
     final ICommonsList <Integer> aIDs = new CommonsArrayList <> ();
     try (final var aStatement = aConnection.createStatement ();

@@ -32,9 +32,9 @@ import jakarta.persistence.EntityManager;
 
 /**
  * Abstract request singleton to handle a single {@link EntityManager}.<br>
- * Note: this class does NOT implement {@link IHasEntityManager} by purpose, as
- * this class should not be used as a direct callback parameter, because than
- * only the object of this particular request is used.
+ * Note: this class does NOT implement {@link IHasEntityManager} by purpose, as this class should
+ * not be used as a direct callback parameter, because than only the object of this particular
+ * request is used.
  *
  * @author Philip Helger
  */
@@ -60,14 +60,14 @@ public abstract class AbstractPerRequestEntityManager extends AbstractRequestSin
   protected abstract EntityManager createEntityManager ();
 
   /**
-   * @return The {@link EntityManager} to be used in this request. If it is the
-   *         first request to an {@link EntityManager} in this request is
-   *         created via createEntityManager(). Never <code>null</code>.
+   * @return The {@link EntityManager} to be used in this request. If it is the first request to an
+   *         {@link EntityManager} in this request is created via createEntityManager(). Never
+   *         <code>null</code>.
    */
   @NonNull
   public EntityManager getEntityManager ()
   {
-    final EntityManager ret = m_aRWLock.readLockedGet ( () -> {
+    final EntityManager ret = m_aRWLock.readLockedGet (() -> {
       if (m_bDestroyed)
         throw new IllegalStateException ("This object was already destroyed and should not be re-used!");
       return m_aEntityManager;

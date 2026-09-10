@@ -65,14 +65,12 @@ public abstract class AbstractH2Connector extends AbstractDBConnector
   }
 
   /**
-   * Dump the database to the passed output stream and closed the passed output
-   * stream.
+   * Dump the database to the passed output stream and closed the passed output stream.
    *
    * @param aOS
-   *        The output stream to dump the DB content to. May not be
-   *        <code>null</code>. Automatically closed when done.
-   * @return <code>true</code> upon success, <code>false</code> if an error
-   *         occurred.
+   *        The output stream to dump the DB content to. May not be <code>null</code>. Automatically
+   *        closed when done.
+   * @return <code>true</code> upon success, <code>false</code> if an error occurred.
    */
   @NonNull
   public final ESuccess dumpDatabase (@NonNull @WillClose final OutputStream aOS)

@@ -21,8 +21,7 @@ import java.sql.SQLException;
 import org.jspecify.annotations.NonNull;
 
 /**
- * A special exception that is thrown to indicate that no Connection could be
- * established.
+ * A special exception that is thrown to indicate that no Connection could be established.
  *
  * @author Philip Helger
  * @since 6.2.0

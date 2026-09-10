@@ -74,8 +74,7 @@ final class JPATelemetry
       return;
 
     final TelemetryAttributes aAttrs = TelemetryAttributes.builder ()
-                                                          .put (CDBTelemetry.ATTR_COMPONENT,
-                                                                CDBTelemetry.COMPONENT_JPA)
+                                                          .put (CDBTelemetry.ATTR_COMPONENT, CDBTelemetry.COMPONENT_JPA)
                                                           .put (CDBTelemetry.ATTR_JPA_OPERATION, sOperation)
                                                           .put (CDBTelemetry.ATTR_SUCCESS, sErrorType == null)
                                                           // Only present in case of an error, as

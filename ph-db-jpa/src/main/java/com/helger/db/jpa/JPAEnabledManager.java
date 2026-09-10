@@ -286,7 +286,7 @@ public class JPAEnabledManager
   @NonNull
   public static final Duration getDefaultExecutionWarnDuration ()
   {
-    return RW_LOCK.readLockedGet ( () -> EXECUTION_WARN_DURATION);
+    return RW_LOCK.readLockedGet (() -> EXECUTION_WARN_DURATION);
   }
 
   /**
@@ -315,7 +315,7 @@ public class JPAEnabledManager
   public static final void setDefaultExecutionDuration (@NonNull final Duration aDuration)
   {
     ValueEnforcer.notNull (aDuration, "Duration");
-    RW_LOCK.writeLocked ( () -> EXECUTION_WARN_DURATION = aDuration);
+    RW_LOCK.writeLocked (() -> EXECUTION_WARN_DURATION = aDuration);
   }
 
   /**

@@ -24,8 +24,8 @@ import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.ICommonsList;
 
 /**
- * Special implementation of the {@link IGeneratedKeysCallback} especially for
- * retrieving a single created ID.
+ * Special implementation of the {@link IGeneratedKeysCallback} especially for retrieving a single
+ * created ID.
  *
  * @author Philip Helger
  */
