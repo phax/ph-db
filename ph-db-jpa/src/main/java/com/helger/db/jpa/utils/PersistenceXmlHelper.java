@@ -77,7 +77,7 @@ public final class PersistenceXmlHelper
           for (final IMicroElement eClass : ePU.getAllChildElements (PERSISTENCE_NAMESPACE_URI, "class"))
           {
             final String sClass = eClass.getTextContent ();
-            if (StringHelper.isEmptyAfterTrim (sClass))
+            if (StringHelper.isBlank (sClass))
               throw new IllegalStateException ("Persistence file " + aURL + ": class name is missing!");
             GenericReflection.getClassFromName (sClass.trim ());
           }

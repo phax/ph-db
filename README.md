@@ -110,6 +110,9 @@ Prepared statements only carry the parameterized SQL text, but the SQL passed to
 
 # News and noteworthy
 
+v8.5.1 - work in progress
+* Requires at least ph-commons 12.5.0
+
 v8.5.0 - 2026-09-06
 * Added optional [ph-telemetry](https://github.com/phax/ph-telemetry) support to `ph-db-jdbc`, `ph-db-jpa` and `ph-db-flyway`. Without a registered telemetry SPI, all emission degrades to cheap no-ops.
   `DBExecutor` emits a span per executed statement (named after the SQL operation, as the OpenTelemetry conventions demand), a span per transaction, and the metrics `db.client.operation.duration`, `phdb.jdbc.statements`, `phdb.jdbc.transactions`, `phdb.jdbc.connections`, `phdb.jdbc.connections.active` and `phdb.jdbc.connection.acquire.duration`.
