@@ -64,7 +64,7 @@
 
   <properties>
     <eclipselink.version>5.0.2</eclipselink.version>
-    <flyway.version>13.9.0</flyway.version>
+    <flyway.version>13.10.0</flyway.version>
     <h2.version>2.5.252</h2.version>
     <mysql.version>26.7.0</mysql.version>
     <oracle.version>23.26.3.0.0</oracle.version>
