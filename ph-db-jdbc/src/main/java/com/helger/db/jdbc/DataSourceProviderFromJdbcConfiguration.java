@@ -68,11 +68,12 @@ public class DataSourceProviderFromJdbcConfiguration implements IHasDataSource, 
     m_aDS.setPoolPreparedStatements (true);
 
     // Pooling config
+    final int nMinConnections = aJdbcConfig.getJdbcPoolingMinConnections ();
     final int nMaxConnections = aJdbcConfig.getJdbcPoolingMaxConnections ();
     m_aDS.setMaxTotal (nMaxConnections);
     m_aDS.setMaxWait (aJdbcConfig.getJdbcPoolingMaxWait ());
-    m_aDS.setInitialSize (Math.min (4, nMaxConnections));
-    m_aDS.setMinIdle (Math.min (4, nMaxConnections));
+    m_aDS.setInitialSize (Math.min (nMinConnections, nMaxConnections));
+    m_aDS.setMinIdle (Math.min (nMinConnections, nMaxConnections));
     m_aDS.setMaxIdle (nMaxConnections);
 
     final boolean bTestOnBorrow = aJdbcConfig.isJdbcPoolingTestOnBorrow ();
