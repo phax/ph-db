@@ -44,7 +44,11 @@ public interface IJdbcDataSourceConfiguration
   String getJdbcPassword ();
 
   /**
-   * @return The minimum number of active connections in the pool.
+   * @return The number of connections created when the pool is initialised, which is also the
+   *         minimum number of idle connections kept in the pool. When the pool is created, the
+   *         value is capped at {@link #getJdbcPoolingMaxConnections()} (unless that is negative)
+   *         and is never less than <code>1</code>.
+   * @since 8.5.1
    */
   @CheckForSigned
   int getJdbcPoolingMinConnections ();

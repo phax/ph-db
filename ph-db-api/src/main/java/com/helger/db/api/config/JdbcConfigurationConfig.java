@@ -367,7 +367,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
   public int getJdbcPoolingMinConnections ()
   {
     return m_aConfig.getAsInt (getConfigKeyJdbcPoolingMinConnections (),
-            JdbcConfiguration.DEFAULT_POOLING_MIN_CONNECTIONS);
+                               JdbcConfiguration.DEFAULT_POOLING_MIN_CONNECTIONS);
   }
 
   @CheckForSigned

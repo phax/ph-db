@@ -115,6 +115,9 @@ v8.5.1 - 2026-10-29
 * Added the configuration key `pooling.min-connections` to `IJdbcDataSourceConfiguration`, `JdbcConfiguration` and `JdbcConfigurationConfig` to configure the initial and the minimum idle number of pooled connections (default `4`).
   Thanks to @tborlee for [PR #4](https://github.com/phax/ph-db/pull/4)
 * `DataSourceProviderFromJdbcConfiguration` caps the minimum number of connections at the maximum number of connections (unless the maximum is negative, which means "no limit") and never uses less than `1`
+* The `JdbcConfiguration` constructor taking `Duration` values without the minimum number of pooled connections is kept for backwards compatibility, but deprecated for removal.
+  The deprecated millisecond-based constructor keeps its previous signature.
+  Both use the default of `4` connections
 
 v8.5.0 - 2026-09-06
 * Added optional [ph-telemetry](https://github.com/phax/ph-telemetry) support to `ph-db-jdbc`, `ph-db-jpa` and `ph-db-flyway`. Without a registered telemetry SPI, all emission degrades to cheap no-ops.

@@ -170,13 +170,15 @@ public final class JdbcConfigurationConfigTest
                                                           false,
                                                           false,
                                                           false,
-                                                          4,
+                                                          6,
                                                           16,
                                                           Duration.ofSeconds (15),
                                                           Duration.ofMinutes (10),
                                                           Duration.ofHours (1),
                                                           Duration.ofMinutes (5),
                                                           true);
+    assertEquals (6, aCfg.getJdbcPoolingMinConnections ());
+    assertEquals (16, aCfg.getJdbcPoolingMaxConnections ());
     assertEquals (Duration.ofSeconds (2), aCfg.getJdbcExecutionTimeWarning ());
     assertEquals (Duration.ofSeconds (15), aCfg.getJdbcPoolingMaxWait ());
     assertEquals (Duration.ofMinutes (10), aCfg.getJdbcPoolingBetweenEvictionRuns ());
@@ -205,17 +207,62 @@ public final class JdbcConfigurationConfigTest
                                                           false,
                                                           false,
                                                           false,
-                                                          4,
                                                           16,
                                                           15_000L,
                                                           600_000L,
                                                           3_600_000L,
                                                           300_000L,
                                                           true);
+    assertEquals (JdbcConfiguration.DEFAULT_POOLING_MIN_CONNECTIONS, aCfg.getJdbcPoolingMinConnections ());
     assertEquals (Duration.ofSeconds (2), aCfg.getJdbcExecutionTimeWarning ());
     assertEquals (Duration.ofSeconds (15), aCfg.getJdbcPoolingMaxWait ());
     assertEquals (Duration.ofMinutes (10), aCfg.getJdbcPoolingBetweenEvictionRuns ());
     assertEquals (Duration.ofHours (1), aCfg.getJdbcPoolingMinEvictableIdle ());
     assertEquals (Duration.ofMinutes (5), aCfg.getJdbcPoolingRemoveAbandonedTimeout ());
+  }
+
+  @Test
+  public void testJdbcConfigurationPojoConstructorWithoutMinConnections ()
+  {
+    @SuppressWarnings ("removal")
+    final JdbcConfiguration aCfg = new JdbcConfiguration (null,
+                                                          "org.h2.Driver",
+                                                          "jdbc:h2:mem:test",
+                                                          "sa",
+                                                          "",
+                                                          null,
+                                                          true,
+                                                          Duration.ofSeconds (2),
+                                                          false,
+                                                          false,
+                                                          false,
+                                                          16,
+                                                          Duration.ofSeconds (15),
+                                                          Duration.ofMinutes (10),
+                                                          Duration.ofHours (1),
+                                                          Duration.ofMinutes (5),
+                                                          true);
+    assertEquals (JdbcConfiguration.DEFAULT_POOLING_MIN_CONNECTIONS, aCfg.getJdbcPoolingMinConnections ());
+    assertEquals (16, aCfg.getJdbcPoolingMaxConnections ());
+  }
+
+  @Test
+  public void testPoolingConnectionsWhenNothingConfigured ()
+  {
+    final JdbcConfigurationConfig aCfg = _build (new CommonsHashMap <> ());
+    assertEquals ("jdbc.pooling.min-connections", aCfg.getConfigKeyJdbcPoolingMinConnections ());
+    assertEquals (JdbcConfiguration.DEFAULT_POOLING_MIN_CONNECTIONS, aCfg.getJdbcPoolingMinConnections ());
+    assertEquals (JdbcConfiguration.DEFAULT_POOLING_MAX_CONNECTIONS, aCfg.getJdbcPoolingMaxConnections ());
+  }
+
+  @Test
+  public void testPoolingConnectionsConfigured ()
+  {
+    final ICommonsMap <String, String> aMap = new CommonsHashMap <> ();
+    aMap.put ("jdbc.pooling.min-connections", "10");
+    aMap.put ("jdbc.pooling.max-connections", "20");
+    final JdbcConfigurationConfig aCfg = _build (aMap);
+    assertEquals (10, aCfg.getJdbcPoolingMinConnections ());
+    assertEquals (20, aCfg.getJdbcPoolingMaxConnections ());
   }
 }

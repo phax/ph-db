@@ -83,7 +83,7 @@ public class JdbcConfiguration implements IJdbcConfiguration
 
   /*
    * Constructor.
-   * @since 8.3.0
+   * @since 8.5.1
    */
   public JdbcConfiguration (@Nullable final String sDatabaseType,
                             @Nullable final String sJdbcDriver,
@@ -134,6 +134,51 @@ public class JdbcConfiguration implements IJdbcConfiguration
   }
 
   /*
+   * Constructor using the default minimum number of pooled connections.
+   * @since 8.3.0
+   * @deprecated Since 8.5.1; use the constructor with the minimum number of pooled connections
+   *             instead.
+   */
+  @Deprecated (forRemoval = true, since = "8.5.1")
+  public JdbcConfiguration (@Nullable final String sDatabaseType,
+                            @Nullable final String sJdbcDriver,
+                            @Nullable final String sJdbcUrl,
+                            @Nullable final String sJdbcUser,
+                            @Nullable final String sJdbcPassword,
+                            @Nullable final String sJdbcSchema,
+                            final boolean bExecutionTimeWarningEnabled,
+                            @NonNull final Duration aExecutionTimeWarning,
+                            final boolean bDebugConnections,
+                            final boolean bDebugTransactions,
+                            final boolean bDebugSQL,
+                            final int nPoolingMaxConnections,
+                            @NonNull final Duration aPoolingMaxWait,
+                            @NonNull final Duration aPoolingBetweenEvictionRuns,
+                            @NonNull final Duration aPoolingMinEvictableIdle,
+                            @NonNull final Duration aPoolingRemoveAbandonedTimeout,
+                            final boolean bPoolingTestOnBorrow)
+  {
+    this (sDatabaseType,
+          sJdbcDriver,
+          sJdbcUrl,
+          sJdbcUser,
+          sJdbcPassword,
+          sJdbcSchema,
+          bExecutionTimeWarningEnabled,
+          aExecutionTimeWarning,
+          bDebugConnections,
+          bDebugTransactions,
+          bDebugSQL,
+          DEFAULT_POOLING_MIN_CONNECTIONS,
+          nPoolingMaxConnections,
+          aPoolingMaxWait,
+          aPoolingBetweenEvictionRuns,
+          aPoolingMinEvictableIdle,
+          aPoolingRemoveAbandonedTimeout,
+          bPoolingTestOnBorrow);
+  }
+
+  /*
    * Constructor taking durations as raw milliseconds.
    * @deprecated Since 8.3.0; use the {@link Duration}-based constructor instead.
    */
@@ -149,7 +194,6 @@ public class JdbcConfiguration implements IJdbcConfiguration
                             final boolean bDebugConnections,
                             final boolean bDebugTransactions,
                             final boolean bDebugSQL,
-                            final int nPoolingMinConnections,
                             final int nPoolingMaxConnections,
                             final long nPoolingMaxWaitMillis,
                             final long nPoolingBetweenEvictionRunsMillis,
@@ -168,7 +212,7 @@ public class JdbcConfiguration implements IJdbcConfiguration
           bDebugConnections,
           bDebugTransactions,
           bDebugSQL,
-          nPoolingMinConnections,
+          DEFAULT_POOLING_MIN_CONNECTIONS,
           nPoolingMaxConnections,
           Duration.ofMillis (nPoolingMaxWaitMillis),
           Duration.ofMillis (nPoolingBetweenEvictionRunsMillis),
@@ -294,6 +338,7 @@ public class JdbcConfiguration implements IJdbcConfiguration
                                        .append ("DebugConnections", m_bDebugConnections)
                                        .append ("DebugTransactions", m_bDebugTransactions)
                                        .append ("DebugSQL", m_bDebugSQL)
+                                       .append ("PoolingMinConnections", m_nPoolingMinConnections)
                                        .append ("PoolingMaxConnections", m_nPoolingMaxConnections)
                                        .append ("PoolingMaxWait", m_aPoolingMaxWait)
                                        .append ("PoolingBetweenEvictionRuns", m_aPoolingBetweenEvictionRuns)
