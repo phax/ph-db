@@ -43,6 +43,7 @@ public class JdbcConfiguration implements IJdbcConfiguration
   public static final boolean DEFAULT_DEBUG_TRANSACTIONS = false;
   public static final boolean DEFAULT_DEBUG_SQL_STATEMENTS = false;
 
+  public static final int DEFAULT_POOLING_MIN_CONNECTIONS = 4;
   public static final int DEFAULT_POOLING_MAX_CONNECTIONS = 8;
   @Deprecated (forRemoval = true, since = "8.3.0")
   public static final long DEFAULT_POOLING_MAX_WAIT_MILLIS = 10_000L;
@@ -72,6 +73,7 @@ public class JdbcConfiguration implements IJdbcConfiguration
   private final boolean m_bDebugTransactions;
   private final boolean m_bDebugSQL;
 
+  private final int m_nPoolingMinConnections;
   private final int m_nPoolingMaxConnections;
   private final Duration m_aPoolingMaxWait;
   private final Duration m_aPoolingBetweenEvictionRuns;
@@ -94,6 +96,7 @@ public class JdbcConfiguration implements IJdbcConfiguration
                             final boolean bDebugConnections,
                             final boolean bDebugTransactions,
                             final boolean bDebugSQL,
+                            final int nPoolingMinConnections,
                             final int nPoolingMaxConnections,
                             @NonNull final Duration aPoolingMaxWait,
                             @NonNull final Duration aPoolingBetweenEvictionRuns,
@@ -121,6 +124,7 @@ public class JdbcConfiguration implements IJdbcConfiguration
     m_bDebugTransactions = bDebugTransactions;
     m_bDebugSQL = bDebugSQL;
 
+    m_nPoolingMinConnections = nPoolingMinConnections;
     m_nPoolingMaxConnections = nPoolingMaxConnections;
     m_aPoolingMaxWait = aPoolingMaxWait;
     m_aPoolingBetweenEvictionRuns = aPoolingBetweenEvictionRuns;
@@ -145,6 +149,7 @@ public class JdbcConfiguration implements IJdbcConfiguration
                             final boolean bDebugConnections,
                             final boolean bDebugTransactions,
                             final boolean bDebugSQL,
+                            final int nPoolingMinConnections,
                             final int nPoolingMaxConnections,
                             final long nPoolingMaxWaitMillis,
                             final long nPoolingBetweenEvictionRunsMillis,
@@ -163,6 +168,7 @@ public class JdbcConfiguration implements IJdbcConfiguration
           bDebugConnections,
           bDebugTransactions,
           bDebugSQL,
+          nPoolingMinConnections,
           nPoolingMaxConnections,
           Duration.ofMillis (nPoolingMaxWaitMillis),
           Duration.ofMillis (nPoolingBetweenEvictionRunsMillis),
@@ -231,6 +237,12 @@ public class JdbcConfiguration implements IJdbcConfiguration
   public boolean isJdbcDebugSQL ()
   {
     return m_bDebugSQL;
+  }
+
+  @CheckForSigned
+  public int getJdbcPoolingMinConnections ()
+  {
+    return m_nPoolingMinConnections;
   }
 
   @CheckForSigned

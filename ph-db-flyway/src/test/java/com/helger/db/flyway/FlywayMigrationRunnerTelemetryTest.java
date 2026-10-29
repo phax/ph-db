@@ -78,6 +78,7 @@ public final class FlywayMigrationRunnerTelemetryTest
                                   JdbcConfiguration.DEFAULT_DEBUG_CONNECTIONS,
                                   JdbcConfiguration.DEFAULT_DEBUG_TRANSACTIONS,
                                   JdbcConfiguration.DEFAULT_DEBUG_SQL_STATEMENTS,
+                                  JdbcConfiguration.DEFAULT_POOLING_MIN_CONNECTIONS,
                                   JdbcConfiguration.DEFAULT_POOLING_MAX_CONNECTIONS,
                                   JdbcConfiguration.DEFAULT_POOLING_MAX_WAIT_DURATION,
                                   JdbcConfiguration.DEFAULT_POOLING_BETWEEN_EVICTION_RUNS_DURATION,

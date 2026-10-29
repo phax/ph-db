@@ -44,6 +44,12 @@ public interface IJdbcDataSourceConfiguration
   String getJdbcPassword ();
 
   /**
+   * @return The minimum number of active connections in the pool.
+   */
+  @CheckForSigned
+  int getJdbcPoolingMinConnections ();
+
+  /**
    * @return The maximum number of active connections in the pool.
    * @since 8.1.3
    */

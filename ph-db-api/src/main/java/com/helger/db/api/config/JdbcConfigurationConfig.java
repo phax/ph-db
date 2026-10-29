@@ -60,6 +60,7 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
   public static final String SUFFIX_DEBUG_TRANSACTIONS = "debug.transactions";
   public static final String SUFFIX_DEBUG_SQL = "debug.sql";
 
+  public static final String SUFFIX_POOLING_MIN_CONNECTIONS = "pooling.min-connections";
   public static final String SUFFIX_POOLING_MAX_CONNECTIONS = "pooling.max-connections";
   public static final String SUFFIX_POOLING_MAX_WAIT = "pooling.max-wait";
   /**
@@ -350,9 +351,23 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
 
   @NonNull
   @Nonempty
+  public final String getConfigKeyJdbcPoolingMinConnections ()
+  {
+    return m_sConfigPrefix + SUFFIX_POOLING_MIN_CONNECTIONS;
+  }
+
+  @NonNull
+  @Nonempty
   public final String getConfigKeyJdbcPoolingMaxConnections ()
   {
     return m_sConfigPrefix + SUFFIX_POOLING_MAX_CONNECTIONS;
+  }
+
+  @CheckForSigned
+  public int getJdbcPoolingMinConnections ()
+  {
+    return m_aConfig.getAsInt (getConfigKeyJdbcPoolingMinConnections (),
+            JdbcConfiguration.DEFAULT_POOLING_MIN_CONNECTIONS);
   }
 
   @CheckForSigned
