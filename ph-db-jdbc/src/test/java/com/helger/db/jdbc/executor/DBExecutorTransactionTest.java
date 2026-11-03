@@ -26,7 +26,9 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.helger.base.io.stream.StreamHelper;
@@ -35,6 +37,7 @@ import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.db.jdbc.IHasConnection;
 import com.helger.db.jdbc.callback.ConstantPreparedStatementDataProvider;
+import com.helger.telemetry.mock.CapturingTelemetry;
 
 /**
  * Verify transaction boundaries using an independent READ_COMMITTED observer.
@@ -48,6 +51,20 @@ public final class DBExecutorTransactionTest
   private Connection m_aWriter;
   private Connection m_aObserver;
   private DBExecutor m_aExecutor;
+
+  @BeforeClass
+  public static void installTelemetry ()
+  {
+    // DBExecutorMetrics resolves its instruments once in its static initializer. If this class runs
+    // first, the same instance as in DBExecutorTelemetryTest must already be installed
+    DBExecutorTelemetryTest.CT.install ();
+  }
+
+  @AfterClass
+  public static void uninstallTelemetry ()
+  {
+    CapturingTelemetry.uninstall ();
+  }
 
   @Before
   public void before () throws SQLException

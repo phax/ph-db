@@ -49,7 +49,8 @@ public final class DBExecutorTelemetryTest
 {
   private static final String JDBC_URL = "jdbc:h2:mem:phdbtelemetry;DB_CLOSE_DELAY=-1";
   private static final String TABLE = "test_telemetry";
-  private static final CapturingTelemetry CT = new CapturingTelemetry ();
+  // Shared with DBExecutorTransactionTest - see there
+  static final CapturingTelemetry CT = new CapturingTelemetry ();
 
   @NonNull
   private static DBExecutor _createExecutor ()
