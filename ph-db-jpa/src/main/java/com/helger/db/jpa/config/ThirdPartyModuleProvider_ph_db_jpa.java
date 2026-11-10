@@ -34,11 +34,13 @@ import com.helger.base.version.Version;
 public final class ThirdPartyModuleProvider_ph_db_jpa implements IThirdPartyModuleProviderSPI
 {
   /** EclipseLink */
-  private static final IThirdPartyModule ECLIPSE_LINK = new ThirdPartyModule ("EclipseLink",
-                                                                              "Eclipse Foundation",
-                                                                              ELicense.EPL10,
-                                                                              new Version (4, 0, 9),
-                                                                              "http://www.eclipse.org/eclipselink/");
+  private static final IThirdPartyModule ECLIPSE_LINK = ThirdPartyModule.builder ()
+                                                                        .displayName ("EclipseLink")
+                                                                        .copyrightOwner ("Eclipse Foundation")
+                                                                        .license (ELicense.EPL10)
+                                                                        .version (new Version (4, 0, 9))
+                                                                        .webSiteUrl ("http://www.eclipse.org/eclipselink/")
+                                                                        .build ();
 
   @Nullable
   public IThirdPartyModule [] getAllThirdPartyModules ()

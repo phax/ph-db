@@ -32,11 +32,13 @@ import com.helger.base.version.Version;
 public final class CJDBC_H2
 {
   /** H2 database */
-  public static final IThirdPartyModule H2 = new ThirdPartyModule ("H2 Database Engine",
-                                                                   "Eclipse Foundation",
-                                                                   ELicense.EPL10,
-                                                                   new Version (2, 0, 202),
-                                                                   "https://www.h2database.com/");
+  public static final IThirdPartyModule H2 = ThirdPartyModule.builder ()
+                                                             .displayName ("H2 Database Engine")
+                                                             .copyrightOwner ("Eclipse Foundation")
+                                                             .license (ELicense.EPL10)
+                                                             .version (new Version (2, 0, 202))
+                                                             .webSiteUrl ("https://www.h2database.com/")
+                                                             .build ();
 
   /** Default JDBC URL prefix */
   public static final String CONNECTION_PREFIX = "jdbc:h2:";

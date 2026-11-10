@@ -34,17 +34,21 @@ import com.helger.base.version.Version;
 public final class ThirdPartyModuleProvider_ph_db_jdbc implements IThirdPartyModuleProviderSPI
 {
   /** Apache commons-pool2 */
-  public static final IThirdPartyModule COMMONS_POOL = new ThirdPartyModule ("Apache Commons Pool",
-                                                                             "Apache",
-                                                                             ELicense.APACHE2,
-                                                                             new Version (2, 13, 1),
-                                                                             "http://commons.apache.org/proper/commons-pool/");
+  public static final IThirdPartyModule COMMONS_POOL = ThirdPartyModule.builder ()
+                                                                       .displayName ("Apache Commons Pool")
+                                                                       .copyrightOwner ("Apache")
+                                                                       .license (ELicense.APACHE2)
+                                                                       .version (new Version (2, 13, 1))
+                                                                       .webSiteUrl ("http://commons.apache.org/proper/commons-pool/")
+                                                                       .build ();
   /** Apache commons-dbcp2 */
-  public static final IThirdPartyModule COMMONS_DBCP = new ThirdPartyModule ("Apache Commons DBCP",
-                                                                             "Apache",
-                                                                             ELicense.APACHE2,
-                                                                             new Version (2, 14, 0),
-                                                                             "http://commons.apache.org/proper/commons-dbcp/");
+  public static final IThirdPartyModule COMMONS_DBCP = ThirdPartyModule.builder ()
+                                                                       .displayName ("Apache Commons DBCP")
+                                                                       .copyrightOwner ("Apache")
+                                                                       .license (ELicense.APACHE2)
+                                                                       .version (new Version (2, 14, 0))
+                                                                       .webSiteUrl ("http://commons.apache.org/proper/commons-dbcp/")
+                                                                       .build ();
 
   @Nullable
   public IThirdPartyModule [] getAllThirdPartyModules ()

@@ -33,11 +33,13 @@ import com.helger.base.version.Version;
 public final class CJDBC_PostgreSQL
 {
   /** MySQL connector */
-  public static final IThirdPartyModule POSTGRESQL = new ThirdPartyModule ("PostgreSQL JDBC Driver",
-                                                                           "PostgreSQL Global Development Group",
-                                                                           ELicense.BSD,
-                                                                           new Version (42, 2, 15),
-                                                                           "https://jdbc.postgresql.org");
+  public static final IThirdPartyModule POSTGRESQL = ThirdPartyModule.builder ()
+                                                                     .displayName ("PostgreSQL JDBC Driver")
+                                                                     .copyrightOwner ("PostgreSQL Global Development Group")
+                                                                     .license (ELicense.BSD)
+                                                                     .version (new Version (42, 2, 15))
+                                                                     .webSiteUrl ("https://jdbc.postgresql.org")
+                                                                     .build ();
 
   public static final String CONNECTION_PREFIX = "jjdbc:postgresql:";
 

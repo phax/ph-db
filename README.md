@@ -110,6 +110,9 @@ Prepared statements only carry the parameterized SQL text, but the SQL passed to
 
 # News and noteworthy
 
+v8.5.2 - work in progress
+* Requires at least ph-commons 12.6.0
+
 v8.5.1 - 2026-10-29
 * Requires at least ph-commons 12.5.0
 * Added the configuration key `pooling.min-connections` to `IJdbcDataSourceConfiguration`, `JdbcConfiguration` and `JdbcConfigurationConfig` to configure the initial and the minimum idle number of pooled connections (default `4`).

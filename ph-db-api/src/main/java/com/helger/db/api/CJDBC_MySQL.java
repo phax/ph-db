@@ -32,11 +32,13 @@ import com.helger.base.version.Version;
 public final class CJDBC_MySQL
 {
   /** MySQL connector */
-  public static final IThirdPartyModule MYSQL = new ThirdPartyModule ("MySQL Connector/J",
-                                                                      "Oracle",
-                                                                      ELicense.GPL20,
-                                                                      new Version (8, 0, 21),
-                                                                      "http://www.mysql.com/");
+  public static final IThirdPartyModule MYSQL = ThirdPartyModule.builder ()
+                                                                .displayName ("MySQL Connector/J")
+                                                                .copyrightOwner ("Oracle")
+                                                                .license (ELicense.GPL20)
+                                                                .version (new Version (8, 0, 21))
+                                                                .webSiteUrl ("http://www.mysql.com/")
+                                                                .build ();
 
   /** Default JDBC URL prefix */
   public static final String CONNECTION_PREFIX = "jdbc:mysql:";
