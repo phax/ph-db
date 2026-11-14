@@ -47,6 +47,22 @@ Add the following to your pom.xml to use this artifact, where `x.y.z` is to be r
 </dependency>
 ```
 
+Or import the BOM and skip per-module versions:
+
+```xml
+<dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>com.helger.db</groupId>
+      <artifactId>ph-db-bom</artifactId>
+      <version>x.y.z</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+  </dependencies>
+</dependencyManagement>
+```
+
 Note: prior to v8.0.0 the group ID was `com.helger`
 
 # Telemetry
@@ -110,8 +126,10 @@ Prepared statements only carry the parameterized SQL text, but the SQL passed to
 
 # News and noteworthy
 
-v8.5.2 - work in progress
-* Requires at least ph-commons 12.6.0
+v8.5.2 - 2026-11-14
+* Requires at least ph-commons 12.7.1
+* Requires at least ph-telemetry 1.1.2
+* New module `ph-db-bom` - a dedicated Bill of Materials with the managed versions of `ph-db-api`, `ph-db-jdbc`, `ph-db-jpa` and `ph-db-flyway`. Import it instead of `ph-db-parent-pom`, which also carries the build configuration of this project.
 
 v8.5.1 - 2026-10-29
 * Requires at least ph-commons 12.5.0

@@ -28,6 +28,7 @@ ph-db is a multi-module Java database abstraction library (Java 17+, built with 
 ### Module Dependency Graph
 
 ```
+ph-db-bom          ← Bill of Materials (dependencyManagement only) for all modules below
 ph-db-api          ← core abstractions, config interfaces, DB-specific helpers
   ├── ph-db-jdbc   ← JDBC executor, connection pooling (Commons DBCP2), DB-specific connectors
   ├── ph-db-jpa    ← JPA/EclipseLink manager, entity manager factories, type converters
