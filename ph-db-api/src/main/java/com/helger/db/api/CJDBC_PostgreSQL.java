@@ -24,7 +24,7 @@ import com.helger.base.thirdparty.ThirdPartyModule;
 import com.helger.base.version.Version;
 
 /**
- * JDBC constants for PostgreSQL S
+ * JDBC constants for PostgreSQL
  *
  * @author Philip Helger
  * @since 6.3.0
@@ -32,7 +32,7 @@ import com.helger.base.version.Version;
 @Immutable
 public final class CJDBC_PostgreSQL
 {
-  /** MySQL connector */
+  /** PostgreSQL connector */
   public static final IThirdPartyModule POSTGRESQL = ThirdPartyModule.builder ()
                                                                      .displayName ("PostgreSQL JDBC Driver")
                                                                      .copyrightOwner ("PostgreSQL Global Development Group")
@@ -41,7 +41,7 @@ public final class CJDBC_PostgreSQL
                                                                      .webSiteUrl ("https://jdbc.postgresql.org")
                                                                      .build ();
 
-  public static final String CONNECTION_PREFIX = "jjdbc:postgresql:";
+  public static final String CONNECTION_PREFIX = "jdbc:postgresql:";
 
   public static final String DEFAULT_JDBC_DRIVER_CLASS_NAME = "org.postgresql.Driver";
 

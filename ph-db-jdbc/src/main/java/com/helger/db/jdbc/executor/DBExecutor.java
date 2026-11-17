@@ -852,27 +852,29 @@ public class DBExecutor implements Serializable
     final IWithConnectionCallback aWithConnectionCB = aConnection -> {
       // First level has 1
       final int nTransactionLevel = m_aTransactionLevel.incrementAndGet ();
-      if (nTransactionLevel == 1)
-      {
-        // A connection with auto-commit enabled commits every statement on its own, so
-        // that neither the commit nor the rollback at the end of this transaction has
-        // any effect - that would silently degrade this transaction to no transaction
-        if (aConnection.getAutoCommit ())
-          LOGGER.error ("The connection " +
-                        aConnection +
-                        " provided for a transaction has auto-commit enabled - every statement is committed on its own and the rollback of this transaction will have no effect");
-
-        // Init transaction specific settings
-        m_bNeedToRollbackTransaction = false;
-        m_aRollbackTransactionCause = null;
-        // Remember the owning thread, so that concurrent use of this
-        // @NotThreadSafe instance from another thread fails fast instead of
-        // silently executing on this transaction's connection
-        m_aTransactionOwnerThread = Thread.currentThread ();
-      }
-
       try
       {
+        // Inside the try, so that the finally block restores the transaction level
+        // even if e.g. getAutoCommit throws
+        if (nTransactionLevel == 1)
+        {
+          // A connection with auto-commit enabled commits every statement on its own, so
+          // that neither the commit nor the rollback at the end of this transaction has
+          // any effect - that would silently degrade this transaction to no transaction
+          if (aConnection.getAutoCommit ())
+            LOGGER.error ("The connection " +
+                          aConnection +
+                          " provided for a transaction has auto-commit enabled - every statement is committed on its own and the rollback of this transaction will have no effect");
+
+          // Init transaction specific settings
+          m_bNeedToRollbackTransaction = false;
+          m_aRollbackTransactionCause = null;
+          // Remember the owning thread, so that concurrent use of this
+          // @NotThreadSafe instance from another thread fails fast instead of
+          // silently executing on this transaction's connection
+          m_aTransactionOwnerThread = Thread.currentThread ();
+        }
+
         final long nTransactionID = COUNTER_TRANSACTION.incrementAndGet ();
         if (m_bDebugTransactions)
           debugLog ("Starting a level " + nTransactionLevel + " transaction [" + nTransactionID + "]");
@@ -1156,7 +1158,9 @@ public class DBExecutor implements Serializable
                                                                m_bTelemetrySQLText,
                                                                false,
                                                                -1,
-                                                               aSpan -> aStatement.execute (sSQL)));
+                                                               aSpan -> aStatement.execute (sSQL,
+                                                                                         aGeneratedKeysCB != null ? Statement.RETURN_GENERATED_KEYS
+                                                                                                                  : Statement.NO_GENERATED_KEYS)));
     }, aGeneratedKeysCB, aExtraExCB);
   }
 
@@ -1212,7 +1216,8 @@ public class DBExecutor implements Serializable
    *        SQL to execute.
    * @param aPSDP
    *        The prepared statement provider.
-   * @return The number of modified/inserted rows.
+   * @return The number of modified/inserted rows or {@link IUpdatedRowCountCallback#NOT_INITIALIZED}
+   *         in case of an error.
    */
   public long insertOrUpdateOrDelete (@NonNull final String sSQL, @NonNull final IPreparedStatementDataProvider aPSDP)
   {
@@ -1230,7 +1235,8 @@ public class DBExecutor implements Serializable
    *        An optional callback to retrieve eventually generated values. May be <code>null</code>.
    * @param aExtraExCB
    *        Per-call Exception callback. May be <code>null</code>.
-   * @return The number of modified/inserted rows.
+   * @return The number of modified/inserted rows or {@link IUpdatedRowCountCallback#NOT_INITIALIZED}
+   *         in case of an error.
    */
   public long insertOrUpdateOrDelete (@NonNull final String sSQL,
                                       @NonNull final IPreparedStatementDataProvider aPSDP,
@@ -1240,12 +1246,17 @@ public class DBExecutor implements Serializable
     // We need this wrapper because the anonymous inner class cannot change
     // variables in outer scope.
     final IUpdatedRowCountCallback aURCCB = new UpdatedRowCountCallback ();
-    withPreparedStatementDo (sSQL,
-                             aPSDP,
-                             (aPreparedStatement, aSpan) -> aPreparedStatement.execute (),
-                             aURCCB,
-                             aGeneratedKeysCB,
-                             aExtraExCB);
+    if (withPreparedStatementDo (sSQL,
+                                 aPSDP,
+                                 (aPreparedStatement, aSpan) -> aPreparedStatement.execute (),
+                                 aURCCB,
+                                 aGeneratedKeysCB,
+                                 aExtraExCB).isFailure ())
+    {
+      // E.g. the generated keys could not be retrieved or the commit failed, so
+      // the update count may not reflect the persisted state
+      return IUpdatedRowCountCallback.NOT_INITIALIZED;
+    }
     return aURCCB.getUpdatedRowCount ();
   }
 
@@ -1305,10 +1316,9 @@ public class DBExecutor implements Serializable
     final long nClobLength = aClob.length ();
     if (nClobLength > Integer.MAX_VALUE)
     {
-      LOGGER.error ("The contained CLOB is larger than 2GB (" +
-                    nClobLength +
-                    " chars) and therefore cannot be converted to a String");
-      return null;
+      throw new SQLException ("The contained CLOB is larger than 2GB (" +
+                              nClobLength +
+                              " chars) and therefore cannot be converted to a String");
     }
 
     // length was ensured previously

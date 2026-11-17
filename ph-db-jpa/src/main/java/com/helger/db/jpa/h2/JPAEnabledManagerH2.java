@@ -35,7 +35,7 @@ import com.helger.db.jpa.JPAEnabledManager;
 @ThreadSafe
 public class JPAEnabledManagerH2 extends JPAEnabledManager
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (JPAEnabledManager.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (JPAEnabledManagerH2.class);
 
   public JPAEnabledManagerH2 (@NonNull final IHasEntityManager aEntityManagerProvider)
   {
@@ -44,9 +44,9 @@ public class JPAEnabledManagerH2 extends JPAEnabledManager
 
   public final boolean isTableExisting (@NonNull final String sTableName)
   {
-    return getSelectCountResultObj (getEntityManager ().createQuery ("SELECT count(ID) FROM TABLES t WHERE t.TABLE_TYPE = 'TABLE' AND TABLE_NAME = :tablename",
-                                                                     Integer.class)
-                                                       .setParameter ("tablename", sTableName)).intValue () > 0;
+    // Native SQL, because INFORMATION_SCHEMA.TABLES is no JPA entity
+    return getSelectCountResultObj (getEntityManager ().createNativeQuery ("SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = ?1")
+                                                       .setParameter (1, sTableName)).longValue () > 0;
   }
 
   private void _executeH2Native (@NonNull @Nonempty final String sNativeSQL)

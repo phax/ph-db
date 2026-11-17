@@ -43,7 +43,10 @@ public final class PersistenceXmlHelper
 {
   /** The JPA configuration file relative to the classpath */
   public static final String PATH_PERSISTENCE_XML = "META-INF/persistence.xml";
+  /** The namespace URI of JPA 1.0 and 2.x persistence.xml files */
   public static final String PERSISTENCE_NAMESPACE_URI = "http://java.sun.com/xml/ns/persistence";
+  /** The namespace URI of Jakarta Persistence 3.x persistence.xml files */
+  public static final String PERSISTENCE_NAMESPACE_URI_JAKARTA = "https://jakarta.ee/xml/ns/persistence";
 
   private static final Logger LOGGER = LoggerFactory.getLogger (PersistenceXmlHelper.class);
 
@@ -72,9 +75,17 @@ public final class PersistenceXmlHelper
         final IMicroDocument aDoc = MicroReader.readMicroXML (new URLResource (aURL));
         if (aDoc == null || aDoc.getDocumentElement () == null)
           throw new IllegalStateException ("No XML file: " + aURL);
-        for (final IMicroElement ePU : aDoc.getDocumentElement ()
-                                           .getAllChildElements (PERSISTENCE_NAMESPACE_URI, "persistence-unit"))
-          for (final IMicroElement eClass : ePU.getAllChildElements (PERSISTENCE_NAMESPACE_URI, "class"))
+        final IMicroElement eRoot = aDoc.getDocumentElement ();
+        final String sNamespaceURI = eRoot.getNamespaceURI ();
+        if (!PERSISTENCE_NAMESPACE_URI.equals (sNamespaceURI) &&
+            !PERSISTENCE_NAMESPACE_URI_JAKARTA.equals (sNamespaceURI))
+          throw new IllegalStateException ("Persistence file " +
+                                           aURL +
+                                           ": unsupported namespace URI '" +
+                                           sNamespaceURI +
+                                           "'");
+        for (final IMicroElement ePU : eRoot.getAllChildElements (sNamespaceURI, "persistence-unit"))
+          for (final IMicroElement eClass : ePU.getAllChildElements (sNamespaceURI, "class"))
           {
             final String sClass = eClass.getTextContent ();
             if (StringHelper.isBlank (sClass))

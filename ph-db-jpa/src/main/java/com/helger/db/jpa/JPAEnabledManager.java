@@ -176,7 +176,7 @@ public class JPAEnabledManager
   @NonNull
   public final JPAEnabledManager setUseTransactionsForSelect (final boolean bUseTransactionsForSelect)
   {
-    m_aAllowNestedTransactions.set (bUseTransactionsForSelect);
+    m_aUseTransactionsForSelect.set (bUseTransactionsForSelect);
     return this;
   }
 

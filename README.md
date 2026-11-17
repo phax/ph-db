@@ -128,11 +128,22 @@ Prepared statements only carry the parameterized SQL text, but the SQL passed to
 
 v8.5.3 - 2026-11-17
 * `DBExecutor` now returns `null` for a SQL `NULL` value of a `CLOB` column instead of an empty string, like for all other column types
+* `DBExecutor` now fails with an `SQLException` for a `CLOB` larger than 2GB instead of returning `null`
+* `DBExecutor.insertOrUpdateOrDelete` now returns `IUpdatedRowCountCallback.NOT_INITIALIZED` if the execution failed after the update count was determined (e.g. when retrieving generated keys or committing)
+* `DBExecutor.executeStatement` now requests the generated keys from the driver if an `IGeneratedKeysCallback` is provided
+* Fixed an inconsistent transaction level in `DBExecutor` if the auto-commit state of the connection cannot be determined
+* Fixed `CJDBC_PostgreSQL.CONNECTION_PREFIX` - it was `jjdbc:postgresql:`
+* `H2Helper.buildJDBCString` now rejects connection properties with a `null` value instead of appending the text `null`
+* Fixed `JPAEnabledManager.setUseTransactionsForSelect` - it changed the "allow nested transactions" setting instead
+* Fixed `JPAEnabledManagerH2.isTableExisting` - it used an invalid JPQL query instead of native SQL
+* Fixed `EntityManagerFactoryWithListener` sharing the thread-local `EntityManager` across all factory instances
+* `PersistenceXmlHelper` now also checks Jakarta Persistence 3.x `persistence.xml` files and fails on an unsupported namespace URI
 
 v8.5.2 - 2026-11-14
 * Requires at least ph-commons 12.7.1
 * Requires at least ph-telemetry 1.1.2
-* New module `ph-db-bom` - a dedicated Bill of Materials with the managed versions of `ph-db-api`, `ph-db-jdbc`, `ph-db-jpa` and `ph-db-flyway`. Import it instead of `ph-db-parent-pom`, which also carries the build configuration of this project.
+* New module `ph-db-bom` - a dedicated Bill of Materials with the managed versions of `ph-db-api`, `ph-db-jdbc`, `ph-db-jpa` and `ph-db-flyway`.
+  Import it instead of `ph-db-parent-pom`, which also carries the build configuration of this project.
 
 v8.5.1 - 2026-10-29
 * Requires at least ph-commons 12.5.0
@@ -144,17 +155,22 @@ v8.5.1 - 2026-10-29
   Both use the default of `4` connections
 
 v8.5.0 - 2026-09-06
-* Added optional [ph-telemetry](https://github.com/phax/ph-telemetry) support to `ph-db-jdbc`, `ph-db-jpa` and `ph-db-flyway`. Without a registered telemetry SPI, all emission degrades to cheap no-ops.
+* Added optional [ph-telemetry](https://github.com/phax/ph-telemetry) support to `ph-db-jdbc`, `ph-db-jpa` and `ph-db-flyway`.
+  Without a registered telemetry SPI, all emission degrades to cheap no-ops.
   `DBExecutor` emits a span per executed statement (named after the SQL operation, as the OpenTelemetry conventions demand), a span per transaction, and the metrics `db.client.operation.duration`, `phdb.jdbc.statements`, `phdb.jdbc.transactions`, `phdb.jdbc.connections`, `phdb.jdbc.connections.active` and `phdb.jdbc.connection.acquire.duration`.
   `JPAEnabledManager` emits a span per `doInTransaction` / `doSelect` plus the metrics `db.client.operation.duration` and `phdb.jpa.operations`.
   `FlywayMigrationRunner` emits a span per migration run plus the metrics `phdb.flyway.migrations` and `phdb.flyway.migrate.duration`.
-  All emitted span, metric and attribute names are constants of the new class `CDBTelemetry` in `ph-db-api`. The OpenTelemetry database semantic conventions are followed where they define a name; everything else is namespaced with `phdb.`. All duration instruments use seconds as their unit, because `db.client.operation.duration` prescribes it.
+  All emitted span, metric and attribute names are constants of the new class `CDBTelemetry` in `ph-db-api`.
+  The OpenTelemetry database semantic conventions are followed where they define a name; everything else is namespaced with `phdb.`.
+  All duration instruments use seconds as their unit, because `db.client.operation.duration` prescribes it.
 * Added `DBExecutor.setDatabaseSystemType (EDatabaseSystemType)` to provide the `db.system.name` telemetry attribute - the attribute is omitted if it is not set.
-* Added `DBExecutor.setTelemetry (boolean)` and `DBExecutor.setTelemetrySQLText (boolean)` as well as the static `JPAEnabledManager.setTelemetryEnabled (boolean)` to disable the telemetry emission. All of them default to enabled.
+* Added `DBExecutor.setTelemetry (boolean)` and `DBExecutor.setTelemetrySQLText (boolean)` as well as the static `JPAEnabledManager.setTelemetryEnabled (boolean)` to disable the telemetry emission.
+  All of them default to enabled.
   Disable `setTelemetrySQLText` if the SQL passed to `executeStatement` or `queryAll` may contain literal values that must not leave the process - prepared statements only carry the parameterized SQL text anyway.
 * Fixed the transaction boundaries of `DBExecutor.performInTransaction` - thanks to @vinit-thummar for reporting and fixing it in [issue #2](https://github.com/phax/ph-db/issues/2).
   Every statement and every query executed inside a transaction committed the shared connection right after it was executed, so a later rollback could not undo the already committed work, and the intermediate states of a transaction became visible to concurrent readers on other connections.
-  Commit and rollback now only happen at the outermost transaction boundary. Note that a failed SQL operation or a failed nested transaction now marks the whole transaction for rollback, even if the caller evaluates the returned `ESuccess` or the updated row count and continues instead of throwing - so a "try the insert, and on failure do the update instead" pattern no longer works inside a transaction, because no savepoints are used.
+  Commit and rollback now only happen at the outermost transaction boundary.
+  Note that a failed SQL operation or a failed nested transaction now marks the whole transaction for rollback, even if the caller evaluates the returned `ESuccess` or the updated row count and continues instead of throwing - so a "try the insert, and on failure do the update instead" pattern no longer works inside a transaction, because no savepoints are used.
   As before, `performInTransaction` requires a connection with auto-commit disabled, and a nested `performInTransaction` joins the outer transaction instead of starting a new one.
   Because a connection with auto-commit enabled silently degrades a transaction to no transaction at all - every statement is committed on its own and the rollback has no effect - this case is now logged as an error when the outermost transaction is started.
 
@@ -166,9 +182,12 @@ v8.4.3 - 2026-09-03
 v8.4.2 - 2026-08-30
 * Requires at least ph-commons 12.4.0
 * Added the new package `com.helger.db.api.paging` in `ph-db-api`, that creates the SQL clauses for a paged and sorted query from the data store independent `IPagingSpec` of ph-commons 12.4.0.
-  `DBPagingHelper.getPagingClause (EDatabaseSystemType, IPagingSpec)` creates the database system specific clause to limit a query to a single page - `LIMIT .. OFFSET ..` for MySQL and the SQL standard `OFFSET .. ROWS FETCH NEXT .. ROWS ONLY` for DB2, H2, Oracle, PostgreSQL and SQL Server. "All rows starting at an offset" is supported as well; for MySQL it uses the documented workaround of a very large row count (`DBPagingHelper.MYSQL_ALL_ROWS`).
+  `DBPagingHelper.getPagingClause (EDatabaseSystemType, IPagingSpec)` creates the database system specific clause to limit a query to a single page - `LIMIT .. OFFSET ..` for MySQL and the SQL standard `OFFSET .. ROWS FETCH NEXT .. ROWS ONLY` for DB2, H2, Oracle, PostgreSQL and SQL Server.
+  "All rows starting at an offset" is supported as well; for MySQL it uses the documented workaround of a very large row count (`DBPagingHelper.MYSQL_ALL_ROWS`).
   `DBPagingHelper.getOrderByClause (IPagingSpec, IDBColumnNameResolver)` creates the matching `ORDER BY` clause, and `getOrderByAndPagingClause (...)` combines the two and warns if paging is applied without an order, because which rows a page contains is undefined that way.
-  The new interface `IDBColumnNameResolver` maps the logical field name of a `SortField` onto the SQL column expression. It is the security boundary of the whole sorting: the field names typically originate from a UI and are therefore attacker controlled, while the returned expression ends up in the statement verbatim, because a column cannot be a JDBC parameter. Unknown field names are ignored, and `IDBColumnNameResolver.createFromMap (Map)` provides a whitelist based implementation.
+  The new interface `IDBColumnNameResolver` maps the logical field name of a `SortField` onto the SQL column expression.
+  It is the security boundary of the whole sorting: the field names typically originate from a UI and are therefore attacker controlled, while the returned expression ends up in the statement verbatim, because a column cannot be a JDBC parameter.
+  Unknown field names are ignored, and `IDBColumnNameResolver.createFromMap (Map)` provides a whitelist based implementation.
   Note that a paging specification requesting 0 rows is rejected with an `IllegalArgumentException`, because there is no portable SQL for it - such a query should not be executed at all.
 
 v8.4.1 - 2026-07-17
@@ -195,7 +214,8 @@ v8.4.0 - 2026-05-01
   the previously named `setExecutionDurationWarn(Duration)` / `getExecutionDuration()` / `isExecutionDurationWarnEnabled()` and the millis-based `setExecutionDurationWarnMS(long)` / `getExecutionDurationWarnMS()` are retained as `@Deprecated(forRemoval = true)` and delegate to the new methods.
   The new `isExecutionWarnDurationEnabled()` requires a strictly positive duration (`> 0`).
 * `DBExecutor.onExecutionTimeExceeded(String, long)` was changed to `onExecutionTimeExceeded(String, Duration)` to match the new callback signature.
-* `JPAEnabledManager.onExecutionTimeExceeded(String, long)` was changed to `onExecutionTimeExceeded(String, Duration)`. Added new `getDefaultExecutionWarnDuration()` and `setDefaultExecutionDuration(Duration)` plus a `DEFAULT_EXECUTION_WARN_DURATION` constant;
+* `JPAEnabledManager.onExecutionTimeExceeded(String, long)` was changed to `onExecutionTimeExceeded(String, Duration)`.
+  Added new `getDefaultExecutionWarnDuration()` and `setDefaultExecutionDuration(Duration)` plus a `DEFAULT_EXECUTION_WARN_DURATION` constant;
   the existing `getDefaultExecutionWarnTime()`, `setDefaultExecutionWarnTime(int)` and `DEFAULT_EXECUTION_WARN_TIME_MS` are now `@Deprecated(forRemoval = true)`.
 
 v8.3.0 - 2026-05-01
@@ -207,8 +227,10 @@ v8.3.0 - 2026-05-01
 * Added five `java.time.Duration`-typed accessors on `IJdbcDataSourceConfiguration` / `IJdbcConfiguration`: `getJdbcPoolingMaxWait()`, `getJdbcPoolingBetweenEvictionRuns()`, `getJdbcPoolingMinEvictableIdle()`, `getJdbcPoolingRemoveAbandonedTimeout()`, `getJdbcExecutionTimeWarning()`.
   The Duration getters are now the primary API;
   the existing `getJdbc*Millis()` long-millis getters are retained as `@Deprecated` thin wrappers.
-* `JdbcConfiguration` (POJO) now stores its five duration values as `Duration` internally. A new primary constructor accepts `Duration` parameters; 
-  the existing long-millis constructor is `@Deprecated` and delegates to it. Added matching `DEFAULT_*` `Duration` constants alongside the existing `DEFAULT_*_MILLIS` longs.
+* `JdbcConfiguration` (POJO) now stores its five duration values as `Duration` internally.
+  A new primary constructor accepts `Duration` parameters; 
+  the existing long-millis constructor is `@Deprecated` and delegates to it.
+  Added matching `DEFAULT_*` `Duration` constants alongside the existing `DEFAULT_*_MILLIS` longs.
 * `DataSourceProviderFromJdbcConfiguration` now consumes the new `Duration` accessors directly, removing the `Duration.ofMillis(...)` wrappers around millis getters.
 * The legacy `*.millis`/`*.ms` configuration keys, the corresponding `SUFFIX_*_MILLIS`/`SUFFIX_*_MS` constants, the `getConfigKey*Millis*()` accessors, and the `getJdbc*Millis()` getters on `IJdbcDataSourceConfiguration` / `IJdbcConfiguration` / `JdbcConfiguration` / `JdbcConfigurationConfig` are now `@Deprecated`.
   A WARN-level log message is emitted at runtime when a legacy `*.millis`/`*.ms` configuration key is read, pointing at the new duration-grammar key.

@@ -178,7 +178,7 @@ public enum EMySQLConnectionProperty implements IHasName
    *
    * @since MySQL 1.1g
    */
-  characterEncoding ("characterEncoding", null, new Version (1, 0, 0)),
+  characterEncoding ("characterEncoding", null, new Version (1, 1, 0)),
   /**
    * Character set to tell the server to return results as.
    *
@@ -532,7 +532,7 @@ public enum EMySQLConnectionProperty implements IHasName
    */
   jdbcCompliantTruncation ("jdbcCompliantTruncation", "true", new Version (3, 1, 2)),
   /**
-   * The maximum number of rows to return (0, the default means return all rows).
+   * The maximum number of rows to return (-1, the default means return all rows).
    */
   maxRows ("maxRows", "-1", null),
   /**

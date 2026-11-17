@@ -343,7 +343,6 @@ public class JdbcConfigurationConfig implements IJdbcConfiguration
     return m_sConfigPrefix + SUFFIX_DEBUG_SQL;
   }
 
-  @CheckForSigned
   public boolean isJdbcDebugSQL ()
   {
     return m_aConfig.getAsBoolean (getConfigKeyJdbcDebugSQL (), JdbcConfiguration.DEFAULT_DEBUG_SQL_STATEMENTS);

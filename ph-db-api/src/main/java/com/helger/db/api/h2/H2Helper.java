@@ -71,10 +71,10 @@ public final class H2Helper
           throw new IllegalArgumentException ("The H2 connection property name '" +
                                               sKey +
                                               "' is invalid - it may not contain ';' or '='");
-        if (sValue != null && sValue.indexOf (';') >= 0)
+        if (sValue == null || sValue.indexOf (';') >= 0)
           throw new IllegalArgumentException ("The value of the H2 connection property '" +
                                               sKey +
-                                              "' is invalid - it may not contain ';'");
+                                              "' is invalid - it may neither be null nor contain ';'");
         aSB.append (';').append (sKey).append ('=').append (sValue);
       }
     return aSB.toString ();

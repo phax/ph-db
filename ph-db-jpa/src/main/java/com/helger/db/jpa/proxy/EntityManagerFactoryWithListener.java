@@ -35,7 +35,7 @@ import jakarta.persistence.SynchronizationType;
  */
 public class EntityManagerFactoryWithListener extends EntityManagerFactoryProxy implements IEntityManagerListener
 {
-  private static final ThreadLocal <EntityManagerWithListener> TL = new ThreadLocal <> ();
+  private final ThreadLocal <EntityManagerWithListener> m_aTL = new ThreadLocal <> ();
 
   public EntityManagerFactoryWithListener (@NonNull final EntityManagerFactory aEntityMgrFactory)
   {
@@ -51,11 +51,11 @@ public class EntityManagerFactoryWithListener extends EntityManagerFactoryProxy 
   @Override
   public EntityManagerWithListener createEntityManager (@Nullable final Map <?, ?> aProperties)
   {
-    EntityManagerWithListener aEntityMgr = TL.get ();
+    EntityManagerWithListener aEntityMgr = m_aTL.get ();
     if (aEntityMgr == null)
     {
       aEntityMgr = new EntityManagerWithListener (super.createEntityManager (aProperties));
-      TL.set (aEntityMgr);
+      m_aTL.set (aEntityMgr);
       // Set special listener, so that the ThreadLocal is cleared after close
       aEntityMgr.setCloseListener (this);
     }
@@ -72,11 +72,11 @@ public class EntityManagerFactoryWithListener extends EntityManagerFactoryProxy 
   public EntityManager createEntityManager (final SynchronizationType eSynchronizationType,
                                             final Map <?, ?> aProperties)
   {
-    EntityManagerWithListener aEntityMgr = TL.get ();
+    EntityManagerWithListener aEntityMgr = m_aTL.get ();
     if (aEntityMgr == null)
     {
       aEntityMgr = new EntityManagerWithListener (super.createEntityManager (eSynchronizationType, aProperties));
-      TL.set (aEntityMgr);
+      m_aTL.set (aEntityMgr);
       // Set special listener, so that the ThreadLocal is cleared after close
       aEntityMgr.setCloseListener (this);
     }
@@ -86,6 +86,6 @@ public class EntityManagerFactoryWithListener extends EntityManagerFactoryProxy 
   @OverridingMethodsMustInvokeSuper
   public void onAfterEntityManagerClosed ()
   {
-    TL.remove ();
+    m_aTL.remove ();
   }
 }
