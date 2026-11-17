@@ -1294,11 +1294,12 @@ public class DBExecutor implements Serializable
                             nUpdateCount != IUpdatedRowCountCallback.NOT_INITIALIZED ? aCB.getGeneratedKey () : null);
   }
 
-  @NonNull
+  @Nullable
   private static String _clobToString (@Nullable final Clob aClob) throws SQLException
   {
+    // A SQL NULL stays null and is not turned into an empty string
     if (aClob == null)
-      return "";
+      return null;
 
     // Check conversion possibility
     final long nClobLength = aClob.length ();
@@ -1307,8 +1308,9 @@ public class DBExecutor implements Serializable
       LOGGER.error ("The contained CLOB is larger than 2GB (" +
                     nClobLength +
                     " chars) and therefore cannot be converted to a String");
-      return "";
+      return null;
     }
+
     // length was ensured previously
     final StringBuilder aSB = new StringBuilder ((int) nClobLength);
     try (final Reader aReader = aClob.getCharacterStream ();

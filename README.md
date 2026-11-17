@@ -126,6 +126,9 @@ Prepared statements only carry the parameterized SQL text, but the SQL passed to
 
 # News and noteworthy
 
+v8.5.3 - 2026-11-17
+* `DBExecutor` now returns `null` for a SQL `NULL` value of a `CLOB` column instead of an empty string, like for all other column types
+
 v8.5.2 - 2026-11-14
 * Requires at least ph-commons 12.7.1
 * Requires at least ph-telemetry 1.1.2
