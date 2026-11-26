@@ -126,6 +126,12 @@ Prepared statements only carry the parameterized SQL text, but the SQL passed to
 
 # News and noteworthy
 
+v8.5.4 - work in progress
+* Added the new class `DBTimestampUTC` to store an instant in a `TIMESTAMP` column (without time zone) as UTC, independent of the default time zone of the JVM and of daylight saving time changes
+  `DBExecutor` binds it with `setTimestamp` and a UTC calendar, and additionally reads every `TIMESTAMP` column with a UTC calendar (`DBResultField.getUTCTimestamp ()`)
+  Read the value back with the new method `DBResultRow.getAsOffsetDateTimeUTC (int)`
+  Verified with PostgreSQL, MySQL, Oracle, SQL Server and DB2 - in contrast to `TIMESTAMP WITH TIME ZONE`, which is not available in MySQL and DB2 LUW
+
 v8.5.3 - 2026-11-17
 * `DBExecutor` now returns `null` for a SQL `NULL` value of a `CLOB` column instead of an empty string, like for all other column types
 * `DBExecutor` now fails with an `SQLException` for a `CLOB` larger than 2GB instead of returning `null`

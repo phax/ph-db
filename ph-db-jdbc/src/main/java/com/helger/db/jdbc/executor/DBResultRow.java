@@ -31,6 +31,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 
 import org.jspecify.annotations.NonNull;
@@ -488,6 +489,28 @@ public class DBResultRow implements ICloneable <DBResultRow>, Serializable
   {
     final Timestamp ret = getAsTimestamp (nIndex);
     return ret == null ? null : PDTFactory.createOffsetDateTime (ret);
+  }
+
+  /**
+   * Get the value of a <code>TIMESTAMP</code> column that was stored as UTC with
+   * {@link DBTimestampUTC}. The result is independent of the default time zone of the JVM.
+   *
+   * @param nIndex
+   *        The 0-based column index.
+   * @return The date time in UTC or <code>null</code> if the value is SQL <code>NULL</code>.
+   * @since 8.5.4
+   */
+  @Nullable
+  public OffsetDateTime getAsOffsetDateTimeUTC (@Nonnegative final int nIndex)
+  {
+    final DBResultField aField = get (nIndex);
+    final Timestamp aUTCTimestamp = aField.getUTCTimestamp ();
+    if (aUTCTimestamp != null)
+      return aUTCTimestamp.toInstant ().atOffset (ZoneOffset.UTC);
+
+    // Not read as TIMESTAMP column - interpret the local date time as UTC
+    final LocalDateTime aLDT = getAsLocalDateTime (nIndex);
+    return aLDT == null ? null : aLDT.atOffset (ZoneOffset.UTC);
   }
 
   @Nullable

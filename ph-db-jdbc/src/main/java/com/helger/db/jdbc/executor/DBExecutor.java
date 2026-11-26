@@ -26,8 +26,10 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.Duration;
+import java.util.Calendar;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -1093,7 +1095,15 @@ public class DBExecutor implements Serializable
           // assign values
           int nIndex = 1;
           for (final Object aArg : aPSDP.getObjectValues ())
-            aPS.setObject (nIndex++, aArg);
+          {
+            if (aArg instanceof final DBTimestampUTC aTimestampUTC)
+            {
+              // Independent of the default time zone of the JVM
+              aPS.setTimestamp (nIndex++, aTimestampUTC.getAsTimestamp (), DBTimestampUTC.createUTCCalendar ());
+            }
+            else
+              aPS.setObject (nIndex++, aArg);
+          }
 
           // call callback
           aPSCallback.run (aPS, aSpan);
@@ -1367,6 +1377,8 @@ public class DBExecutor implements Serializable
       }
       // create object once for all rows
       final DBResultRow aRow = new DBResultRow (nCols);
+      // Used for all TIMESTAMP columns of this result set
+      final Calendar aUTCCalendar = DBTimestampUTC.createUTCCalendar ();
 
       // for all result set elements
       long nResultRows = 0;
@@ -1379,12 +1391,19 @@ public class DBExecutor implements Serializable
         for (int i = 1; i <= nCols; ++i)
         {
           Object aColumnValue = aRS.getObject (i);
+          Timestamp aUTCTimestamp = null;
           if (aColumnTypes[i - 1] == Types.CLOB)
           {
             // Special CLOB handling
             aColumnValue = _clobToString ((java.sql.Clob) aColumnValue);
           }
-          aRow.internalAdd (new DBResultField (aColumnNames[i - 1], aColumnTypes[i - 1], aColumnValue));
+          else
+            if (aColumnTypes[i - 1] == Types.TIMESTAMP && aColumnValue != null)
+            {
+              // Additionally read it as UTC, as stored with DBTimestampUTC
+              aUTCTimestamp = aRS.getTimestamp (i, aUTCCalendar);
+            }
+          aRow.internalAdd (new DBResultField (aColumnNames[i - 1], aColumnTypes[i - 1], aColumnValue, aUTCTimestamp));
         }
         // handle result row
         aCallback.accept (aRow);

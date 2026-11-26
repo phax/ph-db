@@ -41,6 +41,7 @@ ph-db-api          ← core abstractions, config interfaces, DB-specific helpers
 - **`IJdbcConfiguration`** / **`IJdbcDataSourceConfiguration`** (`ph-db-api`) — JDBC config interfaces including pooling params
 - **`AbstractDBConnector`** (`ph-db-jdbc`) — template base for DB connectors; subclasses provide driver class, URL, credentials
 - **`DBExecutor`** (`ph-db-jdbc`) — main JDBC query execution class with prepared statement support
+- **`DBTimestampUTC`** (`ph-db-jdbc`) — parameter value for storing an instant as UTC in a `TIMESTAMP` column; `DBExecutor` binds it with a UTC calendar and additionally reads every `TIMESTAMP` column with a UTC calendar, read it with `DBResultRow.getAsOffsetDateTimeUTC`. A plain `Timestamp` parameter is converted with the JVM default time zone by the drivers
 - **`JPAEnabledManager`** (`ph-db-jpa`) — main JPA transaction executor with statistics tracking
 - **`AbstractGlobalEntityManagerFactory`** (`ph-db-jpa`) — singleton base for EntityManagerFactory; DB-specific subclasses for H2 and MySQL
 - **`FlywayMigrationRunner`** (`ph-db-flyway`) — utility class to run Flyway migrations

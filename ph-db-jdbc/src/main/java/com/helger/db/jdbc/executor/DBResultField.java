@@ -17,6 +17,7 @@
 package com.helger.db.jdbc.executor;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -38,6 +39,7 @@ public class DBResultField implements IGetterDirectTrait, Serializable
   private final String m_sColumnName;
   private final int m_nColumnType;
   private final Object m_aValue;
+  private final Timestamp m_aUTCTimestamp;
 
   /**
    * Constructor
@@ -52,10 +54,34 @@ public class DBResultField implements IGetterDirectTrait, Serializable
    */
   public DBResultField (@NonNull final String sColumnName, final int nColumnType, @Nullable final Object aValue)
   {
+    this (sColumnName, nColumnType, aValue, null);
+  }
+
+  /**
+   * Constructor
+   *
+   * @param sColumnName
+   *        Column name. May not be <code>null</code>. Usually also not empty but MS SQL Server uses
+   *        an empty column name for e.g. "COUNT(*)" queries.
+   * @param nColumnType
+   *        JDBC column type
+   * @param aValue
+   *        The actual value read. Can be "anything".
+   * @param aUTCTimestamp
+   *        The value of a <code>TIMESTAMP</code> column, read with a UTC calendar. May be
+   *        <code>null</code>.
+   * @since 8.5.4
+   */
+  public DBResultField (@NonNull final String sColumnName,
+                        final int nColumnType,
+                        @Nullable final Object aValue,
+                        @Nullable final Timestamp aUTCTimestamp)
+  {
     ValueEnforcer.notNull (sColumnName, "ColumnName");
     m_sColumnName = sColumnName;
     m_nColumnType = nColumnType;
     m_aValue = aValue;
+    m_aUTCTimestamp = aUTCTimestamp;
   }
 
   /**
@@ -94,12 +120,25 @@ public class DBResultField implements IGetterDirectTrait, Serializable
     return m_aValue;
   }
 
+  /**
+   * @return The value of a <code>TIMESTAMP</code> column, read with a UTC calendar, as stored with
+   *         {@link DBTimestampUTC}. May be <code>null</code> for other column types or for SQL
+   *         <code>NULL</code>.
+   * @since 8.5.4
+   */
+  @Nullable
+  public Timestamp getUTCTimestamp ()
+  {
+    return m_aUTCTimestamp;
+  }
+
   @Override
   public String toString ()
   {
     return new ToStringGenerator (this).append ("ColumnName", m_sColumnName)
                                        .append ("ColumnType", m_nColumnType)
                                        .append ("Value", m_aValue)
+                                       .appendIfNotNull ("UTCTimestamp", m_aUTCTimestamp)
                                        .getToString ();
   }
 }
