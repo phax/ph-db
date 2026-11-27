@@ -126,7 +126,7 @@ Prepared statements only carry the parameterized SQL text, but the SQL passed to
 
 # News and noteworthy
 
-v8.5.4 - work in progress
+v8.5.4 - 2026-11-27
 * Added the new class `DBTimestampUTC` to store an instant in a `TIMESTAMP` column (without time zone) as UTC, independent of the default time zone of the JVM and of daylight saving time changes
   `DBExecutor` binds it with `setTimestamp` and a UTC calendar, and additionally reads every `TIMESTAMP` column with a UTC calendar (`DBResultField.getUTCTimestamp ()`)
   Read the value back with the new method `DBResultRow.getAsOffsetDateTimeUTC (int)`
